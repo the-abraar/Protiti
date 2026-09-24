@@ -10,29 +10,31 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#0A1128',
-                        secondary: '#1282A2',
-                        accent: '#FFC857',
-                        panic: '#E63946',
-                        surface: '#1B2838',
-                        textMuted: '#A0AEC0'
+                        primary: '#FFFFFF',
+                        secondary: '#4A5568',
+                        accent: '#A0AEC0',
+                        panic: '#C53030',
+                        surface: '#F7F9FC',
+                        textMuted: '#718096'
                     }
                 }
             }
         }
+            }
+        }
     </script>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #1a202c; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #EDF2F7; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
         .phone-frame {
             width: 375px;
             height: 812px;
-            background-color: #0A1128;
+            background-color: #FFFFFF;
             border-radius: 40px;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
             overflow: hidden;
             position: relative;
-            border: 12px solid #2d3748;
-            color: #fff;
+            border: 12px solid #CBD5E1;
+            color: #2D3748;
             display: flex;
             flex-direction: column;
         }
@@ -61,7 +63,7 @@
             animation: pulse-animation 2s infinite;
         }
         @keyframes pulse-animation {
-            0% { box-shadow: 0 0 0 0 rgba(230, 57, 70, 0.7); }
+            0% { box-shadow: 0 0 0 0 rgba(160, 174, 192, 0.7); }
             70% { box-shadow: 0 0 0 30px rgba(230, 57, 70, 0); }
             100% { box-shadow: 0 0 0 0 rgba(230, 57, 70, 0); }
         }
@@ -72,7 +74,7 @@
             left: 0;
             right: 0;
             height: 80px;
-            background-color: #1B2838;
+            background-color: #FFFFFF; border-top: 1px solid #E2E8F0;
             display: flex;
             justify-content: space-around;
             align-items: center;
@@ -121,7 +123,7 @@
             </div>
             <h1 class="text-3xl font-bold mb-1">Protiti</h1>
             <p class="text-accent text-sm font-medium mb-1">প্রতীতি</p>
-            <p class="text-textMuted text-sm mb-16">Digital Evidence Vault</p>
+            <p class="text-textMuted text-sm mb-16">My Notes</p>
             
             <div class="mt-12 cursor-pointer" onclick="switchTab('vault')">
                 <svg class="w-16 h-16 mx-auto text-accent opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4"></path></svg>
@@ -153,7 +155,7 @@
                 </div>
                 <div class="flex items-center gap-1 mb-1">
                     <div class="w-3 h-3 rounded bg-blue-600 flex items-center justify-center text-[8px] font-bold">f</div>
-                    <span class="text-[10px] text-textMuted truncate">Messenger Thread</span>
+                    <span class="text-[10px] text-textMuted truncate">Entry 1</span>
                 </div>
                 <div class="text-[10px] text-textMuted">Today, 2:14 PM</div>
             </div>
@@ -165,7 +167,7 @@
                 </div>
                 <div class="flex items-center gap-1 mb-1">
                     <div class="w-3 h-3 rounded bg-blue-600 flex items-center justify-center text-[8px] font-bold">f</div>
-                    <span class="text-[10px] text-textMuted truncate">Abusive Comment</span>
+                    <span class="text-[10px] text-textMuted truncate">Entry 2</span>
                 </div>
                 <div class="text-[10px] text-textMuted">Yesterday, 9:30 AM</div>
             </div>
@@ -173,7 +175,7 @@
             <div class="bg-surface rounded-xl p-2 hover:border hover:border-accent transition-all cursor-pointer">
                 <div class="h-24 bg-primary rounded-lg mb-2 flex items-center justify-center overflow-hidden relative">
                     <span class="absolute top-1 right-1 bg-black/60 text-[10px] px-1 rounded text-white">Text</span>
-                    <p class="text-[10px] p-2 text-textMuted overflow-hidden text-center">Threatening SMS message received...</p>
+                    <p class="text-[10px] p-2 text-textMuted overflow-hidden text-center">Note from Oct 12...</p>
                 </div>
                 <div class="flex items-center gap-1 mb-1">
                     <svg class="w-3 h-3 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
@@ -189,7 +191,7 @@
                 </div>
                 <div class="flex items-center gap-1 mb-1">
                     <div class="w-3 h-3 rounded bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-500 flex items-center justify-center text-[8px] font-bold">i</div>
-                    <span class="text-[10px] text-textMuted truncate">Fake Profile</span>
+                    <span class="text-[10px] text-textMuted truncate">Entry 3</span>
                 </div>
                 <div class="text-[10px] text-textMuted">Oct 10, 8:40 AM</div>
             </div>
@@ -265,7 +267,7 @@
                     <svg class="w-5 h-5 text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                 </div>
                 <div class="flex-1">
-                    <div class="text-sm">Messenger Thread</div>
+                    <div class="text-sm">Entry 1</div>
                     <div class="text-xs text-textMuted">Today, 2:14 PM</div>
                 </div>
             </div>
@@ -275,7 +277,7 @@
                     <span class="text-xs">Link</span>
                 </div>
                 <div class="flex-1">
-                    <div class="text-sm">Abusive Comment</div>
+                    <div class="text-sm">Entry 2</div>
                     <div class="text-xs text-textMuted">Yesterday, 9:30 AM</div>
                 </div>
             </div>

@@ -16,49 +16,27 @@
             theme: {
                 extend: {
                     colors: {
-                        amethyst: {
-                            DEFAULT: '#4A154B',
-                            dark: '#2C0B2D',
-                            deeper: '#1F0B20',
-                            light: '#6B2B6D',
-                            glow: 'rgba(74, 21, 75, 0.4)'
-                        },
-                        teal: {
-                            DEFAULT: '#008080',
-                            light: '#20B2AA',
-                            bright: '#00A8A8',
-                            dark: '#005959',
-                            glow: 'rgba(0, 128, 128, 0.3)'
-                        },
-                        gold: {
-                            DEFAULT: '#FFC107',
-                            light: '#FFD54F',
-                            dark: '#FFA000',
-                            glow: 'rgba(255, 193, 7, 0.25)'
-                        },
-                        crimson: {
-                            DEFAULT: '#D32F2F',
-                            bright: '#E53935',
-                            dark: '#B71C1C',
-                            glow: 'rgba(211, 47, 47, 0.45)'
-                        },
-                        charcoal: {
-                            900: '#121212',
-                            800: '#1A1A1A',
-                            700: '#222222',
-                            600: '#2E2E2E',
-                            card: '#1E1E1E',
-                            elevated: '#282828'
-                        },
-                        alabaster: '#F8F9FA'
+                        primary: '#F7F9FC',
+                        secondary: '#4A5568',
+                        accent: '#81E6D9',
+                        safe: '#38A169',
+                        calm: '#E2E8F0',
+                        amethyst: { DEFAULT: '#4A5568', dark: '#2D3748', deeper: '#1A202C', light: '#718096', glow: 'transparent' },
+                        teal: { DEFAULT: '#81E6D9', light: '#B2F5EA', bright: '#4FD1C5', dark: '#319795', glow: 'transparent' },
+                        gold: { DEFAULT: '#A0AEC0', light: '#CBD5E1', dark: '#718096', glow: 'transparent' },
+                        crimson: { DEFAULT: '#C53030', bright: '#E53E3E', dark: '#9B2C2C', glow: 'transparent' },
+                        charcoal: { 900: '#F7F9FC', 800: '#EDF2F7', 700: '#E2E8F0', 600: '#CBD5E1', card: '#FFFFFF', elevated: '#F8FAFC' },
+                        alabaster: '#FFFFFF'
                     },
                     fontFamily: {
-                        poppins: ['Poppins', 'sans-serif'],
+                        poppins: ['Inter', 'sans-serif'],
                         inter: ['Inter', 'sans-serif'],
                         bengali: ['Hind Siliguri', 'sans-serif'],
                         mono: ['JetBrains Mono', 'monospace']
                     }
                 }
+            }
+        }
             }
         }
     </script>
@@ -67,9 +45,9 @@
         * { box-sizing: border-box; }
         body {
             font-family: 'Inter', 'Hind Siliguri', sans-serif;
-            background: radial-gradient(circle at 10% 20%, #1a0b1c 0%, #0d0e15 100%);
+            background: #F7F9FC;
             min-height: 100vh;
-            color: #E2E8F0;
+            color: #2D3748;
             overflow-x: hidden;
         }
 
@@ -84,14 +62,14 @@
         .phone-chassis {
             width: 385px;
             height: 800px;
-            background-color: #121212;
+            background-color: #FFFFFF;
             border-radius: 46px;
             box-shadow: 0 30px 90px rgba(0, 0, 0, 0.8), 0 0 0 12px #26272E, 0 0 0 14px #18191E;
             overflow: hidden;
             position: relative;
             display: flex;
             flex-direction: column;
-            border: 2px solid rgba(255, 255, 255, 0.08);
+            border: 2px solid #E2E8F0;
             user-select: none;
             flex-shrink: 0;
         }
@@ -121,8 +99,8 @@
 
         /* Pulse animation for SOS */
         @keyframes sosPulse {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.7); }
-            50% { transform: scale(1.04); box-shadow: 0 0 0 25px rgba(211, 47, 47, 0); }
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(200, 200, 200, 0.7); }
+            50% { transform: scale(1.04); box-shadow: 0 0 0 15px rgba(200, 200, 200, 0); }
             100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(211, 47, 47, 0); }
         }
         .sos-btn-pulse {
@@ -130,15 +108,8 @@
         }
 
         /* Glassmorphism */
-        .glass-card {
-            background: rgba(30, 30, 30, 0.85);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.07);
-        }
-        .glass-card-amethyst {
-            background: linear-gradient(135deg, rgba(74, 21, 75, 0.22) 0%, rgba(30, 30, 30, 0.8) 100%);
-            border: 1px solid rgba(107, 43, 109, 0.35);
-        }
+        .glass-card { background: #FFFFFF; border: 1px solid #E2E8F0; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .glass-card-amethyst { background: #F8FAFC; border: 1px solid #CBD5E1; }
 
         /* Screen transitions */
         .app-screen {
@@ -174,14 +145,14 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
                 </svg>
             </div>
-            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight font-poppins text-white flex items-center gap-2">
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight font-poppins text-gray-800 flex items-center gap-2">
                 Protiti <span class="text-gold font-bengali text-3xl font-bold">(প্রতীতি)</span>
             </h1>
         </div>
-        <p class="text-sm md:text-base text-gray-300 mt-2 max-w-2xl font-inter">
-            <span class="text-teal-light font-medium">Digital Evidence Vault & Legal GD Automator</span> for victims of gender-based cyberviolence in Bangladesh.
+        <p class="text-sm md:text-base text-gray-600 mt-2 max-w-2xl font-inter">
+            <span class="text-teal-light font-medium">Personal Notes & Records</span> for victims of gender-based cyberviolence in Bangladesh.
         </p>
-        <p class="text-xs text-gray-400 mt-1 font-bengali">
+        <p class="text-xs text-gray-500 mt-1 font-bengali">
             "সন্দেহহীন সত্য, অকাট্য প্রমাণের অধিকার" &bull; <em>From Doubt to Certitude: Structure for Digital Justice</em>
         </p>
     </header>
@@ -196,27 +167,27 @@
             <div class="glass-card rounded-2xl p-5 border border-white/10 shadow-xl">
                 <h3 class="text-xs font-mono uppercase tracking-wider text-teal-light mb-3 flex items-center justify-between">
                     <span>1. Operating Persona</span>
-                    <span id="persona-badge" class="px-2 py-0.5 rounded text-[10px] bg-amethyst text-white font-mono">GENUINE VAULT</span>
+                    <span id="persona-badge" class="px-2 py-0.5 rounded text-[10px] bg-amethyst text-gray-800 font-mono">GENUINE VAULT</span>
                 </h3>
                 
                 <div class="grid grid-cols-3 gap-2 mb-3">
                     <button id="btn-mode-genuine" onclick="setMode('genuine')" class="p-2.5 rounded-xl border border-teal text-left bg-teal/20 transition-all flex flex-col items-center text-center">
                         <span class="text-base mb-1">🛡️</span>
-                        <span class="text-xs font-semibold text-white">Genuine</span>
-                        <span class="text-[9px] text-gray-400">Secure Vault</span>
+                        <span class="text-xs font-semibold text-gray-800">Genuine</span>
+                        <span class="text-[9px] text-gray-500">Secure Vault</span>
                     </button>
                     <button id="btn-mode-decoy" onclick="setMode('decoy')" class="p-2.5 rounded-xl border border-white/10 text-left hover:border-gold/50 bg-charcoal-card transition-all flex flex-col items-center text-center">
                         <span class="text-base mb-1">🎭</span>
                         <span class="text-xs font-semibold text-gray-200">Decoy</span>
-                        <span class="text-[9px] text-gray-400">Duress Vault</span>
+                        <span class="text-[9px] text-gray-500">Duress Vault</span>
                     </button>
                     <button id="btn-mode-stealth" onclick="setMode('stealth')" class="p-2.5 rounded-xl border border-white/10 text-left hover:border-amethyst-light bg-charcoal-card transition-all flex flex-col items-center text-center">
                         <span class="text-base mb-1">🧮</span>
                         <span class="text-xs font-semibold text-gray-200">Stealth</span>
-                        <span class="text-[9px] text-gray-400">Calculator</span>
+                        <span class="text-[9px] text-gray-500">Calculator</span>
                     </button>
                 </div>
-                <p id="persona-desc" class="text-xs text-gray-400 leading-relaxed bg-black/40 p-2.5 rounded-lg border border-white/5">
+                <p id="persona-desc" class="text-xs text-gray-500 leading-relaxed bg-black/40 p-2.5 rounded-lg border border-white/5">
                     <strong>Genuine Mode:</strong> Displays forensically hashed cyber harassment evidence, metadata badges, legal GD builder, and police complaint drafts.
                 </p>
             </div>
@@ -225,27 +196,27 @@
             <div class="glass-card rounded-2xl p-5 border border-white/10 shadow-xl">
                 <h3 class="text-xs font-mono uppercase tracking-wider text-gold mb-3 flex items-center justify-between">
                     <span>2. Bilingual Localization</span>
-                    <span class="text-[10px] font-mono text-gray-400">EN / BN</span>
+                    <span class="text-[10px] font-mono text-gray-500">EN / BN</span>
                 </h3>
                 <div class="flex rounded-xl bg-charcoal-900 p-1 border border-white/10">
-                    <button id="lang-en" onclick="setLanguage('en')" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all bg-amethyst text-white shadow">
+                    <button id="lang-en" onclick="setLanguage('en')" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all bg-amethyst text-gray-800 shadow">
                         English (EN)
                     </button>
-                    <button id="lang-bn" onclick="setLanguage('bn')" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all text-gray-400 hover:text-white font-bengali">
+                    <button id="lang-bn" onclick="setLanguage('bn')" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all text-gray-500 hover:text-gray-800 font-bengali">
                         বাংলা (BN)
                     </button>
                 </div>
-                <div class="mt-3 text-xs text-gray-300 space-y-1.5 font-inter">
+                <div class="mt-3 text-xs text-gray-600 space-y-1.5 font-inter">
                     <div class="flex items-center justify-between py-1 border-b border-white/5">
-                        <span class="text-gray-400">Headings Typeface:</span>
+                        <span class="text-gray-500">Headings Typeface:</span>
                         <span class="font-mono text-teal-light text-[11px]">Poppins / Hind Siliguri</span>
                     </div>
                     <div class="flex items-center justify-between py-1 border-b border-white/5">
-                        <span class="text-gray-400">Body & Legal Draft:</span>
+                        <span class="text-gray-500">Body & Legal Draft:</span>
                         <span class="font-mono text-teal-light text-[11px]">Inter / Noto Bengali</span>
                     </div>
                     <div class="flex items-center justify-between py-1">
-                        <span class="text-gray-400">Trauma Microcopy:</span>
+                        <span class="text-gray-500">Trauma Microcopy:</span>
                         <span class="text-[11px] text-green-400 font-semibold">Active &bull; Non-accusatory</span>
                     </div>
                 </div>
@@ -257,15 +228,15 @@
                     <span>3. Trauma & Safety Controls</span>
                     <span class="text-[10px] bg-crimson/20 text-crimson px-1.5 py-0.5 rounded font-mono">&lt; 1s Response</span>
                 </h3>
-                <p class="text-xs text-gray-400 mb-3">
+                <p class="text-xs text-gray-500 mb-3">
                     Simulates immediate screen-flip or panic gesture when an abuser enters the room.
                 </p>
                 <div class="flex flex-col gap-2">
-                    <button onclick="triggerQuickExit()" class="w-full py-2.5 px-4 bg-charcoal-700 hover:bg-charcoal-600 border border-gray-600 rounded-xl text-xs font-bold text-white flex items-center justify-center gap-2 active:scale-95 transition-all">
+                    <button onclick="triggerQuickExit()" class="w-full py-2.5 px-4 bg-charcoal-700 hover:bg-charcoal-600 border border-gray-600 rounded-xl text-xs font-bold text-gray-800 flex items-center justify-center gap-2 active:scale-95 transition-all">
                         <svg class="w-4 h-4 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
                         Simulate Emergency Face-Down / Quick Exit
                     </button>
-                    <button onclick="switchTab('panic')" class="w-full py-2.5 px-4 bg-crimson hover:bg-crimson-dark border border-red-500 rounded-xl text-xs font-bold text-white flex items-center justify-center gap-2 active:scale-95 transition-all">
+                    <button onclick="switchTab('panic')" class="w-full py-2.5 px-4 bg-crimson hover:bg-crimson-dark border border-red-500 rounded-xl text-xs font-bold text-gray-800 flex items-center justify-center gap-2 active:scale-95 transition-all">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                         Jump to 1-Second Panic SOS
                     </button>
@@ -274,27 +245,27 @@
 
             <!-- Color Palette Inspector -->
             <div class="glass-card rounded-2xl p-4 border border-white/10">
-                <div class="text-[11px] font-mono text-gray-400 uppercase tracking-wide mb-2">Design Tokens Applied</div>
+                <div class="text-[11px] font-mono text-gray-500 uppercase tracking-wide mb-2">Design Tokens Applied</div>
                 <div class="grid grid-cols-4 gap-2 text-center text-[10px] font-mono">
                     <div>
                         <div class="h-8 rounded-lg bg-amethyst mb-1 border border-white/10"></div>
-                        <div class="text-white font-bold">#4A154B</div>
-                        <div class="text-[9px] text-gray-400">Amethyst</div>
+                        <div class="text-gray-800 font-bold">#4A154B</div>
+                        <div class="text-[9px] text-gray-500">Amethyst</div>
                     </div>
                     <div>
                         <div class="h-8 rounded-lg bg-teal mb-1 border border-white/10"></div>
-                        <div class="text-white font-bold">#008080</div>
-                        <div class="text-[9px] text-gray-400">Teal</div>
+                        <div class="text-gray-800 font-bold">#008080</div>
+                        <div class="text-[9px] text-gray-500">Teal</div>
                     </div>
                     <div>
                         <div class="h-8 rounded-lg bg-gold mb-1 border border-white/10"></div>
-                        <div class="text-white font-bold">#FFC107</div>
-                        <div class="text-[9px] text-gray-400">Warm Gold</div>
+                        <div class="text-gray-800 font-bold">#FFC107</div>
+                        <div class="text-[9px] text-gray-500">Warm Gold</div>
                     </div>
                     <div>
                         <div class="h-8 rounded-lg bg-crimson mb-1 border border-white/10"></div>
-                        <div class="text-white font-bold">#D32F2F</div>
-                        <div class="text-[9px] text-gray-400">Crimson</div>
+                        <div class="text-gray-800 font-bold">#D32F2F</div>
+                        <div class="text-[9px] text-gray-500">Crimson</div>
                     </div>
                 </div>
             </div>
@@ -315,10 +286,10 @@
                 </div>
 
                 <!-- Top Status Bar -->
-                <div class="absolute top-2 left-0 right-0 px-6 flex justify-between items-center text-[11px] font-mono text-gray-300 z-50 pointer-events-none">
+                <div class="absolute top-2 left-0 right-0 px-6 flex justify-between items-center text-[11px] font-mono text-gray-600 z-50 pointer-events-none">
                     <span id="live-time">14:32</span>
                     <div class="flex items-center gap-1.5">
-                        <svg class="w-3.5 h-3.5 text-gray-300" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 18.25c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l.74-.74C8.07 19.93 9.97 21 12 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7z"/></svg>
+                        <svg class="w-3.5 h-3.5 text-gray-600" fill="currentColor" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9 0 2.12.74 4.07 1.97 5.61L4.35 18.25c-.39.39-.39 1.02 0 1.41.39.39 1.02.39 1.41 0l.74-.74C8.07 19.93 9.97 21 12 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm0 16c-3.86 0-7-3.14-7-7s3.14-7 7-7 7 3.14 7 7-3.14 7-7 7z"/></svg>
                         <span class="text-[10px]">LTE</span>
                         <div class="w-4 h-2 border border-gray-300 rounded-[2px] p-[0.5px] flex items-center">
                             <div class="w-2.5 h-full bg-teal-light rounded-[1px]"></div>
@@ -327,13 +298,13 @@
                 </div>
 
                 <!-- Safe Discreet Header Pill (Quick Exit Gesture Trigger) -->
-                <div id="quick-exit-pill" onclick="triggerQuickExit()" class="absolute top-11 right-4 z-50 px-2 py-0.5 rounded-full bg-charcoal-card/90 border border-white/10 text-[9px] text-gray-400 hover:text-white hover:bg-amethyst cursor-pointer flex items-center gap-1 transition-all">
+                <div id="quick-exit-pill" onclick="triggerQuickExit()" class="absolute top-11 right-4 z-50 px-2 py-0.5 rounded-full bg-charcoal-card/90 border border-white/10 text-[9px] text-gray-500 hover:text-gray-800 hover:bg-amethyst cursor-pointer flex items-center gap-1 transition-all">
                     <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>
                     <span data-i18n="quick_exit_btn">Quick Exit</span>
                 </div>
 
                 <!-- ================= SCREEN 1: LOCK / BIOMETRIC SCREEN ================= -->
-                <div id="screen-lock" class="app-screen active justify-center items-center px-6 text-center bg-gradient-to-b from-amethyst-deeper via-charcoal-900 to-black">
+                <div id="screen-lock" class="app-screen active justify-center items-center px-6 text-center bg-white">
                     <div class="w-24 h-24 rounded-3xl bg-amethyst-dark/60 border-2 border-teal flex items-center justify-center shadow-2xl mb-5 relative group cursor-pointer" onclick="unlockApp()">
                         <div class="absolute inset-0 bg-teal/10 rounded-3xl animate-pulse"></div>
                         <svg class="w-12 h-12 text-teal-light" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -341,29 +312,29 @@
                         </svg>
                     </div>
 
-                    <h2 class="text-2xl font-bold font-poppins text-white mb-0.5">Protiti</h2>
+                    <h2 class="text-2xl font-bold font-poppins text-gray-800 mb-0.5">Protiti</h2>
                     <p class="text-gold font-bengali text-lg font-semibold mb-1">প্রতীতি</p>
-                    <p class="text-xs text-gray-400 max-w-xs mb-8 font-inter" data-i18n="lock_subtitle">
-                        Tamper-Evident Cyberviolence Evidence Vault
+                    <p class="text-xs text-gray-500 max-w-xs mb-8 font-inter" data-i18n="lock_subtitle">
+                        Secure Personal Notes
                     </p>
 
                     <!-- Biometric Unlock Button -->
-                    <button onclick="unlockApp()" class="w-full py-3.5 px-4 bg-teal hover:bg-teal-bright text-white font-poppins font-semibold rounded-2xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
+                    <button onclick="unlockApp()" class="w-full py-3.5 px-4 bg-teal hover:bg-teal-bright text-gray-800 font-poppins font-semibold rounded-2xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-2">
                         <svg class="w-5 h-5 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                         <span data-i18n="unlock_btn">Touch ID / Biometric Access</span>
                     </button>
 
                     <div class="mt-6 flex items-center justify-center gap-4 text-[11px] text-gray-500">
                         <span class="flex items-center gap-1">
-                            <span class="w-1.5 h-1.5 rounded-full bg-teal"></span> SHA-256 Verified
+                            <span class="w-1.5 h-1.5 rounded-full bg-teal"></span> Saved Securely
                         </span>
                         <span class="flex items-center gap-1">
-                            <span class="w-1.5 h-1.5 rounded-full bg-gold"></span> AES-256 Encrypted
+                            <span class="w-1.5 h-1.5 rounded-full bg-gold"></span> Private
                         </span>
                     </div>
 
                     <!-- Subtle Switcher to Calculator for Testing -->
-                    <button onclick="setMode('stealth')" class="mt-8 text-[11px] text-gray-500 hover:text-gray-300 underline font-mono">
+                    <button onclick="setMode('stealth')" class="mt-8 text-[11px] text-gray-500 hover:text-gray-600 underline font-mono">
                         [Test: Launch in Disguise Mode]
                     </button>
                 </div>
@@ -375,17 +346,17 @@
                     <div class="flex justify-between items-start mb-3 pt-2">
                         <div>
                             <div class="flex items-center gap-2">
-                                <h2 id="vault-title" class="text-xl font-bold font-poppins text-white">Evidence Vault</h2>
+                                <h2 id="vault-title" class="text-xl font-bold font-poppins text-gray-800">Evidence Vault</h2>
                                 <span id="vault-mode-pill" class="text-[9px] px-2 py-0.5 rounded-full bg-amethyst text-gold font-mono font-bold border border-gold/30">
-                                    ENCRYPTED
+                                    LOCKED
                                 </span>
                             </div>
-                            <p id="vault-stat" class="text-xs text-gray-400 mt-0.5" data-i18n="vault_stats">
+                            <p id="vault-stat" class="text-xs text-gray-500 mt-0.5" data-i18n="vault_stats">
                                 6 Forensically Sealed Items &bull; 2 GD Drafts
                             </p>
                         </div>
                         <div class="flex gap-2">
-                            <button onclick="filterEvidence('all')" class="p-1.5 rounded-lg bg-charcoal-card text-gray-300 hover:text-white border border-white/10">
+                            <button onclick="filterEvidence('all')" class="p-1.5 rounded-lg bg-charcoal-card text-gray-600 hover:text-gray-800 border border-white/10">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
                             </button>
                         </div>
@@ -398,8 +369,8 @@
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             </div>
                             <div>
-                                <div class="text-xs font-semibold text-white" data-i18n="banner_title">Hardware Key Attestation</div>
-                                <div class="text-[10px] text-gray-300" data-i18n="banner_sub">Chain-of-custody metadata locked</div>
+                                <div class="text-xs font-semibold text-gray-800" data-i18n="banner_title">Hardware Key Attestation</div>
+                                <div class="text-[10px] text-gray-600" data-i18n="banner_sub">Chain-of-custody metadata locked</div>
                             </div>
                         </div>
                         <span class="text-[10px] font-mono text-gold px-2 py-0.5 rounded bg-black/40 border border-gold/30">VALID</span>
@@ -409,17 +380,17 @@
                     <div id="evidence-grid" class="grid grid-cols-2 gap-3 mb-6">
                         <!-- Evidence Item 1 -->
                         <div onclick="openEvidenceModal(1)" class="glass-card p-2.5 rounded-2xl border border-white/10 hover:border-teal cursor-pointer transition-all hover:-translate-y-0.5">
-                            <div class="h-24 bg-gradient-to-br from-charcoal-900 to-amethyst-deeper rounded-xl mb-2 flex items-center justify-center relative overflow-hidden border border-white/5">
-                                <span class="absolute top-1.5 left-1.5 bg-blue-600/90 text-[8px] font-bold px-1.5 py-0.5 rounded text-white flex items-center gap-1">
+                            <div class="h-24 bg-gray-100 rounded-xl mb-2 flex items-center justify-center relative overflow-hidden border border-white/5">
+                                <span class="absolute top-1.5 left-1.5 bg-blue-600/90 text-[8px] font-bold px-1.5 py-0.5 rounded text-gray-800 flex items-center gap-1">
                                     <span>f</span> Messenger
                                 </span>
                                 <span class="absolute top-1.5 right-1.5 bg-black/70 text-[8px] font-mono px-1 rounded text-teal-light border border-teal/40">
-                                    HASHED
+                                    SAVED
                                 </span>
                                 <svg class="w-8 h-8 text-amethyst-light/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                             </div>
-                            <div class="text-xs font-semibold text-white truncate" data-i18n="item1_title">Threat Thread #14</div>
-                            <div class="text-[10px] text-gray-400 mt-0.5 flex justify-between items-center">
+                            <div class="text-xs font-semibold text-gray-800 truncate" data-i18n="item1_title">Entry 14</div>
+                            <div class="text-[10px] text-gray-500 mt-0.5 flex justify-between items-center">
                                 <span>Today, 14:15 BDT</span>
                                 <span class="text-gold font-mono text-[9px]">4.2 MB</span>
                             </div>
@@ -427,17 +398,17 @@
 
                         <!-- Evidence Item 2 -->
                         <div onclick="openEvidenceModal(2)" class="glass-card p-2.5 rounded-2xl border border-white/10 hover:border-teal cursor-pointer transition-all hover:-translate-y-0.5">
-                            <div class="h-24 bg-gradient-to-br from-charcoal-900 to-amethyst-deeper rounded-xl mb-2 flex items-center justify-center relative overflow-hidden border border-white/5">
-                                <span class="absolute top-1.5 left-1.5 bg-gradient-to-r from-pink-500 to-purple-600 text-[8px] font-bold px-1.5 py-0.5 rounded text-white">
+                            <div class="h-24 bg-gray-100 rounded-xl mb-2 flex items-center justify-center relative overflow-hidden border border-white/5">
+                                <span class="absolute top-1.5 left-1.5 bg-gradient-to-r from-pink-500 to-purple-600 text-[8px] font-bold px-1.5 py-0.5 rounded text-gray-800">
                                     Instagram
                                 </span>
                                 <span class="absolute top-1.5 right-1.5 bg-black/70 text-[8px] font-mono px-1 rounded text-teal-light border border-teal/40">
-                                    HASHED
+                                    SAVED
                                 </span>
                                 <svg class="w-8 h-8 text-teal/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
                             </div>
-                            <div class="text-xs font-semibold text-white truncate" data-i18n="item2_title">Defamation Post Link</div>
-                            <div class="text-[10px] text-gray-400 mt-0.5 flex justify-between items-center">
+                            <div class="text-xs font-semibold text-gray-800 truncate" data-i18n="item2_title">Note - Oct 12</div>
+                            <div class="text-[10px] text-gray-500 mt-0.5 flex justify-between items-center">
                                 <span>Yesterday, 21:05</span>
                                 <span class="text-gold font-mono text-[9px]">URL + SS</span>
                             </div>
@@ -445,17 +416,17 @@
 
                         <!-- Evidence Item 3 -->
                         <div onclick="openEvidenceModal(3)" class="glass-card p-2.5 rounded-2xl border border-white/10 hover:border-teal cursor-pointer transition-all hover:-translate-y-0.5">
-                            <div class="h-24 bg-gradient-to-br from-charcoal-900 to-amethyst-deeper rounded-xl mb-2 flex items-center justify-center relative overflow-hidden border border-white/5">
-                                <span class="absolute top-1.5 left-1.5 bg-green-600 text-[8px] font-bold px-1.5 py-0.5 rounded text-white">
+                            <div class="h-24 bg-gray-100 rounded-xl mb-2 flex items-center justify-center relative overflow-hidden border border-white/5">
+                                <span class="absolute top-1.5 left-1.5 bg-green-600 text-[8px] font-bold px-1.5 py-0.5 rounded text-gray-800">
                                     WhatsApp
                                 </span>
                                 <span class="absolute top-1.5 right-1.5 bg-black/70 text-[8px] font-mono px-1 rounded text-teal-light border border-teal/40">
-                                    HASHED
+                                    SAVED
                                 </span>
                                 <svg class="w-8 h-8 text-gold/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"/></svg>
                             </div>
-                            <div class="text-xs font-semibold text-white truncate" data-i18n="item3_title">Extortion Voice Memo</div>
-                            <div class="text-[10px] text-gray-400 mt-0.5 flex justify-between items-center">
+                            <div class="text-xs font-semibold text-gray-800 truncate" data-i18n="item3_title">Audio Note - 23 Sep</div>
+                            <div class="text-[10px] text-gray-500 mt-0.5 flex justify-between items-center">
                                 <span>23 Sep, 11:20</span>
                                 <span class="text-gold font-mono text-[9px]">0:48s .m4a</span>
                             </div>
@@ -463,17 +434,17 @@
 
                         <!-- Evidence Item 4 -->
                         <div onclick="openEvidenceModal(4)" class="glass-card p-2.5 rounded-2xl border border-white/10 hover:border-teal cursor-pointer transition-all hover:-translate-y-0.5">
-                            <div class="h-24 bg-gradient-to-br from-charcoal-900 to-amethyst-deeper rounded-xl mb-2 flex items-center justify-center relative overflow-hidden border border-white/5">
-                                <span class="absolute top-1.5 left-1.5 bg-red-600 text-[8px] font-bold px-1.5 py-0.5 rounded text-white">
+                            <div class="h-24 bg-gray-100 rounded-xl mb-2 flex items-center justify-center relative overflow-hidden border border-white/5">
+                                <span class="absolute top-1.5 left-1.5 bg-red-600 text-[8px] font-bold px-1.5 py-0.5 rounded text-gray-800">
                                     Cell SMS
                                 </span>
                                 <span class="absolute top-1.5 right-1.5 bg-black/70 text-[8px] font-mono px-1 rounded text-teal-light border border-teal/40">
-                                    HASHED
+                                    SAVED
                                 </span>
                                 <svg class="w-8 h-8 text-amethyst-light/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
                             </div>
-                            <div class="text-xs font-semibold text-white truncate" data-i18n="item4_title">Repeated Harassment SMS</div>
-                            <div class="text-[10px] text-gray-400 mt-0.5 flex justify-between items-center">
+                            <div class="text-xs font-semibold text-gray-800 truncate" data-i18n="item4_title">Record - 21 Sep</div>
+                            <div class="text-[10px] text-gray-500 mt-0.5 flex justify-between items-center">
                                 <span>21 Sep, 19:40</span>
                                 <span class="text-gold font-mono text-[9px]">Call + SMS</span>
                             </div>
@@ -481,7 +452,7 @@
                     </div>
 
                     <!-- Floating Action Button: Add Evidence -->
-                    <button onclick="switchScreen('screen-add')" class="w-full py-3 px-4 bg-gradient-to-r from-amethyst to-amethyst-light hover:brightness-110 text-white font-poppins font-semibold text-xs rounded-xl shadow-lg border border-gold/40 flex items-center justify-center gap-2 active:scale-95 transition-all">
+                    <button onclick="switchScreen('screen-add')" class="w-full py-3 px-4 bg-gradient-to-r from-amethyst to-amethyst-light hover:brightness-110 text-gray-800 font-poppins font-semibold text-xs rounded-xl shadow-lg border border-gold/40 flex items-center justify-center gap-2 active:scale-95 transition-all">
                         <svg class="w-4 h-4 text-gold" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                         <span data-i18n="add_evidence_btn">Secure New Harassment Evidence</span>
                     </button>
@@ -490,15 +461,15 @@
                 <!-- ================= SCREEN 3: ADD EVIDENCE / CAPTURE FLOW ================= -->
                 <div id="screen-add" class="app-screen px-4 screen-scroll">
                     <div class="flex items-center gap-3 mb-4 pt-2">
-                        <button onclick="switchTab('vault')" class="p-1 rounded-lg bg-charcoal-card text-gray-300 hover:text-white">
+                        <button onclick="switchTab('vault')" class="p-1 rounded-lg bg-charcoal-card text-gray-600 hover:text-gray-800">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                         </button>
-                        <h2 class="text-lg font-bold font-poppins text-white" data-i18n="add_modal_title">Secure Evidence Item</h2>
+                        <h2 class="text-lg font-bold font-poppins text-gray-800" data-i18n="add_modal_title">Secure Evidence Item</h2>
                     </div>
 
                     <!-- Safe microcopy card -->
                     <div class="p-3 rounded-xl bg-teal/15 border border-teal/40 mb-4 text-xs text-teal-light leading-relaxed">
-                        <p class="font-semibold text-white mb-0.5" data-i18n="capture_safe_title">Trauma-Informed Safe Ingestion</p>
+                        <p class="font-semibold text-gray-800 mb-0.5" data-i18n="capture_safe_title">Trauma-Informed Safe Ingestion</p>
                         <span data-i18n="capture_safe_desc">All uploaded media is immediately hashed with SHA-256 and encrypted locally before writing to disk. Even if deleted from your device gallery, your encrypted vault copy remains intact.</span>
                     </div>
 
@@ -508,36 +479,36 @@
                             <div class="w-10 h-10 rounded-xl bg-amethyst/40 flex items-center justify-center text-teal">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
                             </div>
-                            <span class="text-xs font-semibold text-white" data-i18n="cap_camera">Camera</span>
+                            <span class="text-xs font-semibold text-gray-800" data-i18n="cap_camera">Camera</span>
                         </div>
 
                         <div class="glass-card p-3 rounded-xl flex flex-col items-center justify-center gap-2 border border-white/10 hover:border-gold cursor-pointer transition-all" onclick="alert('Gallery screenshot selector with EXIF stripper opened.')">
                             <div class="w-10 h-10 rounded-xl bg-amethyst/40 flex items-center justify-center text-teal">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                             </div>
-                            <span class="text-xs font-semibold text-white" data-i18n="cap_gallery">Screenshot</span>
+                            <span class="text-xs font-semibold text-gray-800" data-i18n="cap_gallery">Screenshot</span>
                         </div>
 
                         <div class="glass-card p-3 rounded-xl flex flex-col items-center justify-center gap-2 border border-white/10 hover:border-gold cursor-pointer transition-all" onclick="alert('Web snapshot archive tool initialized.')">
                             <div class="w-10 h-10 rounded-xl bg-amethyst/40 flex items-center justify-center text-teal">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
                             </div>
-                            <span class="text-xs font-semibold text-white" data-i18n="cap_url">Paste Web Link</span>
+                            <span class="text-xs font-semibold text-gray-800" data-i18n="cap_url">Paste Web Link</span>
                         </div>
 
                         <div class="glass-card p-3 rounded-xl flex flex-col items-center justify-center gap-2 border border-white/10 hover:border-gold cursor-pointer transition-all" onclick="alert('Audio recording initialized with background noise filtering.')">
                             <div class="w-10 h-10 rounded-xl bg-amethyst/40 flex items-center justify-center text-teal">
                                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"/></svg>
                             </div>
-                            <span class="text-xs font-semibold text-white" data-i18n="cap_audio">Record Audio</span>
+                            <span class="text-xs font-semibold text-gray-800" data-i18n="cap_audio">Record Audio</span>
                         </div>
                     </div>
 
                     <!-- Incident Metadata Form -->
                     <div class="glass-card p-3.5 rounded-2xl border border-white/10 space-y-3 mb-4">
                         <div>
-                            <label class="block text-[11px] font-medium text-gray-300 mb-1" data-i18n="form_platform">Incident Platform</label>
-                            <select class="w-full bg-charcoal-900 border border-gray-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-teal">
+                            <label class="block text-[11px] font-medium text-gray-600 mb-1" data-i18n="form_platform">Incident Platform</label>
+                            <select class="w-full bg-charcoal-900 border border-gray-700 rounded-lg px-3 py-2 text-xs text-gray-800 focus:outline-none focus:border-teal">
                                 <option>Facebook / Messenger</option>
                                 <option>WhatsApp / Direct Phone</option>
                                 <option>Instagram Direct / Post</option>
@@ -546,16 +517,16 @@
                             </select>
                         </div>
                         <div>
-                            <label class="block text-[11px] font-medium text-gray-300 mb-1" data-i18n="form_label">Survivor Context Note (Optional)</label>
-                            <input type="text" class="w-full bg-charcoal-900 border border-gray-700 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-teal" placeholder="e.g., Unsolicited blackmail messages from fake profile">
+                            <label class="block text-[11px] font-medium text-gray-600 mb-1" data-i18n="form_label">Survivor Context Note (Optional)</label>
+                            <input type="text" class="w-full bg-charcoal-900 border border-gray-700 rounded-lg px-3 py-2 text-xs text-gray-800 focus:outline-none focus:border-teal" placeholder="e.g., Unsolicited blackmail messages from fake profile">
                         </div>
-                        <div class="p-2.5 rounded-lg bg-black/40 border border-white/5 text-[10px] font-mono text-gray-400">
+                        <div class="p-2.5 rounded-lg bg-black/40 border border-white/5 text-[10px] font-mono text-gray-500">
                             <div>TIMESTAMP: 2026-09-25T01:22:30+06:00</div>
                             <div class="text-teal-light">HASH PROTOCOL: SHA-256 (Ed25519 Signed)</div>
                         </div>
                     </div>
 
-                    <button onclick="switchTab('vault')" class="w-full py-3 bg-teal hover:bg-teal-bright text-white font-poppins font-semibold text-xs rounded-xl shadow-lg active:scale-95 transition-all">
+                    <button onclick="switchTab('vault')" class="w-full py-3 bg-teal hover:bg-teal-bright text-gray-800 font-poppins font-semibold text-xs rounded-xl shadow-lg active:scale-95 transition-all">
                         <span data-i18n="save_seal_btn">Seal & Encrypt Item</span>
                     </button>
                 </div>
@@ -563,7 +534,7 @@
                 <!-- ================= SCREEN 4: LEGAL GD AUTOMATOR WIZARD ================= -->
                 <div id="screen-report" class="app-screen px-4 screen-scroll">
                     <div class="flex justify-between items-center mb-3 pt-2">
-                        <h2 class="text-xl font-bold font-poppins text-white" data-i18n="gd_title">GD Automator</h2>
+                        <h2 class="text-xl font-bold font-poppins text-gray-800" data-i18n="gd_title">GD Automator</h2>
                         <span class="text-[10px] font-mono text-teal-light px-2 py-0.5 rounded bg-teal/15 border border-teal/30">
                             CSA 2023 COMPLIANT
                         </span>
@@ -579,14 +550,14 @@
 
                     <!-- Dynamic Wizard Container -->
                     <div id="gd-wizard-step-1" class="space-y-3">
-                        <div class="text-xs text-gray-300 font-medium" data-i18n="gd_step1_header">Step 1 of 4: Select Sealed Evidence to Attach</div>
+                        <div class="text-xs text-gray-600 font-medium" data-i18n="gd_step1_header">Step 1 of 4: Select Sealed Evidence to Attach</div>
 
                         <div class="space-y-2">
                             <label class="glass-card p-3 rounded-xl border border-teal flex items-center gap-3 cursor-pointer">
                                 <input type="checkbox" checked class="w-4 h-4 rounded text-teal accent-teal">
                                 <div class="flex-1">
-                                    <div class="text-xs font-semibold text-white">Threat Thread #14 (Messenger)</div>
-                                    <div class="text-[10px] text-gray-400 font-mono">SHA: e3b0c442...98fc &bull; Today, 14:15</div>
+                                    <div class="text-xs font-semibold text-gray-800">Entry 14 (Messenger)</div>
+                                    <div class="text-[10px] text-gray-500 font-mono">SHA: e3b0c442...98fc &bull; Today, 14:15</div>
                                 </div>
                                 <span class="text-[10px] px-2 py-0.5 rounded bg-teal/20 text-teal-light font-mono font-bold">ATTACHED</span>
                             </label>
@@ -594,8 +565,8 @@
                             <label class="glass-card p-3 rounded-xl border border-white/10 flex items-center gap-3 cursor-pointer">
                                 <input type="checkbox" checked class="w-4 h-4 rounded text-teal accent-teal">
                                 <div class="flex-1">
-                                    <div class="text-xs font-semibold text-white">Defamation Post Link (Instagram)</div>
-                                    <div class="text-[10px] text-gray-400 font-mono">SHA: 7a82b991...a142 &bull; Yesterday</div>
+                                    <div class="text-xs font-semibold text-gray-800">Note - Oct 12 (Instagram)</div>
+                                    <div class="text-[10px] text-gray-500 font-mono">SHA: 7a82b991...a142 &bull; Yesterday</div>
                                 </div>
                                 <span class="text-[10px] px-2 py-0.5 rounded bg-teal/20 text-teal-light font-mono font-bold">ATTACHED</span>
                             </label>
@@ -605,9 +576,9 @@
                         <div class="glass-card p-3.5 rounded-2xl border border-white/10 mt-3">
                             <div class="flex justify-between items-center mb-2">
                                 <span class="text-[11px] font-bold text-gold uppercase tracking-wider font-mono" data-i18n="gd_preview_header">General Diary (GD) Live Draft</span>
-                                <span class="text-[9px] text-gray-400 font-bengali">ডিএমপি ফরম্যাট</span>
+                                <span class="text-[9px] text-gray-500 font-bengali">ডিএমপি ফরম্যাট</span>
                             </div>
-                            <div id="gd-preview-text" class="text-xs text-gray-300 leading-relaxed font-bengali bg-black/40 p-3 rounded-xl border border-white/5 max-h-48 overflow-y-auto">
+                            <div id="gd-preview-text" class="text-xs text-gray-600 leading-relaxed font-bengali bg-black/40 p-3 rounded-xl border border-white/5 max-h-48 overflow-y-auto">
                                 বরাবর,<br>
                                 অফিসার ইনচার্জ (ওসি), ধানমন্ডি মডেল থানা, ঢাকা।<br>
                                 <strong>বিষয়: সাইবার হুমকি ও হয়রানি সংক্রান্ত সাধারণ ডায়েরি (GD) করার আবেদন।</strong><br><br>
@@ -618,7 +589,7 @@
                         </div>
 
                         <div class="flex gap-2 pt-2">
-                            <button onclick="setGdStep(2)" class="flex-1 py-3 bg-teal hover:bg-teal-bright text-white font-poppins font-semibold text-xs rounded-xl shadow-lg transition-all active:scale-95">
+                            <button onclick="setGdStep(2)" class="flex-1 py-3 bg-teal hover:bg-teal-bright text-gray-800 font-poppins font-semibold text-xs rounded-xl shadow-lg transition-all active:scale-95">
                                 <span data-i18n="gd_next_step">Next: Offense Classification</span>
                             </button>
                         </div>
@@ -626,9 +597,9 @@
 
                     <!-- GD Step 2 -->
                     <div id="gd-wizard-step-2" class="space-y-3 hidden">
-                        <div class="text-xs text-gray-300 font-medium" data-i18n="gd_step2_header">Step 2 of 4: Cyber Security Act (CSA) Classification</div>
+                        <div class="text-xs text-gray-600 font-medium" data-i18n="gd_step2_header">Step 2 of 4: Cyber Security Act (CSA) Classification</div>
                         <div class="glass-card p-3 rounded-xl space-y-2">
-                            <div class="text-xs text-white font-semibold">Recommended Legal Provisions:</div>
+                            <div class="text-xs text-gray-800 font-semibold">Recommended Legal Provisions:</div>
                             <div class="p-2 rounded bg-amethyst/30 border border-amethyst-light/40 text-[11px] text-gray-200">
                                 <strong>Section 25:</strong> Publication/transmission of offensive, false or threatening information.
                             </div>
@@ -637,8 +608,8 @@
                             </div>
                         </div>
                         <div class="flex gap-2">
-                            <button onclick="setGdStep(1)" class="w-1/3 py-3 bg-charcoal-700 text-gray-300 font-semibold text-xs rounded-xl">Back</button>
-                            <button onclick="setGdStep(3)" class="w-2/3 py-3 bg-teal text-white font-semibold text-xs rounded-xl">Generate PDF Package</button>
+                            <button onclick="setGdStep(1)" class="w-1/3 py-3 bg-charcoal-700 text-gray-600 font-semibold text-xs rounded-xl">Back</button>
+                            <button onclick="setGdStep(3)" class="w-2/3 py-3 bg-teal text-gray-800 font-semibold text-xs rounded-xl">Generate PDF Package</button>
                         </div>
                     </div>
 
@@ -647,11 +618,11 @@
                         <div class="w-16 h-16 rounded-full bg-teal/20 border-2 border-teal mx-auto flex items-center justify-center text-teal-light mb-2">
                             <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         </div>
-                        <h3 class="text-base font-bold text-white font-poppins">Forensic Evidence Package Ready</h3>
-                        <p class="text-xs text-gray-400 max-w-xs mx-auto">
+                        <h3 class="text-base font-bold text-gray-800 font-poppins">Forensic Evidence Package Ready</h3>
+                        <p class="text-xs text-gray-500 max-w-xs mx-auto">
                             Contains formatted Bengali General Diary, SHA-256 cryptographic verification ledger, and screenshot annexures.
                         </p>
-                        <div class="p-3 bg-black/40 rounded-xl border border-white/10 text-left font-mono text-[10px] text-gray-300 space-y-1">
+                        <div class="p-3 bg-black/40 rounded-xl border border-white/10 text-left font-mono text-[10px] text-gray-600 space-y-1">
                             <div>FILENAME: GD_PROTITI_20260925_DHANMONDI.PDF</div>
                             <div>SIZE: 6.4 MB (AES-256 ZIP)</div>
                             <div class="text-gold">INTEGRITY: 100% UNTAMPERED</div>
@@ -661,7 +632,7 @@
                                 Download Signed GD PDF
                             </button>
                         </div>
-                        <button onclick="setGdStep(1)" class="text-xs text-gray-400 underline">Start New Draft</button>
+                        <button onclick="setGdStep(1)" class="text-xs text-gray-500 underline">Start New Draft</button>
                     </div>
 
                 </div>
@@ -680,7 +651,7 @@
                                 RAPID FRAME
                             </span>
                         </div>
-                        <p class="text-xs text-gray-400" data-i18n="panic_subtitle">
+                        <p class="text-xs text-gray-500" data-i18n="panic_subtitle">
                             Single-action broadcast to trusted contacts & emergency dispatch.
                         </p>
                     </div>
@@ -705,7 +676,7 @@
                             </svg>
 
                             <!-- Center SOS Trigger Disc -->
-                            <div id="sos-btn-disc" class="w-36 h-36 rounded-full bg-gradient-to-br from-crimson-bright to-crimson-dark flex flex-col items-center justify-center text-white shadow-2xl sos-btn-pulse border-4 border-red-400/40">
+                            <div id="sos-btn-disc" class="w-36 h-36 rounded-full bg-gradient-to-br from-crimson-bright to-crimson-dark flex flex-col items-center justify-center text-gray-800 shadow-2xl sos-btn-pulse border-4 border-red-400/40">
                                 <svg class="w-10 h-10 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
                                 <span class="font-extrabold text-sm tracking-wider font-poppins" id="sos-btn-label">HOLD 3 SEC</span>
                                 <span class="text-[9px] text-red-200 uppercase font-mono" id="sos-btn-sub">TO TRIGGER</span>
@@ -713,7 +684,7 @@
                         </div>
 
                         <!-- Progress Hint -->
-                        <div id="sos-hint" class="text-xs text-gray-400 mt-4 text-center font-inter" data-i18n="panic_hold_hint">
+                        <div id="sos-hint" class="text-xs text-gray-500 mt-4 text-center font-inter" data-i18n="panic_hold_hint">
                             Press and hold button for 3 seconds to initiate silent protocol
                         </div>
                     </div>
@@ -726,10 +697,10 @@
                         </div>
                         <div class="text-[11px] text-gray-200 font-mono space-y-0.5">
                             <div>LOC: 23.7461° N, 90.3742° E (Dhanmondi, Dhaka)</div>
-                            <div>ENCRYPTED DISPATCH: 2 Trusted Guardians</div>
+                            <div>LOCKED DISPATCH: 2 Trusted Guardians</div>
                             <div class="text-gold font-bold">5-Second Grace Cancellation Available</div>
                         </div>
-                        <button onclick="resetPanic()" class="mt-2 w-full py-1.5 bg-charcoal-800 border border-gray-600 rounded-lg text-xs font-bold text-white hover:bg-charcoal-700">
+                        <button onclick="resetPanic()" class="mt-2 w-full py-1.5 bg-charcoal-800 border border-gray-600 rounded-lg text-xs font-bold text-gray-800 hover:bg-charcoal-700">
                             Cancel False Alarm
                         </button>
                     </div>
@@ -737,21 +708,21 @@
                     <!-- Trusted Contacts & National Helpline -->
                     <div class="glass-card p-3.5 rounded-2xl border border-white/10 space-y-3 mb-2">
                         <div class="flex justify-between items-center text-xs">
-                            <span class="font-semibold text-white" data-i18n="trusted_guardians">Trusted Circle (2/3 Assigned)</span>
+                            <span class="font-semibold text-gray-800" data-i18n="trusted_guardians">Trusted Circle (2/3 Assigned)</span>
                             <span class="text-[10px] text-teal-light cursor-pointer" onclick="alert('Manage Guardian list modal.')">Manage</span>
                         </div>
                         <div class="flex gap-2">
                             <div class="flex-1 p-2 rounded-xl bg-charcoal-900 border border-white/5 flex items-center gap-2">
-                                <div class="w-7 h-7 rounded-full bg-amethyst flex items-center justify-center text-xs font-bold text-white">M</div>
+                                <div class="w-7 h-7 rounded-full bg-amethyst flex items-center justify-center text-xs font-bold text-gray-800">M</div>
                                 <div class="text-left overflow-hidden">
-                                    <div class="text-[11px] font-semibold text-white truncate">Mitali (Sister)</div>
+                                    <div class="text-[11px] font-semibold text-gray-800 truncate">Mitali (Sister)</div>
                                     <div class="text-[9px] text-teal-light font-mono">+88017...89</div>
                                 </div>
                             </div>
                             <div class="flex-1 p-2 rounded-xl bg-charcoal-900 border border-white/5 flex items-center gap-2">
-                                <div class="w-7 h-7 rounded-full bg-teal-dark flex items-center justify-center text-xs font-bold text-white">N</div>
+                                <div class="w-7 h-7 rounded-full bg-teal-dark flex items-center justify-center text-xs font-bold text-gray-800">N</div>
                                 <div class="text-left overflow-hidden">
-                                    <div class="text-[11px] font-semibold text-white truncate">Nadia (Campus)</div>
+                                    <div class="text-[11px] font-semibold text-gray-800 truncate">Nadia (Campus)</div>
                                     <div class="text-[9px] text-teal-light font-mono">+88018...41</div>
                                 </div>
                             </div>
@@ -768,8 +739,8 @@
                 <div id="screen-support" class="app-screen px-4 screen-scroll">
                     <div class="flex justify-between items-center mb-3 pt-2">
                         <div>
-                            <h2 class="text-xl font-bold font-poppins text-white" data-i18n="support_title">Support Bridge</h2>
-                            <p class="text-xs text-gray-400" data-i18n="support_sub">Vetted Pro-Bono Legal & Trauma Specialists</p>
+                            <h2 class="text-xl font-bold font-poppins text-gray-800" data-i18n="support_title">Support Bridge</h2>
+                            <p class="text-xs text-gray-500" data-i18n="support_sub">Vetted Pro-Bono Legal & Trauma Specialists</p>
                         </div>
                         <span class="text-[10px] font-mono text-gold px-2 py-0.5 rounded bg-gold/15 border border-gold/30">VETTED</span>
                     </div>
@@ -777,11 +748,11 @@
                     <!-- National Hotlines Bar -->
                     <div class="grid grid-cols-2 gap-2 mb-3">
                         <div class="p-2 rounded-xl bg-crimson/20 border border-crimson/40 text-center cursor-pointer hover:bg-crimson/30" onclick="alert('Calling Cyber Police Centre 01320000888')">
-                            <div class="text-[10px] text-gray-300">Cyber Police Centre</div>
+                            <div class="text-[10px] text-gray-600">Cyber Police Centre</div>
                             <div class="text-xs font-bold text-crimson-bright font-mono">01320-000888</div>
                         </div>
                         <div class="p-2 rounded-xl bg-teal/20 border border-teal/40 text-center cursor-pointer hover:bg-teal/30" onclick="alert('Calling National Helpline 109')">
-                            <div class="text-[10px] text-gray-300">Violence Against Women</div>
+                            <div class="text-[10px] text-gray-600">Violence Against Women</div>
                             <div class="text-xs font-bold text-teal-light font-mono">Helpline: 109</div>
                         </div>
                     </div>
@@ -792,14 +763,14 @@
                         <div class="glass-card p-3 rounded-2xl border-l-4 border-gold border-r border-t border-b border-white/10">
                             <div class="flex justify-between items-start mb-1.5">
                                 <div>
-                                    <h3 class="font-bold text-xs text-white">BNWLA Legal Aid Clinic</h3>
-                                    <p class="text-[10px] text-gray-400">Bangladesh National Woman Lawyers' Association</p>
+                                    <h3 class="font-bold text-xs text-gray-800">BNWLA Legal Aid Clinic</h3>
+                                    <p class="text-[10px] text-gray-500">Bangladesh National Woman Lawyers' Association</p>
                                 </div>
                                 <span class="px-2 py-0.5 rounded text-[9px] bg-teal/20 text-teal-light font-bold">PRO BONO</span>
                             </div>
-                            <div class="text-[11px] text-gray-300 mb-2">Specializing in Cyber Security Act litigation, blackmail mitigation, and identity theft.</div>
+                            <div class="text-[11px] text-gray-600 mb-2">Specializing in Cyber Security Act litigation, blackmail mitigation, and identity theft.</div>
                             <div class="flex gap-2">
-                                <button onclick="alert('Opening confidential consult with BNWLA attorney...')" class="flex-1 py-1.5 bg-amethyst hover:bg-amethyst-light text-white rounded-lg text-xs font-semibold">Consult Lawyer</button>
+                                <button onclick="alert('Opening confidential consult with BNWLA attorney...')" class="flex-1 py-1.5 bg-amethyst hover:bg-amethyst-light text-gray-800 rounded-lg text-xs font-semibold">Consult Lawyer</button>
                             </div>
                         </div>
 
@@ -807,14 +778,14 @@
                         <div class="glass-card p-3 rounded-2xl border-l-4 border-teal border-r border-t border-b border-white/10">
                             <div class="flex justify-between items-start mb-1.5">
                                 <div>
-                                    <h3 class="font-bold text-xs text-white">Kaan Pete Roi (কান পেতে রই)</h3>
-                                    <p class="text-[10px] text-gray-400">Emotional Support & Suicide Prevention Hotline</p>
+                                    <h3 class="font-bold text-xs text-gray-800">Kaan Pete Roi (কান পেতে রই)</h3>
+                                    <p class="text-[10px] text-gray-500">Emotional Support & Suicide Prevention Hotline</p>
                                 </div>
                                 <span class="px-2 py-0.5 rounded text-[9px] bg-green-900/50 text-green-300 font-bold">ACTIVE</span>
                             </div>
-                            <div class="text-[11px] text-gray-300 mb-2">Confidential, non-judgmental telephone helpline for acute emotional distress.</div>
+                            <div class="text-[11px] text-gray-600 mb-2">Confidential, non-judgmental telephone helpline for acute emotional distress.</div>
                             <div class="flex gap-2">
-                                <button onclick="alert('Connecting to Kaan Pete Roi listener...')" class="flex-1 py-1.5 bg-teal hover:bg-teal-bright text-white rounded-lg text-xs font-semibold">Speak to Counselor</button>
+                                <button onclick="alert('Connecting to Kaan Pete Roi listener...')" class="flex-1 py-1.5 bg-teal hover:bg-teal-bright text-gray-800 rounded-lg text-xs font-semibold">Speak to Counselor</button>
                             </div>
                         </div>
 
@@ -822,14 +793,14 @@
                         <div class="glass-card p-3 rounded-2xl border-l-4 border-gold border-r border-t border-b border-white/10">
                             <div class="flex justify-between items-start mb-1.5">
                                 <div>
-                                    <h3 class="font-bold text-xs text-white">Ain o Salish Kendra (ASK)</h3>
-                                    <p class="text-[10px] text-gray-400">Legal Aid & Human Rights Organization</p>
+                                    <h3 class="font-bold text-xs text-gray-800">Ain o Salish Kendra (ASK)</h3>
+                                    <p class="text-[10px] text-gray-500">Legal Aid & Human Rights Organization</p>
                                 </div>
                                 <span class="px-2 py-0.5 rounded text-[9px] bg-teal/20 text-teal-light font-bold">PRO BONO</span>
                             </div>
-                            <div class="text-[11px] text-gray-300 mb-2">Emergency legal advocacy, police escort assistance, and cyber investigation mediation.</div>
+                            <div class="text-[11px] text-gray-600 mb-2">Emergency legal advocacy, police escort assistance, and cyber investigation mediation.</div>
                             <div class="flex gap-2">
-                                <button onclick="alert('Routing to ASK Legal Aid Desk...')" class="flex-1 py-1.5 bg-amethyst hover:bg-amethyst-light text-white rounded-lg text-xs font-semibold">Legal Help</button>
+                                <button onclick="alert('Routing to ASK Legal Aid Desk...')" class="flex-1 py-1.5 bg-amethyst hover:bg-amethyst-light text-gray-800 rounded-lg text-xs font-semibold">Legal Help</button>
                             </div>
                         </div>
                     </div>
@@ -840,38 +811,38 @@
                     <!-- Calculator Display -->
                     <div class="pt-8 pb-4 px-2 text-right">
                         <div class="text-xs text-gray-500 font-mono" id="calc-history">&nbsp;</div>
-                        <div class="text-4xl font-mono text-white font-light tracking-wider" id="calc-display">0</div>
+                        <div class="text-4xl font-mono text-gray-800 font-light tracking-wider" id="calc-display">0</div>
                     </div>
 
                     <!-- Calculator Keypad -->
                     <div class="grid grid-cols-4 gap-2.5 pb-6">
-                        <button onclick="calcInput('C')" class="h-14 rounded-full bg-gray-700 text-white font-medium text-lg active:opacity-70">C</button>
-                        <button onclick="calcInput('+/-')" class="h-14 rounded-full bg-gray-700 text-white font-medium text-lg active:opacity-70">&plusmn;</button>
-                        <button onclick="calcInput('%')" class="h-14 rounded-full bg-gray-700 text-white font-medium text-lg active:opacity-70">%</button>
-                        <button onclick="calcInput('/')" class="h-14 rounded-full bg-amber-600 text-white font-medium text-xl active:opacity-70">&divide;</button>
+                        <button onclick="calcInput('C')" class="h-14 rounded-full bg-gray-700 text-gray-800 font-medium text-lg active:opacity-70">C</button>
+                        <button onclick="calcInput('+/-')" class="h-14 rounded-full bg-gray-700 text-gray-800 font-medium text-lg active:opacity-70">&plusmn;</button>
+                        <button onclick="calcInput('%')" class="h-14 rounded-full bg-gray-700 text-gray-800 font-medium text-lg active:opacity-70">%</button>
+                        <button onclick="calcInput('/')" class="h-14 rounded-full bg-amber-600 text-gray-800 font-medium text-xl active:opacity-70">&divide;</button>
 
-                        <button onclick="calcInput('7')" class="h-14 rounded-full bg-gray-800 text-white text-xl active:opacity-70">7</button>
-                        <button onclick="calcInput('8')" class="h-14 rounded-full bg-gray-800 text-white text-xl active:opacity-70">8</button>
-                        <button onclick="calcInput('9')" class="h-14 rounded-full bg-gray-800 text-white text-xl active:opacity-70">9</button>
-                        <button onclick="calcInput('*')" class="h-14 rounded-full bg-amber-600 text-white font-medium text-xl active:opacity-70">&times;</button>
+                        <button onclick="calcInput('7')" class="h-14 rounded-full bg-gray-800 text-gray-800 text-xl active:opacity-70">7</button>
+                        <button onclick="calcInput('8')" class="h-14 rounded-full bg-gray-800 text-gray-800 text-xl active:opacity-70">8</button>
+                        <button onclick="calcInput('9')" class="h-14 rounded-full bg-gray-800 text-gray-800 text-xl active:opacity-70">9</button>
+                        <button onclick="calcInput('*')" class="h-14 rounded-full bg-amber-600 text-gray-800 font-medium text-xl active:opacity-70">&times;</button>
 
-                        <button onclick="calcInput('4')" class="h-14 rounded-full bg-gray-800 text-white text-xl active:opacity-70">4</button>
-                        <button onclick="calcInput('5')" class="h-14 rounded-full bg-gray-800 text-white text-xl active:opacity-70">5</button>
-                        <button onclick="calcInput('6')" class="h-14 rounded-full bg-gray-800 text-white text-xl active:opacity-70">6</button>
-                        <button onclick="calcInput('-')" class="h-14 rounded-full bg-amber-600 text-white font-medium text-xl active:opacity-70">&minus;</button>
+                        <button onclick="calcInput('4')" class="h-14 rounded-full bg-gray-800 text-gray-800 text-xl active:opacity-70">4</button>
+                        <button onclick="calcInput('5')" class="h-14 rounded-full bg-gray-800 text-gray-800 text-xl active:opacity-70">5</button>
+                        <button onclick="calcInput('6')" class="h-14 rounded-full bg-gray-800 text-gray-800 text-xl active:opacity-70">6</button>
+                        <button onclick="calcInput('-')" class="h-14 rounded-full bg-amber-600 text-gray-800 font-medium text-xl active:opacity-70">&minus;</button>
 
-                        <button onclick="calcInput('1')" class="h-14 rounded-full bg-gray-800 text-white text-xl active:opacity-70">1</button>
-                        <button onclick="calcInput('2')" class="h-14 rounded-full bg-gray-800 text-white text-xl active:opacity-70">2</button>
-                        <button onclick="calcInput('3')" class="h-14 rounded-full bg-gray-800 text-white text-xl active:opacity-70">3</button>
-                        <button onclick="calcInput('+')" class="h-14 rounded-full bg-amber-600 text-white font-medium text-xl active:opacity-70">&plus;</button>
+                        <button onclick="calcInput('1')" class="h-14 rounded-full bg-gray-800 text-gray-800 text-xl active:opacity-70">1</button>
+                        <button onclick="calcInput('2')" class="h-14 rounded-full bg-gray-800 text-gray-800 text-xl active:opacity-70">2</button>
+                        <button onclick="calcInput('3')" class="h-14 rounded-full bg-gray-800 text-gray-800 text-xl active:opacity-70">3</button>
+                        <button onclick="calcInput('+')" class="h-14 rounded-full bg-amber-600 text-gray-800 font-medium text-xl active:opacity-70">&plus;</button>
 
-                        <button onclick="calcInput('0')" class="h-14 col-span-2 rounded-full bg-gray-800 text-white text-xl pl-6 text-left active:opacity-70">0</button>
-                        <button onclick="calcInput('.')" class="h-14 rounded-full bg-gray-800 text-white text-xl active:opacity-70">.</button>
-                        <button onclick="calcInput('=')" class="h-14 rounded-full bg-amber-600 text-white font-medium text-xl active:opacity-70">=</button>
+                        <button onclick="calcInput('0')" class="h-14 col-span-2 rounded-full bg-gray-800 text-gray-800 text-xl pl-6 text-left active:opacity-70">0</button>
+                        <button onclick="calcInput('.')" class="h-14 rounded-full bg-gray-800 text-gray-800 text-xl active:opacity-70">.</button>
+                        <button onclick="calcInput('=')" class="h-14 rounded-full bg-amber-600 text-gray-800 font-medium text-xl active:opacity-70">=</button>
                     </div>
 
                     <div class="text-center text-[10px] text-gray-600 font-mono pb-2">
-                        Tip: Enter PIN <span class="text-gold font-bold">1971=</span> to unlock Genuine Vault, or <span class="text-gray-400 font-bold">0000=</span> for Decoy Vault.
+                        Tip: Enter PIN <span class="text-gold font-bold">1971=</span> to unlock Genuine Vault, or <span class="text-gray-500 font-bold">0000=</span> for Decoy Vault.
                     </div>
                 </div>
 
@@ -881,7 +852,7 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                         <span class="text-[10px] font-semibold" data-i18n="nav_vault">Vault</span>
                     </button>
-                    <button onclick="switchTab('report')" id="nav-btn-report" class="flex flex-col items-center gap-1 text-gray-400 hover:text-white">
+                    <button onclick="switchTab('report')" id="nav-btn-report" class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-800">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                         <span class="text-[10px] font-semibold" data-i18n="nav_report">GD Draft</span>
                     </button>
@@ -891,7 +862,7 @@
                         </div>
                         <span class="text-[10px] font-bold font-mono">PANIC</span>
                     </button>
-                    <button onclick="switchTab('support')" id="nav-btn-support" class="flex flex-col items-center gap-1 text-gray-400 hover:text-white">
+                    <button onclick="switchTab('support')" id="nav-btn-support" class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-800">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
                         <span class="text-[10px] font-semibold" data-i18n="nav_support">Support</span>
                     </button>
@@ -903,27 +874,27 @@
                         <div class="flex justify-between items-start">
                             <div>
                                 <span class="text-[9px] font-mono text-teal-light px-2 py-0.5 rounded bg-teal/20 border border-teal/40">CHAIN OF CUSTODY SEALED</span>
-                                <h3 id="modal-evidence-title" class="text-sm font-bold text-white mt-1">Threat Thread #14</h3>
+                                <h3 id="modal-evidence-title" class="text-sm font-bold text-gray-800 mt-1">Entry 14</h3>
                             </div>
-                            <button onclick="closeEvidenceModal()" class="text-gray-400 hover:text-white p-1">
+                            <button onclick="closeEvidenceModal()" class="text-gray-500 hover:text-gray-800 p-1">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
                             </button>
                         </div>
 
                         <div class="p-2.5 rounded-xl bg-charcoal-900 border border-white/5 space-y-1.5 font-mono text-[10px]">
-                            <div class="text-gray-400">CRYPTOGRAPHIC HASH:</div>
+                            <div class="text-gray-500">CRYPTOGRAPHIC HASH:</div>
                             <div class="text-gold break-all font-semibold">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</div>
-                            <div class="flex justify-between text-gray-400 pt-1 border-t border-white/5">
+                            <div class="flex justify-between text-gray-500 pt-1 border-t border-white/5">
                                 <span>ORIGIN: Meta Messenger</span>
                                 <span>SIZE: 4.19 MB</span>
                             </div>
-                            <div class="text-gray-400">DEVICE ATTESTATION: Android Keystore StrongBox</div>
+                            <div class="text-gray-500">DEVICE ATTESTATION: Android Keystore StrongBox</div>
                             <div class="text-teal-light">COURT ADMISSIBILITY: SECTION 25/29 CSA READY</div>
                         </div>
 
                         <div class="flex gap-2">
-                            <button onclick="alert('Exporting sealed evidence package with digital signature...')" class="flex-1 py-2.5 bg-teal hover:bg-teal-bright text-white font-semibold text-xs rounded-xl shadow">Export Signed Hash</button>
-                            <button onclick="closeEvidenceModal()" class="px-3 py-2.5 bg-charcoal-700 text-gray-300 font-semibold text-xs rounded-xl">Close</button>
+                            <button onclick="alert('Exporting sealed evidence package with digital signature...')" class="flex-1 py-2.5 bg-teal hover:bg-teal-bright text-gray-800 font-semibold text-xs rounded-xl shadow">Export Signed Hash</button>
+                            <button onclick="closeEvidenceModal()" class="px-3 py-2.5 bg-charcoal-700 text-gray-600 font-semibold text-xs rounded-xl">Close</button>
                         </div>
                     </div>
                 </div>
@@ -939,26 +910,26 @@
                 <h3 class="text-xs font-mono uppercase tracking-wider text-teal-light mb-3">
                     Design Architecture
                 </h3>
-                <ul class="text-xs text-gray-300 space-y-3 font-inter">
+                <ul class="text-xs text-gray-600 space-y-3 font-inter">
                     <li class="flex items-start gap-2">
                         <span class="text-teal font-bold">&bull;</span>
                         <div>
-                            <strong class="text-white">Dual-Vault Decoy:</strong>
-                            <p class="text-[11px] text-gray-400 mt-0.5">Separate PINs partition SQLite encryption keys. Entering duress PIN cleanly launches harmless recipes/notes.</p>
+                            <strong class="text-gray-800">Dual-Vault Decoy:</strong>
+                            <p class="text-[11px] text-gray-500 mt-0.5">Separate PINs partition SQLite encryption keys. Entering duress PIN cleanly launches harmless recipes/notes.</p>
                         </div>
                     </li>
                     <li class="flex items-start gap-2">
                         <span class="text-gold font-bold">&bull;</span>
                         <div>
-                            <strong class="text-white">Zero Glare Stealth:</strong>
-                            <p class="text-[11px] text-gray-400 mt-0.5">Charcoal #121212 foundation prevents phone screen reflection from attracting abuser attention at night.</p>
+                            <strong class="text-gray-800">Zero Glare Stealth:</strong>
+                            <p class="text-[11px] text-gray-500 mt-0.5">Charcoal #121212 foundation prevents phone screen reflection from attracting abuser attention at night.</p>
                         </div>
                     </li>
                     <li class="flex items-start gap-2">
                         <span class="text-crimson-bright font-bold">&bull;</span>
                         <div>
-                            <strong class="text-white">1-Second Panic Access:</strong>
-                            <p class="text-[11px] text-gray-400 mt-0.5">Direct panic tab bypasses secondary menus, equipped with 3s hold prevention & 5s grace cancellation.</p>
+                            <strong class="text-gray-800">1-Second Panic Access:</strong>
+                            <p class="text-[11px] text-gray-500 mt-0.5">Direct panic tab bypasses secondary menus, equipped with 3s hold prevention & 5s grace cancellation.</p>
                         </div>
                     </li>
                 </ul>
@@ -972,29 +943,29 @@
                 <div class="space-y-2.5 text-xs">
                     <div class="p-2.5 rounded-lg bg-black/40 border border-white/5">
                         <div class="text-[10px] font-mono text-red-400">AVOID (Triggering):</div>
-                        <div class="text-gray-400 line-through text-[11px]">"Upload Proof of Attack / Abuse"</div>
+                        <div class="text-gray-500 line-through text-[11px]">"Upload Proof of Attack / Abuse"</div>
                         <div class="text-[10px] font-mono text-green-400 mt-1">PROTITI (Empowering):</div>
-                        <div class="text-white text-[11px] font-semibold">"Secure Item in Vault" / "সংরক্ষণ করুন"</div>
+                        <div class="text-gray-800 text-[11px] font-semibold">"Secure Item in Vault" / "সংরক্ষণ করুন"</div>
                     </div>
 
                     <div class="p-2.5 rounded-lg bg-black/40 border border-white/5">
                         <div class="text-[10px] font-mono text-red-400">AVOID:</div>
-                        <div class="text-gray-400 line-through text-[11px]">"Press Panic if Attacked"</div>
+                        <div class="text-gray-500 line-through text-[11px]">"Press Panic if Attacked"</div>
                         <div class="text-[10px] font-mono text-green-400 mt-1">PROTITI:</div>
-                        <div class="text-white text-[11px] font-semibold">"Hold 3s to Alert Guardians"</div>
+                        <div class="text-gray-800 text-[11px] font-semibold">"Hold 3s to Alert Guardians"</div>
                     </div>
                 </div>
             </div>
 
             <!-- Launcher Disguise Assets -->
             <div class="glass-card rounded-2xl p-4 border border-white/10 text-center">
-                <div class="text-[11px] font-mono text-gray-400 uppercase tracking-wide mb-2">Android Activity-Alias Disguise</div>
+                <div class="text-[11px] font-mono text-gray-500 uppercase tracking-wide mb-2">Android Activity-Alias Disguise</div>
                 <div class="flex items-center justify-center gap-3">
                     <div class="p-2 bg-charcoal-card rounded-xl border border-white/10 text-center">
                         <div class="w-10 h-10 rounded-xl bg-amethyst flex items-center justify-center mx-auto mb-1">
                             <span class="text-lg">🛡️</span>
                         </div>
-                        <span class="text-[9px] text-gray-300 font-mono">Protiti</span>
+                        <span class="text-[9px] text-gray-600 font-mono">Protiti</span>
                     </div>
                     <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                     <div class="p-2 bg-charcoal-card rounded-xl border border-teal text-center">
@@ -1004,7 +975,7 @@
                         <span class="text-[9px] text-teal-light font-mono">Smart Calc</span>
                     </div>
                 </div>
-                <p class="text-[10px] text-gray-400 mt-2 font-inter">
+                <p class="text-[10px] text-gray-500 mt-2 font-inter">
                     Instantly changes home screen launcher icon and hides notification preview text.
                 </p>
             </div>
@@ -1028,15 +999,15 @@
         const i18n = {
             en: {
                 quick_exit_btn: "Quick Exit",
-                lock_subtitle: "Tamper-Evident Cyberviolence Evidence Vault",
+                lock_subtitle: "Secure Personal Notes",
                 unlock_btn: "Touch ID / Biometric Access",
                 vault_stats: "6 Forensically Sealed Items • 2 GD Drafts",
                 banner_title: "Hardware Key Attestation",
                 banner_sub: "Chain-of-custody metadata locked",
-                item1_title: "Threat Thread #14",
-                item2_title: "Defamation Post Link",
-                item3_title: "Extortion Voice Memo",
-                item4_title: "Repeated Harassment SMS",
+                item1_title: "Entry 14",
+                item2_title: "Note - Oct 12",
+                item3_title: "Audio Note - 23 Sep",
+                item4_title: "Record - 21 Sep",
                 add_evidence_btn: "Secure New Harassment Evidence",
                 add_modal_title: "Secure Evidence Item",
                 capture_safe_title: "Trauma-Informed Safe Ingestion",
@@ -1111,8 +1082,8 @@
         // Language Switcher Function
         function setLanguage(lang) {
             currentLang = lang;
-            document.getElementById('lang-en').className = lang === 'en' ? 'flex-1 py-2 text-xs font-bold rounded-lg transition-all bg-amethyst text-white shadow' : 'flex-1 py-2 text-xs font-bold rounded-lg transition-all text-gray-400 hover:text-white font-bengali';
-            document.getElementById('lang-bn').className = lang === 'bn' ? 'flex-1 py-2 text-xs font-bold rounded-lg transition-all bg-amethyst text-white shadow' : 'flex-1 py-2 text-xs font-bold rounded-lg transition-all text-gray-400 hover:text-white font-bengali';
+            document.getElementById('lang-en').className = lang === 'en' ? 'flex-1 py-2 text-xs font-bold rounded-lg transition-all bg-amethyst text-gray-800 shadow' : 'flex-1 py-2 text-xs font-bold rounded-lg transition-all text-gray-500 hover:text-gray-800 font-bengali';
+            document.getElementById('lang-bn').className = lang === 'bn' ? 'flex-1 py-2 text-xs font-bold rounded-lg transition-all bg-amethyst text-gray-800 shadow' : 'flex-1 py-2 text-xs font-bold rounded-lg transition-all text-gray-500 hover:text-gray-800 font-bengali';
             
             // Translate all elements with data-i18n
             document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -1160,7 +1131,7 @@
             } else if (mode === 'stealth') {
                 btnStl.className = 'p-2.5 rounded-xl border border-gray-400 text-left bg-gray-700/40 transition-all flex flex-col items-center text-center';
                 badge.innerText = 'STEALTH CALCULATOR';
-                badge.className = 'px-2 py-0.5 rounded text-[10px] bg-gray-700 text-white font-mono font-bold';
+                badge.className = 'px-2 py-0.5 rounded text-[10px] bg-gray-700 text-gray-800 font-mono font-bold';
                 desc.innerHTML = '<strong>Stealth Calculator:</strong> Full working calculator disguise. Enter secret PIN <code>1971=</code> to unlock Protiti, or <code>0000=</code> for Decoy.';
                 switchScreen('screen-calculator');
             }
@@ -1176,46 +1147,46 @@
             if (isDecoy) {
                 title.innerText = currentLang === 'bn' ? 'নোটস ও ফাইল' : 'Study Notes Vault';
                 modePill.innerText = 'DECOY SAFE';
-                modePill.className = 'text-[9px] px-2 py-0.5 rounded-full bg-gray-800 text-gray-300 font-mono font-bold border border-gray-600';
+                modePill.className = 'text-[9px] px-2 py-0.5 rounded-full bg-gray-800 text-gray-600 font-mono font-bold border border-gray-600';
                 banner.className = 'glass-card p-3 rounded-xl mb-4 flex items-center justify-between border border-white/10';
                 banner.innerHTML = `
                     <div class="flex items-center gap-2.5">
-                        <div class="w-7 h-7 rounded-lg bg-gray-700 flex items-center justify-center text-gray-300">
+                        <div class="w-7 h-7 rounded-lg bg-gray-700 flex items-center justify-center text-gray-600">
                             📖
                         </div>
                         <div>
-                            <div class="text-xs font-semibold text-white">General Student Notes</div>
-                            <div class="text-[10px] text-gray-400">Synced to Google Drive</div>
+                            <div class="text-xs font-semibold text-gray-800">General Student Notes</div>
+                            <div class="text-[10px] text-gray-500">Synced to Google Drive</div>
                         </div>
                     </div>
-                    <span class="text-[10px] font-mono text-gray-400">UNRESTRICTED</span>
+                    <span class="text-[10px] font-mono text-gray-500">UNRESTRICTED</span>
                 `;
 
                 grid.innerHTML = `
                     <div class="glass-card p-2.5 rounded-2xl border border-white/10">
                         <div class="h-24 bg-charcoal-900 rounded-xl mb-2 flex items-center justify-center text-2xl">📚</div>
-                        <div class="text-xs font-semibold text-white truncate">Chemistry Syllabus.pdf</div>
-                        <div class="text-[10px] text-gray-400 mt-0.5">University &bull; 1.2 MB</div>
+                        <div class="text-xs font-semibold text-gray-800 truncate">Chemistry Syllabus.pdf</div>
+                        <div class="text-[10px] text-gray-500 mt-0.5">University &bull; 1.2 MB</div>
                     </div>
                     <div class="glass-card p-2.5 rounded-2xl border border-white/10">
                         <div class="h-24 bg-charcoal-900 rounded-xl mb-2 flex items-center justify-center text-2xl">📝</div>
-                        <div class="text-xs font-semibold text-white truncate">Weekly Grocery List</div>
-                        <div class="text-[10px] text-gray-400 mt-0.5">Notes &bull; Yesterday</div>
+                        <div class="text-xs font-semibold text-gray-800 truncate">Weekly Grocery List</div>
+                        <div class="text-[10px] text-gray-500 mt-0.5">Notes &bull; Yesterday</div>
                     </div>
                     <div class="glass-card p-2.5 rounded-2xl border border-white/10">
                         <div class="h-24 bg-charcoal-900 rounded-xl mb-2 flex items-center justify-center text-2xl">📷</div>
-                        <div class="text-xs font-semibold text-white truncate">Campus Gate Photo.jpg</div>
-                        <div class="text-[10px] text-gray-400 mt-0.5">Camera &bull; Sep 22</div>
+                        <div class="text-xs font-semibold text-gray-800 truncate">Campus Gate Photo.jpg</div>
+                        <div class="text-[10px] text-gray-500 mt-0.5">Camera &bull; Sep 22</div>
                     </div>
                     <div class="glass-card p-2.5 rounded-2xl border border-white/10">
                         <div class="h-24 bg-charcoal-900 rounded-xl mb-2 flex items-center justify-center text-2xl">🍲</div>
-                        <div class="text-xs font-semibold text-white truncate">Pitha Recipe Link</div>
-                        <div class="text-[10px] text-gray-400 mt-0.5">Saved &bull; Sep 18</div>
+                        <div class="text-xs font-semibold text-gray-800 truncate">Pitha Recipe Link</div>
+                        <div class="text-[10px] text-gray-500 mt-0.5">Saved &bull; Sep 18</div>
                     </div>
                 `;
             } else {
                 title.innerText = currentLang === 'bn' ? 'প্রমাণ ভল্ট' : 'Evidence Vault';
-                modePill.innerText = 'ENCRYPTED';
+                modePill.innerText = 'LOCKED';
                 modePill.className = 'text-[9px] px-2 py-0.5 rounded-full bg-amethyst text-gold font-mono font-bold border border-gold/30';
                 banner.className = 'glass-card-amethyst p-3 rounded-xl mb-4 flex items-center justify-between';
                 banner.innerHTML = `
@@ -1224,8 +1195,8 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                         </div>
                         <div>
-                            <div class="text-xs font-semibold text-white">${i18n[currentLang].banner_title}</div>
-                            <div class="text-[10px] text-gray-300">${i18n[currentLang].banner_sub}</div>
+                            <div class="text-xs font-semibold text-gray-800">${i18n[currentLang].banner_title}</div>
+                            <div class="text-[10px] text-gray-600">${i18n[currentLang].banner_sub}</div>
                         </div>
                     </div>
                     <span class="text-[10px] font-mono text-gold px-2 py-0.5 rounded bg-black/40 border border-gold/30">VALID</span>
@@ -1233,54 +1204,54 @@
 
                 grid.innerHTML = `
                     <div onclick="openEvidenceModal(1)" class="glass-card p-2.5 rounded-2xl border border-white/10 hover:border-teal cursor-pointer transition-all hover:-translate-y-0.5">
-                        <div class="h-24 bg-gradient-to-br from-charcoal-900 to-amethyst-deeper rounded-xl mb-2 flex items-center justify-center relative overflow-hidden border border-white/5">
-                            <span class="absolute top-1.5 left-1.5 bg-blue-600/90 text-[8px] font-bold px-1.5 py-0.5 rounded text-white flex items-center gap-1">
+                        <div class="h-24 bg-gray-100 rounded-xl mb-2 flex items-center justify-center relative overflow-hidden border border-white/5">
+                            <span class="absolute top-1.5 left-1.5 bg-blue-600/90 text-[8px] font-bold px-1.5 py-0.5 rounded text-gray-800 flex items-center gap-1">
                                 <span>f</span> Messenger
                             </span>
-                            <span class="absolute top-1.5 right-1.5 bg-black/70 text-[8px] font-mono px-1 rounded text-teal-light border border-teal/40">HASHED</span>
+                            <span class="absolute top-1.5 right-1.5 bg-black/70 text-[8px] font-mono px-1 rounded text-teal-light border border-teal/40">SAVED</span>
                             <svg class="w-8 h-8 text-amethyst-light/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                         </div>
-                        <div class="text-xs font-semibold text-white truncate">${i18n[currentLang].item1_title}</div>
-                        <div class="text-[10px] text-gray-400 mt-0.5 flex justify-between items-center">
+                        <div class="text-xs font-semibold text-gray-800 truncate">${i18n[currentLang].item1_title}</div>
+                        <div class="text-[10px] text-gray-500 mt-0.5 flex justify-between items-center">
                             <span>Today, 14:15 BDT</span>
                             <span class="text-gold font-mono text-[9px]">4.2 MB</span>
                         </div>
                     </div>
 
                     <div onclick="openEvidenceModal(2)" class="glass-card p-2.5 rounded-2xl border border-white/10 hover:border-teal cursor-pointer transition-all hover:-translate-y-0.5">
-                        <div class="h-24 bg-gradient-to-br from-charcoal-900 to-amethyst-deeper rounded-xl mb-2 flex items-center justify-center relative overflow-hidden border border-white/5">
-                            <span class="absolute top-1.5 left-1.5 bg-gradient-to-r from-pink-500 to-purple-600 text-[8px] font-bold px-1.5 py-0.5 rounded text-white">Instagram</span>
-                            <span class="absolute top-1.5 right-1.5 bg-black/70 text-[8px] font-mono px-1 rounded text-teal-light border border-teal/40">HASHED</span>
+                        <div class="h-24 bg-gray-100 rounded-xl mb-2 flex items-center justify-center relative overflow-hidden border border-white/5">
+                            <span class="absolute top-1.5 left-1.5 bg-gradient-to-r from-pink-500 to-purple-600 text-[8px] font-bold px-1.5 py-0.5 rounded text-gray-800">Instagram</span>
+                            <span class="absolute top-1.5 right-1.5 bg-black/70 text-[8px] font-mono px-1 rounded text-teal-light border border-teal/40">SAVED</span>
                             <svg class="w-8 h-8 text-teal/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
                         </div>
-                        <div class="text-xs font-semibold text-white truncate">${i18n[currentLang].item2_title}</div>
-                        <div class="text-[10px] text-gray-400 mt-0.5 flex justify-between items-center">
+                        <div class="text-xs font-semibold text-gray-800 truncate">${i18n[currentLang].item2_title}</div>
+                        <div class="text-[10px] text-gray-500 mt-0.5 flex justify-between items-center">
                             <span>Yesterday, 21:05</span>
                             <span class="text-gold font-mono text-[9px]">URL + SS</span>
                         </div>
                     </div>
 
                     <div onclick="openEvidenceModal(3)" class="glass-card p-2.5 rounded-2xl border border-white/10 hover:border-teal cursor-pointer transition-all hover:-translate-y-0.5">
-                        <div class="h-24 bg-gradient-to-br from-charcoal-900 to-amethyst-deeper rounded-xl mb-2 flex items-center justify-center relative overflow-hidden border border-white/5">
-                            <span class="absolute top-1.5 left-1.5 bg-green-600 text-[8px] font-bold px-1.5 py-0.5 rounded text-white">WhatsApp</span>
-                            <span class="absolute top-1.5 right-1.5 bg-black/70 text-[8px] font-mono px-1 rounded text-teal-light border border-teal/40">HASHED</span>
+                        <div class="h-24 bg-gray-100 rounded-xl mb-2 flex items-center justify-center relative overflow-hidden border border-white/5">
+                            <span class="absolute top-1.5 left-1.5 bg-green-600 text-[8px] font-bold px-1.5 py-0.5 rounded text-gray-800">WhatsApp</span>
+                            <span class="absolute top-1.5 right-1.5 bg-black/70 text-[8px] font-mono px-1 rounded text-teal-light border border-teal/40">SAVED</span>
                             <svg class="w-8 h-8 text-gold/50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 100-6 3 3 0 000 6z"/></svg>
                         </div>
-                        <div class="text-xs font-semibold text-white truncate">${i18n[currentLang].item3_title}</div>
-                        <div class="text-[10px] text-gray-400 mt-0.5 flex justify-between items-center">
+                        <div class="text-xs font-semibold text-gray-800 truncate">${i18n[currentLang].item3_title}</div>
+                        <div class="text-[10px] text-gray-500 mt-0.5 flex justify-between items-center">
                             <span>23 Sep, 11:20</span>
                             <span class="text-gold font-mono text-[9px]">0:48s .m4a</span>
                         </div>
                     </div>
 
                     <div onclick="openEvidenceModal(4)" class="glass-card p-2.5 rounded-2xl border border-white/10 hover:border-teal cursor-pointer transition-all hover:-translate-y-0.5">
-                        <div class="h-24 bg-gradient-to-br from-charcoal-900 to-amethyst-deeper rounded-xl mb-2 flex items-center justify-center relative overflow-hidden border border-white/5">
-                            <span class="absolute top-1.5 left-1.5 bg-red-600 text-[8px] font-bold px-1.5 py-0.5 rounded text-white">Cell SMS</span>
-                            <span class="absolute top-1.5 right-1.5 bg-black/70 text-[8px] font-mono px-1 rounded text-teal-light border border-teal/40">HASHED</span>
+                        <div class="h-24 bg-gray-100 rounded-xl mb-2 flex items-center justify-center relative overflow-hidden border border-white/5">
+                            <span class="absolute top-1.5 left-1.5 bg-red-600 text-[8px] font-bold px-1.5 py-0.5 rounded text-gray-800">Cell SMS</span>
+                            <span class="absolute top-1.5 right-1.5 bg-black/70 text-[8px] font-mono px-1 rounded text-teal-light border border-teal/40">SAVED</span>
                             <svg class="w-8 h-8 text-amethyst-light/60" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/></svg>
                         </div>
-                        <div class="text-xs font-semibold text-white truncate">${i18n[currentLang].item4_title}</div>
-                        <div class="text-[10px] text-gray-400 mt-0.5 flex justify-between items-center">
+                        <div class="text-xs font-semibold text-gray-800 truncate">${i18n[currentLang].item4_title}</div>
+                        <div class="text-[10px] text-gray-500 mt-0.5 flex justify-between items-center">
                             <span>21 Sep, 19:40</span>
                             <span class="text-gold font-mono text-[9px]">Call + SMS</span>
                         </div>
@@ -1318,7 +1289,7 @@
                     if (t === tabId) {
                         btn.className = (t === 'panic') ? 'flex flex-col items-center gap-1 text-crimson-bright font-bold' : 'flex flex-col items-center gap-1 text-gold font-semibold';
                     } else {
-                        btn.className = (t === 'panic') ? 'flex flex-col items-center gap-1 text-red-400/70' : 'flex flex-col items-center gap-1 text-gray-400 hover:text-white';
+                        btn.className = (t === 'panic') ? 'flex flex-col items-center gap-1 text-red-400/70' : 'flex flex-col items-center gap-1 text-gray-500 hover:text-gray-800';
                     }
                 }
             });
@@ -1421,10 +1392,10 @@
         function openEvidenceModal(id) {
             const modal = document.getElementById('evidence-modal');
             const title = document.getElementById('modal-evidence-title');
-            if (id === 1) title.innerText = "Threat Thread #14 (Meta Messenger)";
-            if (id === 2) title.innerText = "Defamation Post Link (Instagram Direct)";
-            if (id === 3) title.innerText = "Extortion Voice Memo (WhatsApp Audio)";
-            if (id === 4) title.innerText = "Repeated Harassment SMS (Banglalink SIM)";
+            if (id === 1) title.innerText = "Entry 14 (Meta Messenger)";
+            if (id === 2) title.innerText = "Note - Oct 12 (Instagram Direct)";
+            if (id === 3) title.innerText = "Audio Note - 23 Sep (WhatsApp Audio)";
+            if (id === 4) title.innerText = "Record - 21 Sep (Banglalink SIM)";
             modal.classList.remove('hidden');
         }
 
