@@ -4,16 +4,21 @@ import 'ui/features/auth/lock_screen.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(ShieldFrameApp());
+  runApp(const ShieldFrameApp());
 }
 
 class ShieldFrameApp extends StatelessWidget {
+  const ShieldFrameApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Protiti',
-      theme: AppTheme.darkTheme,
-      home: LockScreen(),
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.dark,
+      home: const LockScreen(),
     );
   }
 }

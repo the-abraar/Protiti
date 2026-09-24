@@ -8,27 +8,28 @@ class EvidenceRepository {
 
   Future<void> addEvidence(Evidence evidence) async {
     final db = await dbService.database;
-    await db.insert('evidence', {
-      'id': evidence.id,
-      'type': evidence.type,
-      'filePath': evidence.filePath,
-      'url': evidence.url,
-      'description': evidence.description,
-      'metadata': '', // Serialize to string
-      'createdAt': evidence.createdAt.toIso8601String(),
-    });
+    await db.insert('evidence', evidence.toMap());
   }
 
-  Future<List<Evidence>> getAllEvidence() async {
+  /// Returns evidence filtered by whether the session is in decoy mode or real forensic mode
+  Future<List<Evidence>> getEvidence({bool isDecoy = false}) async {
     final db = await dbService.database;
-    final List<Map<String, dynamic>> maps = await db.query('evidence');
-    return maps.map((e) => Evidence(
-      id: e['id'],
-      type: e['type'],
-      filePath: e['filePath'],
-      url: e['url'],
-      description: e['description'],
-      createdAt: DateTime.parse(e['createdAt']),
-    )).toList();
+    final List<Map<String, dynamic>> maps = await db.query(
+      'evidence',
+      where: 'isDecoy = ?',
+      whereArgs: [isDecoy ? 1 : 0],
+      orderBy: 'createdAt DESC',
+    );
+    return maps.map((e) => Evidence.fromMap(e)).toList();
+  }
+
+  /// Delete an evidence record by ID
+  Future<void> deleteEvidence(String id) async {
+    final db = await dbService.database;
+    await db.delete(
+      'evidence',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
   }
 }

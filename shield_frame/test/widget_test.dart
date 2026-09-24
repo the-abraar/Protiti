@@ -1,30 +1,20 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
 import 'package:shield_frame/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(ShieldFrameApp());
+  testWidgets('Protiti LockScreen renders forensic lock interface', (WidgetTester tester) async {
+    await tester.pumpWidget(const ShieldFrameApp());
+    await tester.pumpAndSettle();
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Verify Title and Vault Authentication header
+    expect(find.text('Protiti (প্রতীতি)'), findsOneWidget);
+    expect(find.text('Forensic Vault Authentication'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
+    // Verify Keypad digits are present
     expect(find.text('1'), findsOneWidget);
+    expect(find.text('9'), findsOneWidget);
+
+    // Verify keypad and stealth lock interface
+    expect(find.byType(ShieldFrameApp), findsOneWidget);
   });
 }
