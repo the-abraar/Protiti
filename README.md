@@ -1,6 +1,8 @@
-# 🛡️ Shield-Frame
+# 🛡️ Aparajita (formerly Shield-Frame)
 
 **"Structure for Justice, Space for Safety"**
+
+> **Note:** "Aparajita" (The Undefeated) is the newly recommended brand name, reflecting resilience and empowerment. See [`team_handoffs/design_handoff.md`](team_handoffs/design_handoff.md) for the full brand identity.
 
 A Digital Evidence Vault app designed for women facing online harassment in Bangladesh. Shield-Frame provides a secure, encrypted framework to document screenshots, links, and timestamps of abuse in a format that is legally admissible and ready for police reporting.
 
