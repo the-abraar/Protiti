@@ -28,7 +28,7 @@ A Digital Evidence Vault app designed for women facing online harassment in Bang
 ### Project Structure
 
 ```
-shield_frame/
+protiti/
 └── lib/
     ├── data/
     │   ├── models/         # DB/API models
@@ -50,7 +50,7 @@ shield_frame/
 ### Getting Started
 
 ```bash
-cd shield_frame
+cd protiti
 flutter pub get
 flutter run
 ```

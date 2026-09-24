@@ -80,7 +80,7 @@ Aligned with `team_handoffs/design_handoff.md`:
 ## 4. Verification & Static Analysis Status
 
 ```bash
-$ cd shield_frame
+$ cd protiti
 $ flutter analyze lib/ test/
 Analyzing 2 items...
 No issues found! (ran in 0.8s)

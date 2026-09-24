@@ -40,12 +40,12 @@ The team responded with an intense cross-functional sprint across Dev, Legal, De
 ### 1. Duress PIN & Decoy Vault Subsystem
 * **Evaluation:** **PARTIALLY FIXED — WITH A LETHAL OPSEC BUG.**
 * **What Works:**
-  - `AuthService` (`shield_frame/lib/data/services/auth_service.dart`) cleanly handles `AuthStatus.authenticatedReal` (PIN `1234`) vs `AuthStatus.authenticatedDuress` (PIN `9999`).
+  - `AuthService` (`protiti/lib/data/services/auth_service.dart`) cleanly handles `AuthStatus.authenticatedReal` (PIN `1234`) vs `AuthStatus.authenticatedDuress` (PIN `9999`).
   - Entering `9999` dynamically switches `VaultScreen` to "Personal Notes & Files", loading syllabus, grocery budgets, and biryani recipes.
 * **The Fatal Bugs & Blindspots:**
-  1. **The "DECOY MODE" Banner of Death:** In `shield_frame/lib/ui/features/vault/vault_screen.dart` (lines 62–76), when `isDecoy` is true, the AppBar renders a container with the literal text **`"DECOY MODE"`**! If an abusive partner or family member forces a survivor to unlock her phone, glances at the screen, and reads "DECOY MODE" in the header, the victim will face immediate, escalated physical violence. **Remove this indicator instantly.** Decoy mode must look 100% uncompromised.
-  2. **The Lock Screen Cheat Sheet:** In `shield_frame/lib/ui/features/auth/lock_screen.dart` (lines 283–302), a prominent card displays: `Demo PIN: 1234 (Real Vault) | 9999 (Duress Decoy)`. If installed on an actual device, this completely defeats the duress mechanism. This banner must be gated behind a hidden debug toggle or removed for production builds.
-  3. **Database Co-Mingling (Zero Forensic Isolation):** In `DatabaseService` (`shield_frame/lib/data/services/database_service.dart`), real evidence and decoy evidence are stored in the **exact same SQLite database table** (`protiti_vault.db`), separated only by an `isDecoy INTEGER DEFAULT 0` column. Worse, both share the same single encryption key from `FlutterSecureStorage`. If a tech-savvy perpetrator or hostile forensics examiner extracts the database, a trivial SQL query (`SELECT * FROM evidence`) unmasks every single victim record. As the Legal Team mandated in `team_handoffs/legal_handoff.md`, true decoy architecture requires a completely separate SQLite file (`decoy_vault.db`) with zero schema pointers to real records.
+  1. **The "DECOY MODE" Banner of Death:** In `protiti/lib/ui/features/vault/vault_screen.dart` (lines 62–76), when `isDecoy` is true, the AppBar renders a container with the literal text **`"DECOY MODE"`**! If an abusive partner or family member forces a survivor to unlock her phone, glances at the screen, and reads "DECOY MODE" in the header, the victim will face immediate, escalated physical violence. **Remove this indicator instantly.** Decoy mode must look 100% uncompromised.
+  2. **The Lock Screen Cheat Sheet:** In `protiti/lib/ui/features/auth/lock_screen.dart` (lines 283–302), a prominent card displays: `Demo PIN: 1234 (Real Vault) | 9999 (Duress Decoy)`. If installed on an actual device, this completely defeats the duress mechanism. This banner must be gated behind a hidden debug toggle or removed for production builds.
+  3. **Database Co-Mingling (Zero Forensic Isolation):** In `DatabaseService` (`protiti/lib/data/services/database_service.dart`), real evidence and decoy evidence are stored in the **exact same SQLite database table** (`protiti_vault.db`), separated only by an `isDecoy INTEGER DEFAULT 0` column. Worse, both share the same single encryption key from `FlutterSecureStorage`. If a tech-savvy perpetrator or hostile forensics examiner extracts the database, a trivial SQL query (`SELECT * FROM evidence`) unmasks every single victim record. As the Legal Team mandated in `team_handoffs/legal_handoff.md`, true decoy architecture requires a completely separate SQLite file (`decoy_vault.db`) with zero schema pointers to real records.
   4. **PIN Inconsistency:** `design_handoff.md` specifies `1971=` (Real) and `0000=` (Decoy). Dev implemented `1234` and `9999`. Unify the documentation and pitch slides.
 
 ---
@@ -98,7 +98,7 @@ The team responded with an intense cross-functional sprint across Dev, Legal, De
   - Functional calculator disguise with working arithmetic evaluator (`lock_screen.dart` and `protiti_mockup.html`). Entering `<PIN>=` silently triggers authentication.
 * **The Fatal Bugs & Blindspots:**
   1. **Disguise is Manual, Not Default:** The Flutter app opens by default to the prominent **"Protiti (প্রতীতি) Forensic Vault Authentication"** lock screen! A user must manually tap the calculator icon in the top right to disguise it. If a spouse or parent grabs the phone unexpectedly, the app opens as a purple forensic vault. It should have a persistent setting: *"Always Launch as Calculator"*.
-  2. **Home Screen Icon & App Name:** On Android, the app is installed under the label `shield_frame` or `Protiti`. If an abuser browses the home screen, an app called "Protiti" or an icon resembling a purple shield invites immediate interrogation. Dynamic activity-alias icon swapping (to disguise the app as "Calculator" or "System Notes" on the OS launcher) must be implemented.
+  2. **Home Screen Icon & App Name:** On Android, the app is installed under the label `protiti` or `Protiti`. If an abuser browses the home screen, an app called "Protiti" or an icon resembling a purple shield invites immediate interrogation. Dynamic activity-alias icon swapping (to disguise the app as "Calculator" or "System Notes" on the OS launcher) must be implemented.
 
 ---
 
@@ -108,7 +108,7 @@ The team responded with an intense cross-functional sprint across Dev, Legal, De
   - `pitch_materials/protiti_mockup.html` and `design_handoff.md` feature excellent bilingual typography pairing Poppins/Inter with Hind Siliguri and deep cultural resonance.
   - Trauma-informed Bengali microcopy standards are well-documented.
 * **The Fatal Bugs & Blindspots:**
-  1. **Codebase is 100% English Hardcoded:** In `shield_frame/lib/`, every button, header, and error message is hardcoded in English: `"Enter security PIN"`, `"Incorrect PIN. Please re-enter"`, `"Secure New Evidence"`, `"Hold for 3 seconds to activate"`. There is no `intl` or `.arb` localization file. A semi-literate victim in rural Barishal or Rangpur will not understand why an authentication attempt failed or how to file a complaint.
+  1. **Codebase is 100% English Hardcoded:** In `protiti/lib/`, every button, header, and error message is hardcoded in English: `"Enter security PIN"`, `"Incorrect PIN. Please re-enter"`, `"Secure New Evidence"`, `"Hold for 3 seconds to activate"`. There is no `intl` or `.arb` localization file. A semi-literate victim in rural Barishal or Rangpur will not understand why an authentication attempt failed or how to file a complaint.
   2. **Voice Navigation Missing:** Audio-guided intake was promised in the pitch documents to address literacy barriers across the 8 divisions, but there is zero audio playback or TTS infrastructure in the code.
 
 ---
@@ -150,8 +150,8 @@ With **5 days remaining** until the September 30 deadline, the team must execute
 
 ### Immediate / Day 1 (Critical Pitch Deck & OPSEC Remediation):
 1. **Eradicate Lethal UI Bugs in Flutter:**
-   - Delete lines 62–76 in `shield_frame/lib/ui/features/vault/vault_screen.dart` (the `'DECOY MODE'` banner). Decoy mode must display identical stealth chrome.
-   - Remove or guard the demo PIN informational banner in `shield_frame/lib/ui/features/auth/lock_screen.dart`.
+   - Delete lines 62–76 in `protiti/lib/ui/features/vault/vault_screen.dart` (the `'DECOY MODE'` banner). Decoy mode must display identical stealth chrome.
+   - Remove or guard the demo PIN informational banner in `protiti/lib/ui/features/auth/lock_screen.dart`.
 2. **Synchronize & Finalize `pitch_materials/pitch_deck.md`:**
    - Purge all references to "Cyber Security Act" and replace with **"Cyber Protection Act, 2026"**.
    - Fill all bracketed placeholders in Slide 6 (Quote) and Slide 7 (Budget).
