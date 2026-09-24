@@ -1,7 +1,7 @@
-# Shield-Frame Developer Handoff
-
+# Protiti (প্রতীতি) Developer Handoff
+ 
 ## Overview
-This document outlines the recent UI updates made to the Shield-Frame app to make it demo-ready, along with notes on state management and immediate next steps for the next developer picking up this project.
+This document outlines the recent UI updates made to the Protiti app to make it demo-ready, along with notes on state management and immediate next steps for the next developer picking up this project.
 
 ## What Was Built
 

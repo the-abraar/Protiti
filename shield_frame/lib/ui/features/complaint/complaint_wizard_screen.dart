@@ -58,4 +58,4 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
       ],
     );
   }
-}\n
+}

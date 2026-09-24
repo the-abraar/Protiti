@@ -1,4 +1,4 @@
-# 🎥 Shield-Frame (Aparajita) — Official Demo Script
+# 🎥 Protiti (প্রতীতি) — Official Demo Script
 
 *Use this script while screen-recording the Flutter app or HTML mockup. It is specifically designed to preemptively answer the judges' hardest questions.*
 
@@ -7,7 +7,7 @@
 ## 🎬 Introduction (0:00 - 0:20)
 **Action:** Show the Lock Screen (Calculator Disguise).
 **Script:** 
-> "Hello judges. In Bangladesh, 64% of women face digital violence, but most evidence is lost because victims are forced to delete it. Meet **Aparajita** (formerly Shield-Frame), our Digital Evidence Vault. At first glance, it looks like a standard calculator—essential for victims whose abusers have access to their devices."
+> "Hello judges. In Bangladesh, 64% of women face digital violence, but most evidence is lost because victims are forced to delete it. Meet **Protiti (প্রতীতি)**, our Digital Evidence Vault. At first glance, it looks like a standard calculator—essential for victims whose abusers have access to their devices."
 
 ## 🔓 The Vault & Duress PIN (0:20 - 0:45)
 **Action:** Type the real PIN/Biometric to enter the Vault. Point to the evidence grid.

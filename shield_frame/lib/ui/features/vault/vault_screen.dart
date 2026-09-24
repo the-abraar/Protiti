@@ -93,4 +93,4 @@ class VaultGridScreen extends StatelessWidget {
       },
     );
   }
-}\n
+}

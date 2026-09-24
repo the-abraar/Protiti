@@ -7,4 +7,4 @@ class ComplaintRepository {
   ComplaintRepository(this.dbService);
   
   // Implementation for storing/retrieving complaints
-}\n
+}

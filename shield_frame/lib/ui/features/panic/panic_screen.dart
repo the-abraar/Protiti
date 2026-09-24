@@ -73,4 +73,4 @@ class _PanicScreenState extends State<PanicScreen> with SingleTickerProviderStat
       ),
     );
   }
-}\n
+}

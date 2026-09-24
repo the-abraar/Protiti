@@ -26,7 +26,7 @@ class _LockScreenState extends State<LockScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isCalculatorMode ? 'Calculator' : 'Shield Frame'),
+        title: Text(_isCalculatorMode ? 'Calculator' : 'Protiti (প্রতীতি)'),
         actions: [
           IconButton(
             icon: Icon(Icons.calculate),
@@ -53,4 +53,4 @@ class _LockScreenState extends State<LockScreen> {
       ),
     );
   }
-}\n
+}

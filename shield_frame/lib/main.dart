@@ -11,9 +11,9 @@ class ShieldFrameApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Shield Frame',
+      title: 'Protiti',
       theme: AppTheme.darkTheme,
       home: LockScreen(),
     );
   }
-}\n
+}

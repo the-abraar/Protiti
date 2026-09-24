@@ -24,4 +24,4 @@ class LocationService {
 
     return await Geolocator.getCurrentPosition();
   }
-}\n
+}

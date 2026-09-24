@@ -33,4 +33,4 @@ class DatabaseService {
       },
     );
   }
-}\n
+}

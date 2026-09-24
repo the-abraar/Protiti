@@ -7,4 +7,4 @@ class ContactRepository {
   ContactRepository(this.dbService);
 
   // Implementation for contacts
-}\n
+}

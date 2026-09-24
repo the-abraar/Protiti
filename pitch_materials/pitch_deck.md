@@ -1,6 +1,6 @@
 # Slide 1: Title & Hook
-**Project Shield-Frame**
-*"Structure for Justice, Space for Safety"*
+**Project Protiti (প্রতীতি)**
+*"সন্দেহহীন সত্য, অকাট্য প্রমাণের অধিকার" / "From Doubt to Certitude: Structure for Digital Justice"*
 
 **Team:** [Team Name / DKC Branding]
 **DKC Fellowship Application - UNDP Bangladesh**
@@ -25,7 +25,7 @@
 
 ---
 
-# Slide 3: The Solution — Shield-Frame (Structure)
+# Slide 3: The Solution — Protiti (Certitude)
 *Providing a frame of safety to structure the path to justice.*
 
 - **Secure Evidence Vault:** Cloud-based, biometric-locked storage with auto-metadata extraction.
@@ -41,12 +41,12 @@
 *From Chaos to Clarity.*
 
 1. **Capture:** Victim captures evidence (screenshot, link, text).
-2. **Structure:** Shield-Frame auto-tags metadata (time, date, source, cryptographic hash).
+2. **Structure:** Protiti auto-tags metadata (time, date, source, cryptographic hash).
 3. **Analyze:** User answers guided questions about the incident in a safe, trauma-informed interface.
 4. **Formulate:** App generates a structured legal complaint (GD format).
 5. **Action:** Export securely to police, lawyer, or a Support Bridge contact.
 
-*Visual Suggestion:* A flowchart or a "Before & After" graphic. Left side: "Messy Chat" with erratic lines. Right side: Shield-Frame processing it into a "Clean Legal Complaint" with straight, organized lines.
+*Visual Suggestion:* A flowchart or a "Before & After" graphic. Left side: "Messy Chat" with erratic lines. Right side: Protiti processing it into a "Clean Legal Complaint" with straight, organized lines.
 
 ---
 
@@ -73,7 +73,7 @@
   - Increase in successfully filed, actionable complaints.
   - Faster processing time for cybercrime investigations.
 
-> *"With Shield-Frame, the burden of proof shifts from the victim's memory to undeniable data." - [Placeholder for Quote]*
+> *"With Protiti, the burden of proof shifts from the victim's memory to undeniable certitude." - [Placeholder for Quote]*
 
 *Visual Suggestion:* A map of Bangladesh highlighting the 8 divisions with connecting nodes, alongside icons representing students, police, and legal clinics working together.
 
@@ -106,4 +106,4 @@
 **Call to Action:**
 **"Every woman deserves a frame of safety. Help us build the structure for justice."**
 
-*Visual Suggestion:* A strong, empowering photograph of a woman looking forward confidently, overlaid with the Shield-Frame logo and the final call to action in bold typography.
+*Visual Suggestion:* A strong, empowering photograph of a woman looking forward confidently, overlaid with the Protiti logo and the final call to action in bold typography.

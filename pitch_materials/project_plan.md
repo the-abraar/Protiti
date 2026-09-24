@@ -1,17 +1,17 @@
-# Shield-Frame: Digital Evidence Vault - Project Plan
+# Protiti (প্রতীতি): Digital Evidence Vault - Project Plan
 
 ## 1. Project Overview
 * **Vision**: Empower women in Bangladesh facing online harassment to securely document evidence and confidently seek legal recourse.
 * **Mission**: Provide a secure, private, and legally-aligned mobile application to capture, store, and act upon digital evidence of online harassment.
 * **Problem Statement**: Victims of online harassment in Bangladesh often lack a secure way to document evidence. Standard screenshots can be easily deleted, tampered with, or accessed by abusers if they have access to the victim's device. Furthermore, navigating the legal system (like filing a General Diary - GD) is daunting due to complex legal jargon and lack of standardized formats.
-* **Blankframe Alignment**: Shield-Frame aligns closely with Blankframe's mission of leveraging technology for social good, specifically focusing on digital rights, privacy, and safety for marginalized groups in vulnerable situations.
+* **Mission Alignment**: Protiti aligns closely with the mission of leveraging technology for social good, specifically focusing on digital rights, privacy, and safety for women and marginalized groups in vulnerable situations.
 
 ## 2. Architecture Design
 
 ### System Architecture Diagram
 ```mermaid
 flowchart TD
-    User([User]) --> App[Shield-Frame App]
+    User([User]) --> App[Protiti App]
     App --> Auth[Biometric Auth & App Disguise]
     App --> Storage[Local Encrypted Storage (SQLCipher)]
     App --> Logic[GD Automator Logic]

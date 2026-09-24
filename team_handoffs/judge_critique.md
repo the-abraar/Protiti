@@ -1,4 +1,4 @@
-# ⚖️ The Judge's Critique: Shield-Frame
+# ⚖️ The Judge's Critique: Project Protiti (প্রতীতি)
 
 *An unapologetic reality check for the UNDP DKC Fellowship Pitch.*
 

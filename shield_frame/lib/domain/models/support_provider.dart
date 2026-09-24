@@ -18,4 +18,4 @@ class SupportProvider {
     required this.division,
     required this.isProBono,
   });
-}\n
+}

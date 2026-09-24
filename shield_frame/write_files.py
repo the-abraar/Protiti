@@ -350,7 +350,7 @@ class _LockScreenState extends State<LockScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(_isCalculatorMode ? 'Calculator' : 'Shield Frame'),
+        title: Text(_isCalculatorMode ? 'Calculator' : 'Protiti (প্রতীতি)'),
         actions: [
           IconButton(
             icon: Icon(Icons.calculate),
@@ -484,7 +484,7 @@ class ShieldFrameApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Shield Frame',
+      title: 'Protiti',
       theme: AppTheme.darkTheme,
       home: LockScreen(),
     );

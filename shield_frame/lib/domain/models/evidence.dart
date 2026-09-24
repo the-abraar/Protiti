@@ -16,4 +16,4 @@ class Evidence {
     this.metadata,
     required this.createdAt,
   });
-}\n
+}

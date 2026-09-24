@@ -9,4 +9,4 @@ class TriggerPanicUseCase {
     final loc = await locationService.getCurrentLocation();
     // Send SMS to emergency contacts with loc
   }
-}\n
+}

@@ -1,10 +1,11 @@
-# 🛡️ Aparajita (formerly Shield-Frame)
+# 🛡️ Protiti (প্রতীতি)
 
-**"Structure for Justice, Space for Safety"**
+**"সন্দেহহীন সত্য, অকাট্য প্রমাণের অধিকার"**  
+*"From Doubt to Certitude: Structure for Digital Justice"*
 
-> **Note:** "Aparajita" (The Undefeated) is the newly recommended brand name, reflecting resilience and empowerment. See [`team_handoffs/design_handoff.md`](team_handoffs/design_handoff.md) for the full brand identity.
+> **Note:** "Protiti" (প্রতীতি - Deep Conviction & Undisputed Certitude) is the official brand identity. Rooted in Bengali epistemology and cultural resonance, Protiti establishes indisputable digital evidence for women facing online harassment in Bangladesh. See [`team_handoffs/design_handoff.md`](team_handoffs/design_handoff.md) for the brand identity and verified uniqueness audit.
 
-A Digital Evidence Vault app designed for women facing online harassment in Bangladesh. Shield-Frame provides a secure, encrypted framework to document screenshots, links, and timestamps of abuse in a format that is legally admissible and ready for police reporting.
+A Digital Evidence Vault app designed for women facing online harassment in Bangladesh. Protiti provides a secure, encrypted framework to document screenshots, links, and timestamps of abuse in a format that is legally admissible and ready for police reporting.
 
 ## 🎯 DKC Fellowship — Theme: Gender-based Online Violence
 
@@ -55,7 +56,7 @@ flutter run
 
 ### Impact
 
-> *64% of Bangladeshi women face digital violence. Most cases go unreported because evidence is lost, legal processes are intimidating, and support is hard to find. Shield-Frame changes that.*
+> *64% of Bangladeshi women face digital violence. Most cases go unreported because evidence is lost, legal processes are intimidating, and support is hard to find. Protiti changes that.*
 
 ---
 

@@ -20,4 +20,4 @@ class Complaint {
     required this.status,
     required this.createdAt,
   });
-}\n
+}

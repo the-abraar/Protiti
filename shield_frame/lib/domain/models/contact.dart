@@ -14,4 +14,4 @@ class TrustedContact {
     required this.relationship,
     required this.isEmergency,
   });
-}\n
+}

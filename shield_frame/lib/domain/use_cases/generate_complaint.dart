@@ -5,4 +5,4 @@ class GenerateComplaintUseCase {
     // Generates legally-formatted General Diary (GD) complaints
     return 'Subject: General Diary regarding online harassment...';
   }
-}\n
+}

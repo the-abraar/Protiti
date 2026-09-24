@@ -8,4 +8,4 @@ class EncryptionService {
     // Implement actual AES decryption here
     return cipherText;
   }
-}\n
+}

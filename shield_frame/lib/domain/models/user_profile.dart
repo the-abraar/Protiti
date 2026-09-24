@@ -12,4 +12,4 @@ class UserProfile {
     required this.division,
     required this.emergencyContactIds,
   });
-}\n
+}

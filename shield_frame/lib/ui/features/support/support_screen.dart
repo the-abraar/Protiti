@@ -5,4 +5,4 @@ class SupportScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(child: Text('Support Bridge (Lawyers & Counselors)'));
   }
-}\n
+}

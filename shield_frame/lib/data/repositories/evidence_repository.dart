@@ -31,4 +31,4 @@ class EvidenceRepository {
       createdAt: DateTime.parse(e['createdAt']),
     )).toList();
   }
-}\n
+}
