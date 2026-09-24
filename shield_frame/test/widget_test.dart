@@ -2,7 +2,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:shield_frame/main.dart';
 
 void main() {
-  testWidgets('Protiti LockScreen renders forensic lock interface', (WidgetTester tester) async {
+  testWidgets('Protiti LockScreen renders forensic lock interface', (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(const ShieldFrameApp());
     await tester.pumpAndSettle();
 

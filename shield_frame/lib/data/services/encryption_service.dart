@@ -1,7 +1,7 @@
 class EncryptionService {
   String encrypt(String plainText) {
     // Implement actual AES encryption here
-    return plainText; 
+    return plainText;
   }
 
   String decrypt(String cipherText) {

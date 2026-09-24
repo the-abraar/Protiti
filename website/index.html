@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protiti (প্রতীতি) - Digital Justice Framework</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0A1128;
+            color: #E2E8F0;
+        }
+        .text-teal { color: #1282A2; }
+        .text-amber { color: #FFC857; }
+        .bg-teal { background-color: #1282A2; }
+        .bg-navy-light { background-color: #1a274c; }
+        .border-teal { border-color: #1282A2; }
+    </style>
+</head>
+<body class="antialiased selection:bg-teal-500 selection:text-white">
+
+    <!-- Header -->
+    <header class="container mx-auto px-6 py-8 flex justify-between items-center border-b border-gray-800">
+        <div class="flex items-center gap-3">
+            <!-- Simple SVG Logo -->
+            <svg class="w-8 h-8 text-amber" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+            </svg>
+            <h1 class="text-2xl font-bold tracking-wider">Protiti<span class="text-teal text-xl font-normal ml-2">প্রতীতি</span></h1>
+        </div>
+        <nav class="hidden md:flex gap-6 text-sm font-medium">
+            <a href="#problem" class="hover:text-teal transition">The Problem</a>
+            <a href="#solution" class="hover:text-teal transition">The Solution</a>
+            <a href="#features" class="hover:text-teal transition">Features</a>
+            <a href="#impact" class="hover:text-teal transition">Impact</a>
+        </nav>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="container mx-auto px-6 py-20 flex flex-col-reverse md:flex-row items-center gap-12">
+        <div class="w-full md:w-1/2 space-y-6">
+            <div class="inline-block px-3 py-1 bg-amber/10 text-amber border border-amber/20 rounded-full text-sm font-semibold mb-4">
+                DKC Fellowship 2026 - Gender-based Online Violence
+            </div>
+            <h2 class="text-4xl md:text-6xl font-bold leading-tight">
+                From Doubt to <br><span class="text-teal">Certitude.</span>
+            </h2>
+            <p class="text-xl text-gray-400 italic">"সন্দেহহীন সত্য, অকাট্য প্রমাণের অধিকার"</p>
+            <p class="text-lg text-gray-300 leading-relaxed">
+                A Digital Evidence Vault app designed for women facing online harassment in Bangladesh. Protiti provides a secure, encrypted framework to document screenshots, links, and timestamps of abuse in a format that is legally admissible and ready for police reporting.
+            </p>
+            <div class="pt-4">
+                <a href="#solution" class="bg-teal text-white px-8 py-3 rounded-md font-semibold hover:bg-opacity-90 transition inline-block">See How it Works</a>
+            </div>
+        </div>
+        <div class="w-full md:w-1/2 flex justify-center">
+            <!-- Real App Mockup Embed -->
+            <div class="relative w-[320px] h-[650px] border-4 border-gray-700 rounded-[2rem] overflow-hidden shadow-2xl shadow-teal/20 bg-gray-900">
+                <iframe src="protiti_mockup.html" class="w-full h-full border-none" title="App Mockup"></iframe>
+            </div>
+        </div>
+    </section>
+
+    <!-- The Problem & Solution -->
+    <section id="problem" class="bg-navy-light py-20">
+        <div class="container mx-auto px-6">
+            <div class="grid md:grid-cols-2 gap-16">
+                <!-- The Problem -->
+                <div class="space-y-6">
+                    <h3 class="text-3xl font-bold flex items-center gap-3">
+                        <span class="text-red-400">Chaos</span> The Reality
+                    </h3>
+                    <p class="text-gray-300"><strong>64% of Bangladeshi women face digital violence.</strong> Victims are left vulnerable without structure.</p>
+                    <ul class="space-y-4 text-gray-400">
+                        <li class="flex items-start gap-3">
+                            <span class="text-red-400 mt-1">✗</span>
+                            <span><strong>Evidence Loss:</strong> Victims delete messages/accounts out of fear, destroying crucial proof.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-red-400 mt-1">✗</span>
+                            <span><strong>Legal Complexity:</strong> General Diary (GD) filing is intimidating and confusing.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-red-400 mt-1">✗</span>
+                            <span><strong>Metadata Gap:</strong> Simple screenshots are easily dismissed. They lack timestamps and source URLs.</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- The Solution -->
+                <div id="solution" class="space-y-6">
+                    <h3 class="text-3xl font-bold flex items-center gap-3">
+                        <span class="text-teal">Clarity</span> The Solution
+                    </h3>
+                    <p class="text-gray-300">Protiti provides a frame of safety to structure the path to justice.</p>
+                    <ul class="space-y-4 text-gray-400">
+                        <li class="flex items-start gap-3">
+                            <span class="text-teal mt-1">✓</span>
+                            <span><strong>Zero-Knowledge Security:</strong> End-to-end encryption with local SQLCipher on-device storage.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-teal mt-1">✓</span>
+                            <span><strong>Legal Logic Engine:</strong> Mapped directly to the Cyber Protection Act, 2026.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="text-teal mt-1">✓</span>
+                            <span><strong>Resilience:</strong> Offline-first architecture ensures the vault works without active mobile internet.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section id="features" class="container mx-auto px-6 py-20">
+        <h2 class="text-3xl font-bold text-center mb-16">Core Features</h2>
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div class="bg-gray-800/50 p-6 rounded-xl border border-gray-700 hover:border-teal transition duration-300">
+                <div class="text-4xl mb-4">📦</div>
+                <h4 class="text-xl font-semibold mb-3">Secure Evidence Vault</h4>
+                <p class="text-gray-400 text-sm leading-relaxed">Biometric-locked, encrypted storage with a Duress PIN (Decoy Vault) for physical coercion scenarios.</p>
+            </div>
+            <div class="bg-gray-800/50 p-6 rounded-xl border border-gray-700 hover:border-teal transition duration-300">
+                <div class="text-4xl mb-4">📝</div>
+                <h4 class="text-xl font-semibold mb-3">GD-Automator</h4>
+                <p class="text-gray-400 text-sm leading-relaxed">Maps data to the Cyber Protection Act 2026 and designed for direct Bangladesh Police e-GD API integration.</p>
+            </div>
+            <div class="bg-gray-800/50 p-6 rounded-xl border border-gray-700 hover:border-teal transition duration-300">
+                <div class="text-4xl mb-4">🚨</div>
+                <h4 class="text-xl font-semibold mb-3">Panic Frame</h4>
+                <p class="text-gray-400 text-sm leading-relaxed">Offline-first SOS alert with lightweight SMS coordinates for low-connectivity environments.</p>
+            </div>
+            <div class="bg-gray-800/50 p-6 rounded-xl border border-gray-700 hover:border-teal transition duration-300">
+                <div class="text-4xl mb-4">🤝</div>
+                <h4 class="text-xl font-semibold mb-3">Support Bridge</h4>
+                <p class="text-gray-400 text-sm leading-relaxed">Curated directory of pro-bono lawyers and mental health counselors for victims to find safe help.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- App Walkthrough (Alternative Mockup) -->
+    <section class="bg-navy-light py-20">
+        <div class="container mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
+            <div class="w-full md:w-1/2 flex justify-center">
+                <div class="relative w-[320px] h-[650px] border-4 border-gray-700 rounded-[2rem] overflow-hidden shadow-2xl bg-gray-900">
+                    <iframe src="shield_frame_mockup.html" class="w-full h-full border-none" title="Shield Frame Mockup"></iframe>
+                </div>
+            </div>
+            <div class="w-full md:w-1/2 space-y-6">
+                <h2 class="text-3xl font-bold">The User Journey</h2>
+                <div class="space-y-4">
+                    <div class="flex gap-4">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-teal text-white flex items-center justify-center font-bold">1</div>
+                        <div>
+                            <h4 class="font-semibold text-lg text-amber">Capture</h4>
+                            <p class="text-gray-400">Victim captures evidence (screenshot, link, text).</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-teal text-white flex items-center justify-center font-bold">2</div>
+                        <div>
+                            <h4 class="font-semibold text-lg text-amber">Structure</h4>
+                            <p class="text-gray-400">Protiti auto-tags metadata (time, date, source, cryptographic hash).</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-teal text-white flex items-center justify-center font-bold">3</div>
+                        <div>
+                            <h4 class="font-semibold text-lg text-amber">Analyze</h4>
+                            <p class="text-gray-400">User answers guided questions about the incident in a safe, trauma-informed interface.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-4">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-teal text-white flex items-center justify-center font-bold">4</div>
+                        <div>
+                            <h4 class="font-semibold text-lg text-amber">Formulate & Action</h4>
+                            <p class="text-gray-400">App generates a structured legal complaint (GD format). Export securely to police or lawyer.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Target & Impact -->
+    <section id="impact" class="container mx-auto px-6 py-20 text-center">
+        <h2 class="text-3xl font-bold mb-6">Target Community & Impact</h2>
+        <p class="text-gray-300 max-w-2xl mx-auto mb-12">
+            Empowering female university and college students (18-30) facing digital harassment, blackmail, and deepfakes. Working with Police Cyber Support for Women (PCSW) and legal aid clinics.
+        </p>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div class="p-6 border border-gray-800 rounded-lg">
+                <div class="text-4xl font-bold text-amber mb-2">80%+</div>
+                <p class="text-gray-400">Reduction in accidental evidence destruction.</p>
+            </div>
+            <div class="p-6 border border-gray-800 rounded-lg">
+                <div class="text-4xl font-bold text-teal mb-2">3x</div>
+                <p class="text-gray-400">Increase in actionable, court-admissible General Diaries filed.</p>
+            </div>
+            <div class="p-6 border border-gray-800 rounded-lg">
+                <div class="text-4xl font-bold text-amber mb-2">Swift</div>
+                <p class="text-gray-400">Escalation of severe extortion cases to female cyber officers.</p>
+            </div>
+        </div>
+        
+        <div class="mt-16 max-w-3xl mx-auto italic text-xl text-gray-400 border-l-4 border-teal pl-6 text-left">
+            "With Protiti, the burden of proof shifts from the victim's trauma to undisputed certitude — turning deleted chats into courtroom-ready evidence."
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-800 py-10 mt-10">
+        <div class="container mx-auto px-6 text-center text-gray-500">
+            <p class="mb-4"><strong>Every woman deserves a frame of safety. Help us build the structure for justice.</strong></p>
+            <p>&copy; 2026 Project Protiti. DKC Digital Respect & Cohesion Fellowship.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

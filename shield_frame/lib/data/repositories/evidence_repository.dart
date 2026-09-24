@@ -26,10 +26,6 @@ class EvidenceRepository {
   /// Delete an evidence record by ID
   Future<void> deleteEvidence(String id) async {
     final db = await dbService.database;
-    await db.delete(
-      'evidence',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    await db.delete('evidence', where: 'id = ?', whereArgs: [id]);
   }
 }

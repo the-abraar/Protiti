@@ -1,11 +1,7 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'biometric_service.dart';
 
-enum AuthStatus {
-  authenticatedReal,
-  authenticatedDuress,
-  failed,
-}
+enum AuthStatus { authenticatedReal, authenticatedDuress, failed }
 
 class AuthService {
   final FlutterSecureStorage _secureStorage;
@@ -23,8 +19,8 @@ class AuthService {
   AuthService({
     FlutterSecureStorage? secureStorage,
     BiometricService? biometricService,
-  })  : _secureStorage = secureStorage ?? const FlutterSecureStorage(),
-        _biometricService = biometricService ?? BiometricService();
+  }) : _secureStorage = secureStorage ?? const FlutterSecureStorage(),
+       _biometricService = biometricService ?? BiometricService();
 
   Future<String> getRealPin() async {
     final pin = await _secureStorage.read(key: _realPinKey);

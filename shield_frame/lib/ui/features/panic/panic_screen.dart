@@ -16,7 +16,8 @@ class PanicScreen extends StatefulWidget {
   State<PanicScreen> createState() => _PanicScreenState();
 }
 
-class _PanicScreenState extends State<PanicScreen> with TickerProviderStateMixin {
+class _PanicScreenState extends State<PanicScreen>
+    with TickerProviderStateMixin {
   late final AnimationController _pulseController;
   late final AnimationController _holdController;
 
@@ -134,14 +135,18 @@ class _PanicScreenState extends State<PanicScreen> with TickerProviderStateMixin
                   : AppTheme.cardDark,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
-                color: _isTriggered ? AppTheme.crimson : AppTheme.teal.withValues(alpha: 0.4),
+                color: _isTriggered
+                    ? AppTheme.crimson
+                    : AppTheme.teal.withValues(alpha: 0.4),
               ),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Icon(
-                  _isTriggered ? Icons.warning_rounded : Icons.offline_bolt_outlined,
+                  _isTriggered
+                      ? Icons.warning_rounded
+                      : Icons.offline_bolt_outlined,
                   size: 16,
                   color: _isTriggered ? AppTheme.crimson : AppTheme.warmGold,
                 ),
@@ -173,8 +178,8 @@ class _PanicScreenState extends State<PanicScreen> with TickerProviderStateMixin
             _isTriggered
                 ? 'Emergency SOS triggered! Broadcasted to responders.'
                 : (_isHolding
-                    ? 'Keep holding... ${(3.0 - (_holdController.value * 3.0)).toStringAsFixed(1)}s'
-                    : 'Press & Hold for 3 seconds to broadcast SOS'),
+                      ? 'Keep holding... ${(3.0 - (_holdController.value * 3.0)).toStringAsFixed(1)}s'
+                      : 'Press & Hold for 3 seconds to broadcast SOS'),
             textAlign: TextAlign.center,
             style: TextStyle(
               fontSize: 15,
@@ -255,7 +260,9 @@ class _PanicScreenState extends State<PanicScreen> with TickerProviderStateMixin
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppTheme.crimson.withValues(alpha: _isTriggered ? 0.7 : 0.4),
+                        color: AppTheme.crimson.withValues(
+                          alpha: _isTriggered ? 0.7 : 0.4,
+                        ),
                         blurRadius: _isHolding ? 40 : 25,
                         spreadRadius: _isHolding ? 8 : 4,
                       ),
@@ -266,7 +273,9 @@ class _PanicScreenState extends State<PanicScreen> with TickerProviderStateMixin
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
-                        _isTriggered ? Icons.notification_important : Icons.touch_app_outlined,
+                        _isTriggered
+                            ? Icons.notification_important
+                            : Icons.touch_app_outlined,
                         size: 44,
                         color: Colors.white,
                       ),
@@ -315,7 +324,11 @@ class _PanicScreenState extends State<PanicScreen> with TickerProviderStateMixin
         children: [
           Row(
             children: [
-              const Icon(Icons.check_circle_outline, color: Colors.greenAccent, size: 20),
+              const Icon(
+                Icons.check_circle_outline,
+                color: Colors.greenAccent,
+                size: 20,
+              ),
               const SizedBox(width: 8),
               const Expanded(
                 child: Text(
@@ -333,7 +346,11 @@ class _PanicScreenState extends State<PanicScreen> with TickerProviderStateMixin
           const Divider(height: 16, color: Colors.white12),
           Text(
             'Location Coordinates:',
-            style: TextStyle(fontSize: 12, color: Colors.grey[400], fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 12,
+              color: Colors.grey[400],
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 4),
           SelectableText(
@@ -354,7 +371,11 @@ class _PanicScreenState extends State<PanicScreen> with TickerProviderStateMixin
             ),
             child: Text(
               result.formattedMessage,
-              style: TextStyle(fontSize: 11, color: Colors.grey[300], fontStyle: FontStyle.italic),
+              style: TextStyle(
+                fontSize: 11,
+                color: Colors.grey[300],
+                fontStyle: FontStyle.italic,
+              ),
             ),
           ),
         ],
@@ -372,7 +393,11 @@ class _PanicScreenState extends State<PanicScreen> with TickerProviderStateMixin
             SizedBox(width: 8),
             Text(
               'Direct Bangladesh Emergency Hotlines',
-              style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppTheme.textPrimaryDark),
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.textPrimaryDark,
+              ),
             ),
           ],
         ),
@@ -380,11 +405,19 @@ class _PanicScreenState extends State<PanicScreen> with TickerProviderStateMixin
         Row(
           children: [
             Expanded(
-              child: _buildHotlineCard('999', 'National Police / EMS', AppTheme.crimson),
+              child: _buildHotlineCard(
+                '999',
+                'National Police / EMS',
+                AppTheme.crimson,
+              ),
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: _buildHotlineCard('109', 'GBV Toll-Free BD', AppTheme.tealLight),
+              child: _buildHotlineCard(
+                '109',
+                'GBV Toll-Free BD',
+                AppTheme.tealLight,
+              ),
             ),
           ],
         ),
@@ -392,11 +425,19 @@ class _PanicScreenState extends State<PanicScreen> with TickerProviderStateMixin
         Row(
           children: [
             Expanded(
-              child: _buildHotlineCard('10921', 'Violence Helpline', AppTheme.warmGold),
+              child: _buildHotlineCard(
+                '10921',
+                'Violence Helpline',
+                AppTheme.warmGold,
+              ),
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: _buildHotlineCard('01320000888', 'Cyber Police BD', Colors.deepPurpleAccent),
+              child: _buildHotlineCard(
+                '01320000888',
+                'Cyber Police BD',
+                Colors.deepPurpleAccent,
+              ),
             ),
           ],
         ),
@@ -432,7 +473,11 @@ class _PanicScreenState extends State<PanicScreen> with TickerProviderStateMixin
                 children: [
                   Text(
                     number,
-                    style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: accentColor),
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                      color: accentColor,
+                    ),
                   ),
                   Text(
                     label,
@@ -458,7 +503,11 @@ class _PanicScreenState extends State<PanicScreen> with TickerProviderStateMixin
         children: [
           Row(
             children: const [
-              Icon(Icons.health_and_safety_outlined, color: AppTheme.tealLight, size: 28),
+              Icon(
+                Icons.health_and_safety_outlined,
+                color: AppTheme.tealLight,
+                size: 28,
+              ),
               SizedBox(width: 10),
               Text(
                 'Personal Well-Being & Safety',
@@ -472,13 +521,29 @@ class _PanicScreenState extends State<PanicScreen> with TickerProviderStateMixin
             style: TextStyle(fontSize: 13, color: Colors.grey[400]),
           ),
           const SizedBox(height: 20),
-          _buildDecoyItem('Dhaka Medical College Emergency', '+880255165088', 'Medical'),
+          _buildDecoyItem(
+            'Dhaka Medical College Emergency',
+            '+880255165088',
+            'Medical',
+          ),
           const SizedBox(height: 10),
-          _buildDecoyItem('National Emergency Services', '999', 'Public Service'),
+          _buildDecoyItem(
+            'National Emergency Services',
+            '999',
+            'Public Service',
+          ),
           const SizedBox(height: 10),
-          _buildDecoyItem('Dhaka University Proctor Office', '01700000000', 'Campus Info'),
+          _buildDecoyItem(
+            'Dhaka University Proctor Office',
+            '01700000000',
+            'Campus Info',
+          ),
           const SizedBox(height: 10),
-          _buildDecoyItem('Dhaka Traffic Control Room', '01713398500', 'Transit Helpline'),
+          _buildDecoyItem(
+            'Dhaka Traffic Control Room',
+            '01713398500',
+            'Transit Helpline',
+          ),
         ],
       ),
     );
@@ -498,16 +563,28 @@ class _PanicScreenState extends State<PanicScreen> with TickerProviderStateMixin
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text(category, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+                Text(
+                  category,
+                  style: const TextStyle(fontSize: 11, color: Colors.grey),
+                ),
               ],
             ),
           ),
           TextButton.icon(
             onPressed: () => _callHotline(phone),
             icon: const Icon(Icons.call, size: 16, color: AppTheme.tealLight),
-            label: Text(phone, style: const TextStyle(color: AppTheme.tealLight, fontSize: 12)),
+            label: Text(
+              phone,
+              style: const TextStyle(color: AppTheme.tealLight, fontSize: 12),
+            ),
           ),
         ],
       ),

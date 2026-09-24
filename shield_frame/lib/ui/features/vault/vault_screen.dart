@@ -47,13 +47,17 @@ class _VaultScreenState extends State<VaultScreen> {
         title: Row(
           children: [
             Icon(
-              widget.isDecoy ? Icons.folder_shared_outlined : Icons.lock_clock_outlined,
+              widget.isDecoy
+                  ? Icons.folder_shared_outlined
+                  : Icons.lock_clock_outlined,
               size: 20,
               color: widget.isDecoy ? AppTheme.teal : AppTheme.warmGold,
             ),
             const SizedBox(width: 8),
             Text(
-              widget.isDecoy ? 'Personal Notes & Files' : 'Protiti Forensic Vault',
+              widget.isDecoy
+                  ? 'Personal Notes & Files'
+                  : 'Protiti Forensic Vault',
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ],
@@ -85,18 +89,26 @@ class _VaultScreenState extends State<VaultScreen> {
             label: widget.isDecoy ? 'Notes' : 'Report',
           ),
           BottomNavigationBarItem(
-            icon: Icon(widget.isDecoy ? Icons.info_outline : Icons.warning_amber),
+            icon: Icon(
+              widget.isDecoy ? Icons.info_outline : Icons.warning_amber,
+            ),
             label: widget.isDecoy ? 'Safety' : 'Panic SOS',
           ),
           BottomNavigationBarItem(
-            icon: Icon(widget.isDecoy ? Icons.contact_support_outlined : Icons.support_agent),
+            icon: Icon(
+              widget.isDecoy
+                  ? Icons.contact_support_outlined
+                  : Icons.support_agent,
+            ),
             label: widget.isDecoy ? 'Help' : 'Support',
           ),
         ],
       ),
       floatingActionButton: _currentIndex == 0
           ? FloatingActionButton.extended(
-              backgroundColor: widget.isDecoy ? AppTheme.teal : AppTheme.deepAmethyst,
+              backgroundColor: widget.isDecoy
+                  ? AppTheme.teal
+                  : AppTheme.deepAmethyst,
               onPressed: () => _showAddDialog(context),
               icon: const Icon(Icons.add),
               label: Text(widget.isDecoy ? 'Add File' : 'Secure Evidence'),
@@ -112,14 +124,18 @@ class _VaultScreenState extends State<VaultScreen> {
       builder: (ctx) {
         return AlertDialog(
           backgroundColor: AppTheme.cardDark,
-          title: Text(widget.isDecoy ? 'Add Personal Document' : 'Secure New Evidence'),
+          title: Text(
+            widget.isDecoy ? 'Add Personal Document' : 'Secure New Evidence',
+          ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: titleController,
                 decoration: InputDecoration(
-                  labelText: widget.isDecoy ? 'Document Title / Note' : 'Evidence Description',
+                  labelText: widget.isDecoy
+                      ? 'Document Title / Note'
+                      : 'Evidence Description',
                 ),
               ),
             ],
@@ -167,7 +183,9 @@ class VaultGridScreen extends StatefulWidget {
 }
 
 class _VaultGridScreenState extends State<VaultGridScreen> {
-  final EvidenceRepository _evidenceRepo = EvidenceRepository(DatabaseService());
+  final EvidenceRepository _evidenceRepo = EvidenceRepository(
+    DatabaseService(),
+  );
   late Future<List<Evidence>> _evidenceFuture;
 
   @override
@@ -237,7 +255,9 @@ class _VaultGridScreenState extends State<VaultGridScreen> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  widget.isDecoy ? 'No personal files saved yet' : 'Forensic Vault is Empty',
+                  widget.isDecoy
+                      ? 'No personal files saved yet'
+                      : 'Forensic Vault is Empty',
                   style: const TextStyle(fontSize: 16, color: Colors.grey),
                 ),
               ],
@@ -251,12 +271,19 @@ class _VaultGridScreenState extends State<VaultGridScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                color: widget.isDecoy ? Colors.grey[900] : AppTheme.deepAmethyst.withValues(alpha: 0.25),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
+                color: widget.isDecoy
+                    ? Colors.grey[900]
+                    : AppTheme.deepAmethyst.withValues(alpha: 0.25),
                 child: Row(
                   children: [
                     Icon(
-                      widget.isDecoy ? Icons.visibility_off_outlined : Icons.verified_user_outlined,
+                      widget.isDecoy
+                          ? Icons.visibility_off_outlined
+                          : Icons.verified_user_outlined,
                       size: 18,
                       color: widget.isDecoy ? Colors.grey : AppTheme.tealLight,
                     ),
@@ -264,11 +291,13 @@ class _VaultGridScreenState extends State<VaultGridScreen> {
                     Expanded(
                       child: Text(
                         widget.isDecoy
-                          ? 'Showing 3 innocent decoy files. Sensitive evidence is completely hidden.'
-                          : 'Encrypted Forensic Storage: Real-time SHA-256 integrity hashing active.',
+                            ? 'Showing 3 innocent decoy files. Sensitive evidence is completely hidden.'
+                            : 'Encrypted Forensic Storage: Real-time SHA-256 integrity hashing active.',
                         style: TextStyle(
                           fontSize: 12,
-                          color: widget.isDecoy ? Colors.grey[400] : AppTheme.textPrimaryDark,
+                          color: widget.isDecoy
+                              ? Colors.grey[400]
+                              : AppTheme.textPrimaryDark,
                         ),
                       ),
                     ),
@@ -287,14 +316,17 @@ class _VaultGridScreenState extends State<VaultGridScreen> {
                   itemCount: items.length,
                   itemBuilder: (context, index) {
                     final item = items[index];
-                    final dateStr = '${item.createdAt.day}/${item.createdAt.month}/${item.createdAt.year}';
+                    final dateStr =
+                        '${item.createdAt.day}/${item.createdAt.month}/${item.createdAt.year}';
 
                     return Card(
                       elevation: 3,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                         side: BorderSide(
-                          color: widget.isDecoy ? Colors.white10 : AppTheme.teal.withValues(alpha: 0.2),
+                          color: widget.isDecoy
+                              ? Colors.white10
+                              : AppTheme.teal.withValues(alpha: 0.2),
                         ),
                       ),
                       child: Padding(
@@ -308,7 +340,9 @@ class _VaultGridScreenState extends State<VaultGridScreen> {
                                 Container(
                                   padding: const EdgeInsets.all(8),
                                   decoration: BoxDecoration(
-                                    color: _getBadgeColor(item.type).withValues(alpha: 0.15),
+                                    color: _getBadgeColor(
+                                      item.type,
+                                    ).withValues(alpha: 0.15),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Icon(
@@ -318,14 +352,21 @@ class _VaultGridScreenState extends State<VaultGridScreen> {
                                   ),
                                 ),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 2,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: Colors.white10,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: Text(
                                     item.type.toUpperCase(),
-                                    style: const TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: Colors.grey),
+                                    style: const TextStyle(
+                                      fontSize: 9,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.grey,
+                                    ),
                                   ),
                                 ),
                               ],
@@ -346,10 +387,17 @@ class _VaultGridScreenState extends State<VaultGridScreen> {
                               children: [
                                 Text(
                                   dateStr,
-                                  style: const TextStyle(color: Colors.grey, fontSize: 11),
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 11,
+                                  ),
                                 ),
                                 if (!widget.isDecoy)
-                                  const Icon(Icons.shield, size: 14, color: AppTheme.tealLight),
+                                  const Icon(
+                                    Icons.shield,
+                                    size: 14,
+                                    color: AppTheme.tealLight,
+                                  ),
                               ],
                             ),
                           ],

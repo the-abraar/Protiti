@@ -98,7 +98,10 @@ class SupportScreen extends StatelessWidget {
                 Expanded(
                   child: Text(
                     name,
-                    style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 IconButton(
@@ -111,12 +114,20 @@ class SupportScreen extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               specialty,
-              style: const TextStyle(fontSize: 12, color: AppTheme.tealLight, fontWeight: FontWeight.w500),
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppTheme.tealLight,
+                fontWeight: FontWeight.w500,
+              ),
             ),
             const SizedBox(height: 8),
             Row(
               children: [
-                const Icon(Icons.location_on_outlined, size: 14, color: Colors.grey),
+                const Icon(
+                  Icons.location_on_outlined,
+                  size: 14,
+                  color: Colors.grey,
+                ),
                 const SizedBox(width: 4),
                 Text(
                   location,
@@ -125,7 +136,11 @@ class SupportScreen extends StatelessWidget {
                 const Spacer(),
                 Text(
                   phone,
-                  style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white70),
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white70,
+                  ),
                 ),
               ],
             ),

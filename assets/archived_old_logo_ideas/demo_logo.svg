@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="shieldGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1282A2" />
+      <stop offset="100%" stop-color="#0A1128" />
+    </linearGradient>
+  </defs>
+  <!-- Background Shield -->
+  <path d="M256 48 C 256 48, 120 90, 80 90 C 80 250, 130 390, 256 464 C 382 390, 432 250, 432 90 C 392 90, 256 48, 256 48 Z" fill="url(#shieldGrad)" />
+  
+  <!-- Vault wheel / inner circle -->
+  <circle cx="256" cy="245" r="100" fill="none" stroke="#FFFFFF" stroke-width="16" opacity="0.9" />
+  
+  <!-- Outer nodes on the vault -->
+  <circle cx="256" cy="145" r="12" fill="#FFC857" />
+  <circle cx="256" cy="345" r="12" fill="#FFC857" />
+  <circle cx="156" cy="245" r="12" fill="#FFC857" />
+  <circle cx="356" cy="245" r="12" fill="#FFC857" />
+  
+  <!-- Inner Keyhole -->
+  <path d="M256 195 C 235 195, 218 212, 218 233 C 218 248, 227 261, 240 267 L 235 305 L 277 305 L 272 267 C 285 261, 294 248, 294 233 C 294 212, 277 195, 256 195 Z" fill="#FFC857" />
+</svg>

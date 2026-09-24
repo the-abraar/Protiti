@@ -75,9 +75,7 @@ class _LockScreenState extends State<LockScreen> {
   void _navigateToVault({required bool isDecoy}) {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(
-        builder: (context) => VaultScreen(isDecoy: isDecoy),
-      ),
+      MaterialPageRoute(builder: (context) => VaultScreen(isDecoy: isDecoy)),
     );
   }
 
@@ -115,10 +113,14 @@ class _LockScreenState extends State<LockScreen> {
               result = _firstOperand! * secondOperand;
               break;
             case '÷':
-              result = secondOperand != 0 ? _firstOperand! / secondOperand : 0.0;
+              result = secondOperand != 0
+                  ? _firstOperand! / secondOperand
+                  : 0.0;
               break;
           }
-          _calcDisplay = result % 1 == 0 ? result.toInt().toString() : result.toStringAsFixed(2);
+          _calcDisplay = result % 1 == 0
+              ? result.toInt().toString()
+              : result.toStringAsFixed(2);
           _firstOperand = null;
           _operator = null;
           _shouldResetCalcDisplay = true;
@@ -144,15 +146,22 @@ class _LockScreenState extends State<LockScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: _isCalculatorMode ? Colors.black : Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: _isCalculatorMode
+          ? Colors.black
+          : Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
           _isCalculatorMode ? 'Calculator' : 'Protiti (প্রতীতি)',
-          style: const TextStyle(fontWeight: FontWeight.w600, letterSpacing: 0.5),
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
+          ),
         ),
         actions: [
           IconButton(
-            tooltip: _isCalculatorMode ? 'Switch to Standard Lock' : 'Enable Calculator Stealth Disguise',
+            tooltip: _isCalculatorMode
+                ? 'Switch to Standard Lock'
+                : 'Enable Calculator Stealth Disguise',
             icon: Icon(
               _isCalculatorMode ? Icons.lock_outline : Icons.calculate_outlined,
               color: AppTheme.warmGold,
@@ -169,7 +178,9 @@ class _LockScreenState extends State<LockScreen> {
         ],
       ),
       body: SafeArea(
-        child: _isCalculatorMode ? _buildCalculatorBody() : _buildStandardLockBody(),
+        child: _isCalculatorMode
+            ? _buildCalculatorBody()
+            : _buildStandardLockBody(),
       ),
     );
   }
@@ -206,10 +217,7 @@ class _LockScreenState extends State<LockScreen> {
           const SizedBox(height: 8),
           Text(
             'Enter security PIN or use biometrics to access records',
-            style: TextStyle(
-              fontSize: 13,
-              color: Colors.grey[400],
-            ),
+            style: TextStyle(fontSize: 13, color: Colors.grey[400]),
           ),
           const SizedBox(height: 20),
 
@@ -238,7 +246,11 @@ class _LockScreenState extends State<LockScreen> {
             const SizedBox(height: 12),
             Text(
               _errorMessage,
-              style: const TextStyle(color: AppTheme.crimson, fontSize: 13, fontWeight: FontWeight.w500),
+              style: const TextStyle(
+                color: AppTheme.crimson,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ],
 
@@ -396,7 +408,9 @@ class _LockScreenState extends State<LockScreen> {
                       : (isTopRow ? Colors.grey[700] : Colors.grey[900]),
                   foregroundColor: Colors.white,
                   shape: isZero
-                      ? RoundedRectangleBorder(borderRadius: BorderRadius.circular(40))
+                      ? RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(40),
+                        )
                       : const CircleBorder(),
                   padding: EdgeInsets.zero,
                   elevation: 0,
@@ -404,7 +418,10 @@ class _LockScreenState extends State<LockScreen> {
                 onPressed: () => _onCalcButtonPress(label),
                 child: Text(
                   label,
-                  style: const TextStyle(fontSize: 26, fontWeight: FontWeight.w400),
+                  style: const TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.w400,
+                  ),
                 ),
               ),
             ),

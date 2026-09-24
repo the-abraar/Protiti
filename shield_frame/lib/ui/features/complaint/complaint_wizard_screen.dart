@@ -39,7 +39,11 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
             child: Row(
               children: [
-                const Icon(Icons.gavel_outlined, color: AppTheme.tealLight, size: 22),
+                const Icon(
+                  Icons.gavel_outlined,
+                  color: AppTheme.tealLight,
+                  size: 22,
+                ),
                 const SizedBox(width: 8),
                 const Text(
                   'Legal GD & Complaint Generator',
@@ -67,7 +71,9 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
               } else {
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
-                    content: Text('Formal GD Complaint packaged and ready for export.'),
+                    content: Text(
+                      'Formal GD Complaint packaged and ready for export.',
+                    ),
                     backgroundColor: AppTheme.deepAmethyst,
                   ),
                 );
@@ -90,7 +96,9 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                         backgroundColor: AppTheme.deepAmethyst,
                       ),
                       onPressed: details.onStepContinue,
-                      child: Text(_currentStep == 2 ? 'Generate & Export GD' : 'Continue'),
+                      child: Text(
+                        _currentStep == 2 ? 'Generate & Export GD' : 'Continue',
+                      ),
                     ),
                     if (_currentStep > 0) ...[
                       const SizedBox(width: 12),
@@ -106,13 +114,16 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
             steps: [
               Step(
                 title: const Text('Incident & Thana Details'),
-                subtitle: const Text('Designate Police Station and incident scope'),
+                subtitle: const Text(
+                  'Designate Police Station and incident scope',
+                ),
                 content: Column(
                   children: [
                     TextField(
                       controller: _stationController,
                       decoration: const InputDecoration(
-                        labelText: 'Jurisdiction Thana / Police Station (e.g. Dhanmondi, Gulshan)',
+                        labelText:
+                            'Jurisdiction Thana / Police Station (e.g. Dhanmondi, Gulshan)',
                         prefixIcon: Icon(Icons.local_police_outlined),
                       ),
                     ),
@@ -120,7 +131,8 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                     TextField(
                       controller: _titleController,
                       decoration: const InputDecoration(
-                        labelText: 'Allegation Title (e.g., Cyber Extortion / Stalking)',
+                        labelText:
+                            'Allegation Title (e.g., Cyber Extortion / Stalking)',
                         prefixIcon: Icon(Icons.report_problem_outlined),
                       ),
                     ),
@@ -136,7 +148,9 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                   ],
                 ),
                 isActive: _currentStep >= 0,
-                state: _currentStep > 0 ? StepState.complete : StepState.indexed,
+                state: _currentStep > 0
+                    ? StepState.complete
+                    : StepState.indexed,
               ),
               Step(
                 title: const Text('Attach Verified Evidence'),
@@ -153,7 +167,11 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                       ),
                       child: Row(
                         children: const [
-                          Icon(Icons.check_circle, color: AppTheme.tealLight, size: 20),
+                          Icon(
+                            Icons.check_circle,
+                            color: AppTheme.tealLight,
+                            size: 20,
+                          ),
                           SizedBox(width: 8),
                           Expanded(
                             child: Text(
@@ -166,7 +184,9 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                     ),
                     const SizedBox(height: 12),
                     ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(backgroundColor: AppTheme.teal),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.teal,
+                      ),
                       onPressed: () {},
                       icon: const Icon(Icons.add_photo_alternate_outlined),
                       label: const Text('Select Additional Evidence'),
@@ -174,7 +194,9 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                   ],
                 ),
                 isActive: _currentStep >= 1,
-                state: _currentStep > 1 ? StepState.complete : StepState.indexed,
+                state: _currentStep > 1
+                    ? StepState.complete
+                    : StepState.indexed,
               ),
               Step(
                 title: const Text('Legal Review & Police Format'),
@@ -184,14 +206,20 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                   decoration: BoxDecoration(
                     color: AppTheme.cardDark,
                     borderRadius: BorderRadius.circular(10),
-                    border: Border.all(color: AppTheme.warmGold.withValues(alpha: 0.4)),
+                    border: Border.all(
+                      color: AppTheme.warmGold.withValues(alpha: 0.4),
+                    ),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: const [
                       Text(
                         'General Diary Format (সাধারণ ডায়েরি):',
-                        style: TextStyle(fontWeight: FontWeight.bold, color: AppTheme.warmGold, fontSize: 13),
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.warmGold,
+                          fontSize: 13,
+                        ),
                       ),
                       SizedBox(height: 8),
                       Text(
@@ -221,7 +249,11 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
         children: [
           Row(
             children: const [
-              Icon(Icons.note_alt_outlined, color: AppTheme.tealLight, size: 24),
+              Icon(
+                Icons.note_alt_outlined,
+                color: AppTheme.tealLight,
+                size: 24,
+              ),
               SizedBox(width: 8),
               Text(
                 'Personal Study Notes & Outlines',

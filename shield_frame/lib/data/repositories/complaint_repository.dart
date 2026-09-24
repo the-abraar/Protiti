@@ -24,7 +24,10 @@ class ComplaintRepository {
 
   Future<List<Complaint>> getAllComplaints() async {
     final db = await dbService.database;
-    final List<Map<String, dynamic>> maps = await db.query('complaints', orderBy: 'createdAt DESC');
+    final List<Map<String, dynamic>> maps = await db.query(
+      'complaints',
+      orderBy: 'createdAt DESC',
+    );
     return maps.map((c) {
       List<String> evIds = [];
       try {

@@ -31,7 +31,7 @@ class DatabaseService {
   Future<Database> _initDb() async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, 'protiti_vault.db');
-    
+
     // Obtain secure key from hardware-backed keystore
     final dbKey = await getOrGenerateDbKey();
 
@@ -49,7 +49,9 @@ class DatabaseService {
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
           try {
-            await db.execute('ALTER TABLE evidence ADD COLUMN isDecoy INTEGER DEFAULT 0');
+            await db.execute(
+              'ALTER TABLE evidence ADD COLUMN isDecoy INTEGER DEFAULT 0',
+            );
           } catch (_) {}
         }
       },
@@ -57,8 +59,7 @@ class DatabaseService {
   }
 
   Future<void> _createTables(Database db) async {
-    await db.execute(
-      '''CREATE TABLE IF NOT EXISTS evidence (
+    await db.execute('''CREATE TABLE IF NOT EXISTS evidence (
         id TEXT PRIMARY KEY,
         type TEXT,
         filePath TEXT,
@@ -67,10 +68,8 @@ class DatabaseService {
         metadata TEXT,
         createdAt TEXT,
         isDecoy INTEGER DEFAULT 0
-      )''',
-    );
-    await db.execute(
-      '''CREATE TABLE IF NOT EXISTS complaints (
+      )''');
+    await db.execute('''CREATE TABLE IF NOT EXISTS complaints (
         id TEXT PRIMARY KEY,
         type TEXT,
         title TEXT,
@@ -80,18 +79,15 @@ class DatabaseService {
         targetPoliceStation TEXT,
         status TEXT,
         createdAt TEXT
-      )''',
-    );
-    await db.execute(
-      '''CREATE TABLE IF NOT EXISTS contacts (
+      )''');
+    await db.execute('''CREATE TABLE IF NOT EXISTS contacts (
         id TEXT PRIMARY KEY,
         name TEXT,
         phone TEXT,
         email TEXT,
         relationship TEXT,
         isEmergency INTEGER DEFAULT 1
-      )''',
-    );
+      )''');
   }
 
   Future<void> _seedInitialData(Database db) async {
@@ -102,8 +98,12 @@ class DatabaseService {
       'type': 'screenshot',
       'filePath': null,
       'url': null,
-      'description': 'Threatening WhatsApp chat from perpetrator with time-stamped extortion demand',
-      'metadata': jsonEncode({'source': 'WhatsApp', 'hash': 'sha256_mock_a8f9c1'}),
+      'description':
+          'Threatening WhatsApp chat from perpetrator with time-stamped extortion demand',
+      'metadata': jsonEncode({
+        'source': 'WhatsApp',
+        'hash': 'sha256_mock_a8f9c1',
+      }),
       'createdAt': now.subtract(const Duration(days: 1)).toIso8601String(),
       'isDecoy': 0,
     });
@@ -112,7 +112,8 @@ class DatabaseService {
       'type': 'audio',
       'filePath': null,
       'url': null,
-      'description': 'Recorded audio harassment call with explicit death threat and location stalking',
+      'description':
+          'Recorded audio harassment call with explicit death threat and location stalking',
       'metadata': jsonEncode({'durationSeconds': 94, 'codec': 'm4a'}),
       'createdAt': now.subtract(const Duration(days: 3)).toIso8601String(),
       'isDecoy': 0,
@@ -122,7 +123,8 @@ class DatabaseService {
       'type': 'pdf',
       'filePath': null,
       'url': null,
-      'description': 'Certified cyber incident log export documenting unauthorized login attempts',
+      'description':
+          'Certified cyber incident log export documenting unauthorized login attempts',
       'metadata': jsonEncode({'pages': 3, 'format': 'pdf'}),
       'createdAt': now.subtract(const Duration(days: 5)).toIso8601String(),
       'isDecoy': 0,

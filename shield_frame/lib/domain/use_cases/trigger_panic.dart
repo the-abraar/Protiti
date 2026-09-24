@@ -29,10 +29,7 @@ class TriggerPanicUseCase {
   final LocationService locationService;
   final ContactRepository? contactRepository;
 
-  TriggerPanicUseCase(
-    this.locationService, {
-    this.contactRepository,
-  });
+  TriggerPanicUseCase(this.locationService, {this.contactRepository});
 
   /// Executes offline panic sequence:
   /// 1. Obtains GPS coordinates with offline tolerance.
@@ -51,7 +48,8 @@ class TriggerPanicUseCase {
       if (pos != null) {
         lat = pos.latitude;
         lng = pos.longitude;
-        locationStr = 'https://maps.google.com/?q=${lat.toStringAsFixed(6)},${lng.toStringAsFixed(6)} (${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)})';
+        locationStr =
+            'https://maps.google.com/?q=${lat.toStringAsFixed(6)},${lng.toStringAsFixed(6)} (${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)})';
       } else {
         locationStr = 'GPS location unavailable (Offline/Indoor)';
       }
@@ -64,7 +62,10 @@ class TriggerPanicUseCase {
     if (contactRepository != null) {
       try {
         final contacts = await contactRepository!.getEmergencyContacts();
-        recipientNumbers = contacts.map((c) => c.phone).where((p) => p.isNotEmpty).toList();
+        recipientNumbers = contacts
+            .map((c) => c.phone)
+            .where((p) => p.isNotEmpty)
+            .toList();
       } catch (_) {}
     }
 
@@ -74,7 +75,8 @@ class TriggerPanicUseCase {
     }
 
     // 3. Construct High-Priority SMS Payload
-    final message = 'EMERGENCY SOS [Protiti]: I need urgent help! My location: $locationStr at ${timestamp.hour.toString().padLeft(2, '0')}:${timestamp.minute.toString().padLeft(2, '0')} (BD Time). Please send assistance immediately.';
+    final message =
+        'EMERGENCY SOS [Protiti]: I need urgent help! My location: $locationStr at ${timestamp.hour.toString().padLeft(2, '0')}:${timestamp.minute.toString().padLeft(2, '0')} (BD Time). Please send assistance immediately.';
 
     // 4. Dispatch via SMS URI Scheme (operates on 2G/GSM control channel, zero mobile data required)
     String dispatchMethod = 'sms';
@@ -94,14 +96,18 @@ class TriggerPanicUseCase {
         dispatchSuccess = true;
       } else {
         // Fallback to generic share sheet
-        await SharePlus.instance.share(ShareParams(text: message, subject: 'EMERGENCY SOS [Protiti]'));
+        await SharePlus.instance.share(
+          ShareParams(text: message, subject: 'EMERGENCY SOS [Protiti]'),
+        );
         dispatchSuccess = true;
         dispatchMethod = 'share_fallback';
       }
     } catch (_) {
       // Last-resort fallback to SharePlus
       try {
-        await SharePlus.instance.share(ShareParams(text: message, subject: 'EMERGENCY SOS [Protiti]'));
+        await SharePlus.instance.share(
+          ShareParams(text: message, subject: 'EMERGENCY SOS [Protiti]'),
+        );
         dispatchSuccess = true;
         dispatchMethod = 'share_fallback';
       } catch (_) {
