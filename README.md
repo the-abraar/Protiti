@@ -10,9 +10,9 @@ A Digital Evidence Vault app designed for women facing online harassment in Bang
 
 ### Core Features
 
-- **📦 Secure Evidence Vault** — Biometric-locked, encrypted storage with auto-metadata extraction
-- **📝 GD-Automator** — Generates legally-formatted General Diary complaints mapped to Bangladesh Cyber Security Act
-- **🚨 Panic Frame** — One-touch emergency alert with GPS location + evidence pack to trusted contacts
+- **📦 Secure Evidence Vault** — Biometric-locked, encrypted storage with a **Duress PIN (Decoy Vault)** for physical coercion scenarios
+- **📝 GD-Automator** — Maps data to the **Cyber Protection Act 2026** and designed for direct **Bangladesh Police e-GD API** integration
+- **🚨 Panic Frame** — Offline-first SOS alert with SMS fallback for low-connectivity environments
 - **🤝 Support Bridge** — Curated directory of pro-bono lawyers and mental health counselors
 
 ### Tech Stack
