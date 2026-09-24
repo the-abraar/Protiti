@@ -37,7 +37,7 @@
 *Providing a frame of safety to structure the path to justice.*
 
 - **Secure Evidence Vault:** On-device encrypted SQLCipher storage with Duress PIN (Decoy Vault) for physical coercion scenarios.
-- **GD-Automator:** Simple Q&A interface that maps data to Bangladesh Police Online e-GD portal schema (`gd.police.gov.bd`) in Bengali and English.
+- **GD-Automator:** Simple Q&A interface powered by TypeSafe's **Jev "System One" AI** that instantly classifies and maps data to the Bangladesh Police Online e-GD portal schema (`gd.police.gov.bd`).
 - **Panic Frame:** Offline-first SOS alert with lightweight SMS coordinates and direct 999/PCSW emergency links.
 - **Support Bridge:** A curated network connecting victims with vetted pro-bono lawyers (BNWLA, BLAST) and mental health counselors.
 
@@ -63,6 +63,7 @@
 
 - **Zero-Knowledge Security:** End-to-end encryption with local SQLCipher on-device storage.
 - **Disguise Mode & Duress PIN:** Dual-PIN authentication opening a benign Decoy Vault under coercion, plus stealth calculator mask.
+- **System One AI (Jev):** Utilizes the ultra-fast, hallucination-free Jev AI to score threat severity and automate incident classification in milliseconds.
 - **Legal Logic Engine:** Mapped directly to the **Cyber Protection Act, 2026** and **Evidence (Amendment) Act, 2022** (Section 65B Certificate of Authenticity generation).
 - **Localized Police Routing:** Division-specific Thana locator and direct Police Cyber Support for Women (PCSW) hotline (`01320000888`).
 - **Resilience:** Offline-first architecture ensures the vault, GD drafting, and SMS SOS dispatch work without active mobile internet.

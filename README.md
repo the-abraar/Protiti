@@ -12,7 +12,7 @@ A Digital Evidence Vault app designed for women facing online harassment in Bang
 ### Core Features
 
 - **📦 Secure Evidence Vault** — Biometric-locked, encrypted storage with a **Duress PIN (Decoy Vault)** for physical coercion scenarios
-- **📝 GD-Automator** — Maps data to the **Cyber Protection Act 2026** and designed for direct **Bangladesh Police e-GD API** integration
+- **📝 GD-Automator** — Uses TypeSafe's "Jev" AI to map data to the **Cyber Protection Act 2026** and designed for direct **Bangladesh Police e-GD API** integration
 - **🚨 Panic Frame** — Offline-first SOS alert with SMS fallback for low-connectivity environments
 - **🤝 Support Bridge** — Curated directory of pro-bono lawyers and mental health counselors
 
@@ -21,6 +21,7 @@ A Digital Evidence Vault app designed for women facing online harassment in Bang
 - **Framework:** Flutter + Dart
 - **Architecture:** MVVM (Model-View-ViewModel)
 - **Database:** SQLite with SQLCipher encryption
+- **AI Engine:** TypeSafe AI "Jev" (System One) for fast, hallucination-free legal triage
 - **Auth:** Biometric (fingerprint/face) + PIN
 - **Security:** AES-256 encryption, SHA-256 evidence hashing, app disguise mode
 

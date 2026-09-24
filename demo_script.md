@@ -17,7 +17,7 @@
 ## 📝 GD-Automator & Police Integration (0:45 - 1:15)
 **Action:** Tap the 'Report' tab. Click through the stepper wizard.
 **Script:** 
-> "When the user is ready to report, they don't have to navigate complex legal jargon. Our GD-Automator asks simple questions and maps the incident directly to the new **Cyber Protection Act 2026**. Rather than just printing a PDF that a local officer might reject, our data architecture is designed to integrate directly with the Bangladesh Police's official **e-GD API**, bridging the gap between victim and law enforcement."
+> "When the user is ready to report, they don't have to navigate complex legal jargon. Our GD-Automator uses the ultra-fast **Jev 'System One' AI** to instantly classify the incident and map it directly to the new **Cyber Protection Act 2026**. Rather than just printing a PDF that a local officer might reject, our data architecture is designed to integrate directly with the Bangladesh Police's official **e-GD API**, bridging the gap between victim and law enforcement."
 
 ## 🚨 Offline-First Panic Button (1:15 - 1:40)
 **Action:** Tap the 'Panic' tab. Show the pulsating SOS button.
