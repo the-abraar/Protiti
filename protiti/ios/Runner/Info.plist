@@ -2,6 +2,19 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Protiti uses Face ID to securely unlock your Forensic Vault.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Protiti needs your location to send emergency SOS coordinates.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Protiti uses the camera to securely capture evidence.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Protiti accesses photos to attach screenshot evidence.</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>sms</string>
+		<string>tel</string>
+	</array>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>CFBundleDevelopmentRegion</key>
