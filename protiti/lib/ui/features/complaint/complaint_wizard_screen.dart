@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:async';
+import 'dart:io';
+import 'package:printing/printing.dart';
 import '../../../domain/use_cases/generate_complaint.dart';
 import '../../core/theme/app_theme.dart';
 
@@ -24,7 +26,7 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
   void initState() {
     super.initState();
     _loadSecureDraft();
-    
+
     // Auto-save listeners
     _titleController.addListener(_saveSecureDraft);
     _descController.addListener(_saveSecureDraft);
@@ -32,23 +34,32 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
   }
 
   Future<void> _loadSecureDraft() async {
-    if (widget.isDecoy) return; // Do not load GD drafts into the decoy notes!
-    
+    if (widget.isDecoy) {
+      _titleController.text =
+          await _storage.read(key: 'decoy_draft_title') ?? '';
+      _descController.text = await _storage.read(key: 'decoy_draft_desc') ?? '';
+      return;
+    }
+
     _titleController.text = await _storage.read(key: 'gd_draft_title') ?? '';
     _descController.text = await _storage.read(key: 'gd_draft_desc') ?? '';
-    _stationController.text = await _storage.read(key: 'gd_draft_station') ?? '';
+    _stationController.text =
+        await _storage.read(key: 'gd_draft_station') ?? '';
   }
 
   Timer? _debounce;
 
   void _saveSecureDraft() {
-    if (widget.isDecoy) return;
-    
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
-      _storage.write(key: 'gd_draft_title', value: _titleController.text);
-      _storage.write(key: 'gd_draft_desc', value: _descController.text);
-      _storage.write(key: 'gd_draft_station', value: _stationController.text);
+      if (widget.isDecoy) {
+        _storage.write(key: 'decoy_draft_title', value: _titleController.text);
+        _storage.write(key: 'decoy_draft_desc', value: _descController.text);
+      } else {
+        _storage.write(key: 'gd_draft_title', value: _titleController.text);
+        _storage.write(key: 'gd_draft_desc', value: _descController.text);
+        _storage.write(key: 'gd_draft_station', value: _stationController.text);
+      }
     });
   }
 
@@ -63,24 +74,31 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
 
   Future<void> _generateAndExportPDF() async {
     final useCase = GenerateComplaintUseCase();
-    
+
     final path = await useCase.execute(
       [], // Empty list for now until evidence provider is explicitly linked here
       {
         'title': _titleController.text,
         'description': _descController.text,
         'station': _stationController.text,
-      }
+      },
     );
-    
+
     if (!mounted) return;
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Success! GD PDF saved at: $path'),
-        backgroundColor: Colors.green,
-      ),
-    );
+
+    // Use printing package to present the PDF for native export/sharing
+    try {
+      final file = File(path);
+      final bytes = await file.readAsBytes();
+      await Printing.sharePdf(bytes: bytes, filename: 'GD_Complaint.pdf');
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Failed to export PDF: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override
@@ -328,22 +346,24 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
             style: TextStyle(fontSize: 13, color: Colors.grey[400]),
           ),
           const SizedBox(height: 20),
-          const TextField(
+          TextField(
+            controller: _titleController,
             autocorrect: false,
             enableSuggestions: false,
             keyboardType: TextInputType.visiblePassword,
-            decoration: InputDecoration(
+            decoration: const InputDecoration(
               labelText: 'Topic / Note Title',
               prefixIcon: Icon(Icons.title),
             ),
           ),
           const SizedBox(height: 16),
-          const Expanded(
+          Expanded(
             child: TextField(
+              controller: _descController,
               autocorrect: false,
               enableSuggestions: false,
               keyboardType: TextInputType.visiblePassword,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Note Content...',
                 alignLabelWithHint: true,
               ),

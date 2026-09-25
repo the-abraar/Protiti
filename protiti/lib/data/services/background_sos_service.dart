@@ -9,6 +9,7 @@ import '../repositories/contact_repository.dart';
 import 'database_service.dart';
 import 'geofence_service.dart';
 import 'secure_audio_service.dart';
+import 'package:hardware_sos/hardware_sos.dart' as hardware_sos;
 
 class BackgroundSosService {
   static Future<void> initializeService() async {
@@ -49,7 +50,15 @@ class BackgroundSosService {
     final geofenceService = GeofenceService(triggerPanic);
     geofenceService.startGeofenceMonitoring();
     
+    final hardwareSos = hardware_sos.HardwareSos();
+    final hardwareSosSubscription = hardwareSos.sosEvents.listen((event) async {
+      if (event == "sos_triggered") {
+        await triggerPanic.execute();
+      }
+    });
+    
     service.on('stopService').listen((event) {
+      hardwareSosSubscription.cancel();
       shakeService.stopListening();
       geofenceService.stopGeofenceMonitoring();
       service.stopSelf();
