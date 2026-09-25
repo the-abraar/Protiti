@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:async';
+import '../../../domain/use_cases/generate_complaint.dart';
 import '../../core/theme/app_theme.dart';
 
 class ComplaintWizardScreen extends StatefulWidget {
@@ -15,13 +18,69 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descController = TextEditingController();
   final TextEditingController _stationController = TextEditingController();
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSecureDraft();
+    
+    // Auto-save listeners
+    _titleController.addListener(_saveSecureDraft);
+    _descController.addListener(_saveSecureDraft);
+    _stationController.addListener(_saveSecureDraft);
+  }
+
+  Future<void> _loadSecureDraft() async {
+    if (widget.isDecoy) return; // Do not load GD drafts into the decoy notes!
+    
+    _titleController.text = await _storage.read(key: 'gd_draft_title') ?? '';
+    _descController.text = await _storage.read(key: 'gd_draft_desc') ?? '';
+    _stationController.text = await _storage.read(key: 'gd_draft_station') ?? '';
+  }
+
+  Timer? _debounce;
+
+  void _saveSecureDraft() {
+    if (widget.isDecoy) return;
+    
+    if (_debounce?.isActive ?? false) _debounce!.cancel();
+    _debounce = Timer(const Duration(milliseconds: 500), () {
+      _storage.write(key: 'gd_draft_title', value: _titleController.text);
+      _storage.write(key: 'gd_draft_desc', value: _descController.text);
+      _storage.write(key: 'gd_draft_station', value: _stationController.text);
+    });
+  }
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _titleController.dispose();
     _descController.dispose();
     _stationController.dispose();
     super.dispose();
+  }
+
+  Future<void> _generateAndExportPDF() async {
+    final useCase = GenerateComplaintUseCase();
+    
+    final path = await useCase.execute(
+      [], // Empty list for now until evidence provider is explicitly linked here
+      {
+        'title': _titleController.text,
+        'description': _descController.text,
+        'station': _stationController.text,
+      }
+    );
+    
+    if (!mounted) return;
+    
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Success! GD PDF saved at: $path'),
+        backgroundColor: Colors.green,
+      ),
+    );
   }
 
   @override
@@ -69,14 +128,7 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                   _currentStep += 1;
                 });
               } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text(
-                      'Formal GD Complaint packaged and ready for export.',
-                    ),
-                    backgroundColor: AppTheme.deepAmethyst,
-                  ),
-                );
+                _generateAndExportPDF();
               }
             },
             onStepCancel: () {
@@ -121,6 +173,9 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                   children: [
                     TextField(
                       controller: _stationController,
+                      autocorrect: false,
+                      enableSuggestions: false,
+                      keyboardType: TextInputType.visiblePassword,
                       decoration: const InputDecoration(
                         labelText:
                             'Jurisdiction Thana / Police Station (e.g. Dhanmondi, Gulshan)',
@@ -130,6 +185,9 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                     const SizedBox(height: 12),
                     TextField(
                       controller: _titleController,
+                      autocorrect: false,
+                      enableSuggestions: false,
+                      keyboardType: TextInputType.visiblePassword,
                       decoration: const InputDecoration(
                         labelText:
                             'Allegation Title (e.g., Cyber Extortion / Stalking)',
@@ -139,6 +197,9 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                     const SizedBox(height: 12),
                     TextField(
                       controller: _descController,
+                      autocorrect: false,
+                      enableSuggestions: false,
+                      keyboardType: TextInputType.visiblePassword,
                       decoration: const InputDecoration(
                         labelText: 'Chronological Description of Incident',
                         alignLabelWithHint: true,
@@ -268,6 +329,9 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
           ),
           const SizedBox(height: 20),
           const TextField(
+            autocorrect: false,
+            enableSuggestions: false,
+            keyboardType: TextInputType.visiblePassword,
             decoration: InputDecoration(
               labelText: 'Topic / Note Title',
               prefixIcon: Icon(Icons.title),
@@ -276,6 +340,9 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
           const SizedBox(height: 16),
           const Expanded(
             child: TextField(
+              autocorrect: false,
+              enableSuggestions: false,
+              keyboardType: TextInputType.visiblePassword,
               decoration: InputDecoration(
                 labelText: 'Note Content...',
                 alignLabelWithHint: true,
