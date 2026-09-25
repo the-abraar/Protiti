@@ -1,8 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
 import '../../../data/services/auth_service.dart';
 import '../../core/theme/app_theme.dart';
 import '../vault/vault_screen.dart';
+import '../vault/vault_provider.dart';
+import '../../../data/repositories/evidence_repository.dart';
+import '../../../data/services/database_service.dart';
+import 'package:provider/provider.dart';
+import '../../../data/services/wipe_service.dart';
+import '../../../data/services/threat_detection_service.dart';
+import '../../../data/services/camouflage_service.dart';
+import '../../../data/services/alibi_service.dart';
+import 'thermal_decoy_screen.dart';
 
 class LockScreen extends StatefulWidget {
   const LockScreen({super.key});
@@ -16,6 +26,9 @@ class _LockScreenState extends State<LockScreen> {
   bool _isCalculatorMode = false;
   String _enteredPin = '';
   String _errorMessage = '';
+  bool _isCompromised = false;
+  int _crashTapCount = 0;
+  bool _isBiometricLocked = false;
 
   // Calculator disguise state
   String _calcDisplay = '0';
@@ -23,9 +36,30 @@ class _LockScreenState extends State<LockScreen> {
   String? _operator;
   bool _shouldResetCalcDisplay = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _scanThreats();
+    _checkBiometricStatus();
+  }
+
+  Future<void> _checkBiometricStatus() async {
+    final locked = await _authService.isBiometricHardLocked();
+    if (mounted) {
+      setState(() => _isBiometricLocked = locked);
+    }
+  }
+
+  Future<void> _scanThreats() async {
+    final compromised = await ThreatDetectionService.isDeviceCompromised();
+    if (mounted) {
+      setState(() => _isCompromised = compromised);
+    }
+  }
+
   void _onNumberTap(String number) {
     if (_enteredPin.length < 4) {
-      HapticFeedback.lightImpact();
+      // HapticFeedback removed for tactical privacy
       setState(() {
         _errorMessage = '';
         _enteredPin += number;
@@ -39,7 +73,7 @@ class _LockScreenState extends State<LockScreen> {
 
   void _onBackspace() {
     if (_enteredPin.isNotEmpty) {
-      HapticFeedback.selectionClick();
+      // HapticFeedback removed for tactical privacy
       setState(() {
         _errorMessage = '';
         _enteredPin = _enteredPin.substring(0, _enteredPin.length - 1);
@@ -51,7 +85,31 @@ class _LockScreenState extends State<LockScreen> {
     final status = await _authService.verifyPin(pin);
     if (!mounted) return;
 
-    if (status == AuthStatus.authenticatedReal) {
+    if (status == AuthStatus.lockedOut) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+           const SnackBar(
+            content: Text('Maximum attempts exceeded. Vault locked for 15 minutes.'),
+            backgroundColor: Colors.red,
+          )
+        );
+        setState(() {
+          _enteredPin = '';
+          _errorMessage = '';
+        });
+      }
+    } else if (status == AuthStatus.wiped) {
+      await WipeService.executeNuclearWipe();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Critical Error: Application Data Corrupted. Resetting...'),
+            backgroundColor: Colors.red,
+          )
+        );
+        Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+      }
+    } else if (status == AuthStatus.authenticatedReal) {
       _navigateToVault(isDecoy: false);
     } else if (status == AuthStatus.authenticatedDuress) {
       // Duress PIN entered: Quietly load harmless decoy vault
@@ -75,7 +133,15 @@ class _LockScreenState extends State<LockScreen> {
   void _navigateToVault({required bool isDecoy}) {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => VaultScreen(isDecoy: isDecoy)),
+      MaterialPageRoute(
+        builder: (context) => ChangeNotifierProvider(
+          create: (_) => VaultProvider(
+            EvidenceRepository(DatabaseService()),
+            isDecoy: isDecoy,
+          ),
+          child: VaultScreen(isDecoy: isDecoy),
+        ),
+      ),
     );
   }
 
@@ -166,21 +232,46 @@ class _LockScreenState extends State<LockScreen> {
               _isCalculatorMode ? Icons.lock_outline : Icons.calculate_outlined,
               color: AppTheme.warmGold,
             ),
-            onPressed: () {
+            onPressed: () async {
               setState(() {
                 _isCalculatorMode = !_isCalculatorMode;
                 _enteredPin = '';
                 _errorMessage = '';
                 _calcDisplay = '0';
               });
+              if (_isCalculatorMode) {
+                await CamouflageService.enableCalculatorDisguise();
+              } else {
+                await CamouflageService.restoreOriginalIdentity();
+              }
             },
           ),
         ],
       ),
-      body: SafeArea(
-        child: _isCalculatorMode
-            ? _buildCalculatorBody()
-            : _buildStandardLockBody(),
+      body: Stack(
+        children: [
+          SafeArea(
+            child: _isCalculatorMode
+                ? _buildCalculatorBody()
+                : _buildStandardLockBody(),
+          ),
+          Positioned(
+            bottom: 20,
+            left: 20,
+            child: GestureDetector(
+              onDoubleTap: () {
+                // Silently trigger the alibi. No UI feedback is given.
+                // In exactly 15 seconds, a native phone call will ring.
+                AlibiService.scheduleFakeCall(delaySeconds: 15);
+              },
+              child: Container(
+                width: 50,
+                height: 50,
+                color: Colors.transparent, // Completely invisible trigger zone
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -206,20 +297,74 @@ class _LockScreenState extends State<LockScreen> {
             ),
           ),
           const SizedBox(height: 16),
-          const Text(
-            'Forensic Vault Authentication',
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppTheme.textPrimaryDark,
+          GestureDetector(
+            onTap: () {
+              _crashTapCount++;
+              
+              if (_crashTapCount >= 5) {
+                // Force an immediate native process termination.
+                // To the OS and the abuser, this looks like a hard, unrecoverable crash.
+                SystemChannels.platform.invokeMethod('SystemNavigator.pop');
+              }
+              
+              // Reset the counter if the user stops tapping
+              Future.delayed(const Duration(seconds: 2), () {
+                if (mounted) {
+                  setState(() {
+                    _crashTapCount = 0;
+                  });
+                }
+              });
+            },
+            onLongPress: () async {
+              // 1. Permanently disable FaceID for the next launch
+              await _authService.enforcePinHardLock();
+              
+              // 2. Trigger the thermal decoy
+              if (!mounted) return;
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const ThermalDecoyScreen()),
+              );
+            },
+            child: Text(
+              AppLocalizations.of(context)!.vaultAuthTitle,
+              style: const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.textPrimaryDark,
+              ),
             ),
           ),
           const SizedBox(height: 8),
           Text(
-            'Enter security PIN or use biometrics to access records',
+            AppLocalizations.of(context)!.vaultAuthSubtitle,
             style: TextStyle(fontSize: 13, color: Colors.grey[400]),
           ),
           const SizedBox(height: 20),
+          
+          if (_isCompromised)
+            Container(
+              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.red.withValues(alpha: 0.2),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: Colors.red),
+              ),
+              child: Row(
+                children: const [
+                  Icon(Icons.gpp_bad, color: Colors.red),
+                  SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'WARNING: Device OS Compromised (Rooted). Encrypted data may be vulnerable to stalkerware.',
+                      style: TextStyle(color: Colors.redAccent, fontSize: 12),
+                    ),
+                  ),
+                ],
+              ),
+            ),
 
           // PIN Indicators (4 dots)
           Row(
@@ -271,11 +416,14 @@ class _LockScreenState extends State<LockScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     // Biometric Button
-                    _buildActionButton(
-                      icon: Icons.fingerprint,
-                      onTap: _authenticateBiometric,
-                      tooltip: 'Biometric Unlock',
-                    ),
+                    if (!_isBiometricLocked)
+                      _buildActionButton(
+                        icon: Icons.fingerprint,
+                        onTap: _authenticateBiometric,
+                        tooltip: 'Biometric Unlock',
+                      )
+                    else
+                      const SizedBox(width: 72, height: 72),
                     _buildNumberButton('0'),
                     // Backspace Button
                     _buildActionButton(
@@ -306,6 +454,9 @@ class _LockScreenState extends State<LockScreen> {
 
   Widget _buildNumberButton(String digit) {
     return InkWell(
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      enableFeedback: false,
       onTap: () => _onNumberTap(digit),
       borderRadius: BorderRadius.circular(40),
       child: Container(
@@ -335,6 +486,9 @@ class _LockScreenState extends State<LockScreen> {
     required String tooltip,
   }) {
     return InkWell(
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      enableFeedback: false,
       onTap: onTap,
       borderRadius: BorderRadius.circular(40),
       child: Container(
