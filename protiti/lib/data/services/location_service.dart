@@ -22,6 +22,18 @@ class LocationService {
       return null;
     }
 
-    return await Geolocator.getCurrentPosition();
+    try {
+      // Enforce a strict 4-second timeout for emergency scenarios
+      return await Geolocator.getCurrentPosition().timeout(
+        const Duration(seconds: 4),
+        onTimeout: () {
+          throw Exception('Location fetch timed out');
+        },
+      );
+    } catch (e) {
+      // Gracefully return null if GPS hangs, allowing the SOS SMS to 
+      // dispatch immediately with a "Location unavailable" fallback string.
+      return null;
+    }
   }
 }

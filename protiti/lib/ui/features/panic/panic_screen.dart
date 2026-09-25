@@ -6,6 +6,10 @@ import '../../../data/services/location_service.dart';
 import '../../../data/services/database_service.dart';
 import '../../../data/repositories/contact_repository.dart';
 import '../../../domain/use_cases/trigger_panic.dart';
+import '../../../data/services/secure_audio_service.dart';
+import '../../../data/services/flashlight_sos_service.dart';
+import '../../../data/services/acoustic_deterrent_service.dart';
+import 'strobe_screen.dart';
 
 class PanicScreen extends StatefulWidget {
   final bool isDecoy;
@@ -26,6 +30,10 @@ class _PanicScreenState extends State<PanicScreen>
   bool _isTriggered = false;
   bool _isDispatching = false;
   PanicResult? _lastResult;
+  final FlashlightSosService _flashlightService = FlashlightSosService();
+  bool _isVisualSosActive = false;
+  final AcousticDeterrentService _sirenService = AcousticDeterrentService();
+  bool _isSirenActive = false;
 
   @override
   void initState() {
@@ -33,6 +41,7 @@ class _PanicScreenState extends State<PanicScreen>
     _panicUseCase = TriggerPanicUseCase(
       LocationService(),
       contactRepository: ContactRepository(DatabaseService()),
+      audioService: SecureAudioService(),
     );
 
     // Continuous pulse animation for SOS visibility
@@ -56,6 +65,8 @@ class _PanicScreenState extends State<PanicScreen>
 
   @override
   void dispose() {
+    _flashlightService.stopVisualSos();
+    _sirenService.stopSiren();
     _pulseController.dispose();
     _holdController.dispose();
     super.dispose();
@@ -171,6 +182,89 @@ class _PanicScreenState extends State<PanicScreen>
           // Central SOS Hold Button with Progress Ring
           _buildHoldButton(),
 
+          const SizedBox(height: 40),
+          
+          ElevatedButton.icon(
+            icon: Icon(
+              _isVisualSosActive ? Icons.flashlight_off : Icons.flashlight_on, 
+              color: Colors.white
+            ),
+            label: Text(
+              _isVisualSosActive ? 'STOP VISUAL SOS' : 'ACTIVATE VISUAL SOS',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _isVisualSosActive ? Colors.red : Colors.orange,
+            ),
+            onPressed: () {
+              setState(() {
+                _isVisualSosActive = !_isVisualSosActive;
+              });
+              if (_isVisualSosActive) {
+                _flashlightService.startVisualSos();
+              } else {
+                _flashlightService.stopVisualSos();
+              }
+            },
+          ),
+          const SizedBox(height: 20),
+
+          OutlinedButton.icon(
+            icon: const Icon(Icons.phone_in_talk, color: Colors.redAccent),
+            label: const Text(
+              'CALL 999 NOW',
+              style: TextStyle(color: Colors.redAccent, fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            style: OutlinedButton.styleFrom(
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+              side: const BorderSide(color: Colors.redAccent, width: 2),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(30),
+              ),
+            ),
+            onPressed: () {
+              // Instantly trigger the native phone dialer intent
+              _panicUseCase.launchEmergencyCall();
+            },
+          ),
+          
+          const SizedBox(height: 20),
+          ElevatedButton.icon(
+            icon: Icon(
+              _isSirenActive ? Icons.volume_off : Icons.volume_up, 
+              color: Colors.white
+            ),
+            label: Text(
+              _isSirenActive ? 'STOP SIREN ALARM' : 'TRIGGER SIREN ALARM',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: _isSirenActive ? Colors.red : Colors.yellow[800],
+            ),
+            onPressed: () {
+              setState(() {
+                _isSirenActive = !_isSirenActive;
+              });
+              
+              if (_isSirenActive) {
+                _sirenService.triggerLoudSiren();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const StrobeScreen()),
+                ).then((_) {
+                  _sirenService.stopSiren();
+                  if (mounted) {
+                    setState(() {
+                      _isSirenActive = false;
+                    });
+                  }
+                });
+              } else {
+                _sirenService.stopSiren();
+              }
+            },
+          ),
+
           const SizedBox(height: 32),
 
           // Instructions / Status Text
@@ -215,10 +309,13 @@ class _PanicScreenState extends State<PanicScreen>
   }
 
   Widget _buildHoldButton() {
-    return GestureDetector(
-      onTapDown: (_) => _onHoldStart(),
-      onTapUp: (_) => _onHoldEnd(),
-      onTapCancel: () => _onHoldEnd(),
+    return Semantics(
+      button: true,
+      label: 'Press and hold for 3 seconds to broadcast SOS',
+      child: GestureDetector(
+        onTapDown: (_) => _onHoldStart(),
+        onTapUp: (_) => _onHoldEnd(),
+        onTapCancel: () => _onHoldEnd(),
       child: AnimatedBuilder(
         animation: Listenable.merge([_pulseController, _holdController]),
         builder: (context, child) {
@@ -246,10 +343,13 @@ class _PanicScreenState extends State<PanicScreen>
               // Glowing Pulsing SOS Circle
               Transform.scale(
                 scale: pulseScale,
-                child: Container(
-                  width: 190,
-                  height: 190,
-                  decoration: BoxDecoration(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    minWidth: 190,
+                    minHeight: 190,
+                  ),
+                  child: Container(
+                    decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
                       colors: _isTriggered
