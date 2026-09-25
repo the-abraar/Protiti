@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'dart:io';
 import 'package:flutter_background_service/flutter_background_service.dart';
 // Note: flutter_background_service_android doesn't exist separately anymore, the android platform is integrated into the core package.
 // Actually, it's just flutter_background_service for the core classes.
@@ -10,6 +11,7 @@ import 'database_service.dart';
 import 'geofence_service.dart';
 import 'secure_audio_service.dart';
 import 'package:hardware_sos/hardware_sos.dart' as hardware_sos;
+import 'dart:async';
 
 class BackgroundSosService {
   static Future<void> initializeService() async {
@@ -50,15 +52,18 @@ class BackgroundSosService {
     final geofenceService = GeofenceService(triggerPanic);
     geofenceService.startGeofenceMonitoring();
     
-    final hardwareSos = hardware_sos.HardwareSos();
-    final hardwareSosSubscription = hardwareSos.sosEvents.listen((event) async {
-      if (event == "sos_triggered") {
-        await triggerPanic.execute();
-      }
-    });
+    StreamSubscription? hardwareSosSubscription;
+    if (Platform.isAndroid) {
+      final hardwareSos = hardware_sos.HardwareSos();
+      hardwareSosSubscription = hardwareSos.sosEvents.listen((event) async {
+        if (event == "sos_triggered") {
+          await triggerPanic.execute();
+        }
+      });
+    }
     
     service.on('stopService').listen((event) {
-      hardwareSosSubscription.cancel();
+      hardwareSosSubscription?.cancel();
       shakeService.stopListening();
       geofenceService.stopGeofenceMonitoring();
       service.stopSelf();

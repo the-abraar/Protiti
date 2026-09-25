@@ -6,10 +6,35 @@
 	<string>Protiti uses Face ID to securely unlock your Forensic Vault.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Protiti needs your location to send emergency SOS coordinates.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Protiti needs your location in the background for geofencing.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Protiti uses the camera to securely capture evidence.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Protiti accesses photos to attach screenshot evidence.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Protiti uses the microphone to securely record audio evidence.</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Protiti needs Bluetooth for emergency nearby connections.</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Protiti needs Bluetooth to connect to nearby devices.</string>
+	<key>NSLocalNetworkUsageDescription</key>
+	<string>Protiti needs local network access for peer-to-peer transfers.</string>
+	<key>NSBonjourServices</key>
+	<array>
+		<string>_dartobservatory._tcp</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>audio</string>
+		<string>fetch</string>
+		<string>location</string>
+		<string>processing</string>
+	</array>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>dev.flutter.background.refresh</string>
+	</array>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>sms</string>
