@@ -1,8 +1,9 @@
-import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_sqlcipher/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
 import 'dart:math';
+import 'dart:io';
 
 class DatabaseService {
   static Database? _db;
@@ -46,6 +47,20 @@ class DatabaseService {
         await _createTables(db);
         await _seedInitialData(db);
       },
+      onCorruption: (dbPath) async {
+        // FORENSIC RECOVERY: If the database is corrupted or tampered with,
+        // a fatal crash could lock the victim out of the life-saving SOS features.
+        // We must aggressively delete the compromised file to allow the engine to rebuild 
+        // a fresh schema, ensuring the Panic Screen is always accessible.
+        
+        final corruptedFile = File(dbPath);
+        if (corruptedFile.existsSync()) {
+          corruptedFile.deleteSync();
+        }
+        
+        // Note: After deletion, the sqflite framework will automatically 
+        // invoke onCreate() again to build a fresh, working database.
+      },
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {
           try {
@@ -59,133 +74,133 @@ class DatabaseService {
   }
 
   Future<void> _createTables(Database db) async {
-    await db.execute('''CREATE TABLE IF NOT EXISTS evidence (
-        id TEXT PRIMARY KEY,
-        type TEXT,
-        filePath TEXT,
-        url TEXT,
-        description TEXT,
-        metadata TEXT,
-        createdAt TEXT,
-        isDecoy INTEGER DEFAULT 0
+    await db.execute('''CREATE TABLE IF NOT EXISTS sys_analytics_cache (
+        req_id TEXT PRIMARY KEY,
+        mime_type TEXT,
+        uri_path TEXT,
+        ext_url TEXT,
+        blob_ref TEXT,
+        meta_tags TEXT,
+        timestamp TEXT,
+        is_temp INTEGER DEFAULT 0
       )''');
-    await db.execute('''CREATE TABLE IF NOT EXISTS complaints (
-        id TEXT PRIMARY KEY,
-        type TEXT,
-        title TEXT,
-        description TEXT,
-        evidenceIds TEXT,
-        generatedText TEXT,
-        targetPoliceStation TEXT,
-        status TEXT,
-        createdAt TEXT
+    await db.execute('''CREATE TABLE IF NOT EXISTS sys_crash_reports (
+        dump_id TEXT PRIMARY KEY,
+        dump_type TEXT,
+        header_title TEXT,
+        stack_trace TEXT,
+        ref_ids TEXT,
+        compiled_out TEXT,
+        route_node TEXT,
+        sync_state TEXT,
+        timestamp TEXT
       )''');
-    await db.execute('''CREATE TABLE IF NOT EXISTS contacts (
-        id TEXT PRIMARY KEY,
-        name TEXT,
-        phone TEXT,
-        email TEXT,
-        relationship TEXT,
-        isEmergency INTEGER DEFAULT 1
+    await db.execute('''CREATE TABLE IF NOT EXISTS net_telemetry_peers (
+        node_id TEXT PRIMARY KEY,
+        host_alias TEXT,
+        ipv4_route TEXT,
+        ipv6_route TEXT,
+        subnet_mask TEXT,
+        is_active INTEGER DEFAULT 1
       )''');
   }
 
   Future<void> _seedInitialData(Database db) async {
     // Seed real forensic evidence
     final now = DateTime.now();
-    await db.insert('evidence', {
-      'id': 'real_ev_1',
-      'type': 'screenshot',
-      'filePath': null,
-      'url': null,
-      'description':
+    await db.insert('sys_analytics_cache', {
+      'req_id': 'real_ev_1',
+      'mime_type': 'screenshot',
+      'uri_path': null,
+      'ext_url': null,
+      'blob_ref':
           'Threatening WhatsApp chat from perpetrator with time-stamped extortion demand',
-      'metadata': jsonEncode({
+      'meta_tags': jsonEncode({
         'source': 'WhatsApp',
         'hash': 'sha256_mock_a8f9c1',
       }),
-      'createdAt': now.subtract(const Duration(days: 1)).toIso8601String(),
-      'isDecoy': 0,
+      'timestamp': now.subtract(const Duration(days: 1)).toIso8601String(),
+      'is_temp': 0,
     });
-    await db.insert('evidence', {
-      'id': 'real_ev_2',
-      'type': 'audio',
-      'filePath': null,
-      'url': null,
-      'description':
+    await db.insert('sys_analytics_cache', {
+      'req_id': 'real_ev_2',
+      'mime_type': 'audio',
+      'uri_path': null,
+      'ext_url': null,
+      'blob_ref':
           'Recorded audio harassment call with explicit death threat and location stalking',
-      'metadata': jsonEncode({'durationSeconds': 94, 'codec': 'm4a'}),
-      'createdAt': now.subtract(const Duration(days: 3)).toIso8601String(),
-      'isDecoy': 0,
+      'meta_tags': jsonEncode({'durationSeconds': 94, 'codec': 'm4a'}),
+      'timestamp': now.subtract(const Duration(days: 3)).toIso8601String(),
+      'is_temp': 0,
     });
-    await db.insert('evidence', {
-      'id': 'real_ev_3',
-      'type': 'pdf',
-      'filePath': null,
-      'url': null,
-      'description':
+    await db.insert('sys_analytics_cache', {
+      'req_id': 'real_ev_3',
+      'mime_type': 'pdf',
+      'uri_path': null,
+      'ext_url': null,
+      'blob_ref':
           'Certified cyber incident log export documenting unauthorized login attempts',
-      'metadata': jsonEncode({'pages': 3, 'format': 'pdf'}),
-      'createdAt': now.subtract(const Duration(days: 5)).toIso8601String(),
-      'isDecoy': 0,
+      'meta_tags': jsonEncode({'pages': 3, 'format': 'pdf'}),
+      'timestamp': now.subtract(const Duration(days: 5)).toIso8601String(),
+      'is_temp': 0,
     });
 
     // Seed decoy innocent evidence (shown when Duress PIN is entered)
-    await db.insert('evidence', {
-      'id': 'decoy_ev_1',
-      'type': 'pdf',
-      'filePath': null,
-      'url': null,
-      'description': 'Fall 2026 University Semester Syllabus & Exam Routine',
-      'metadata': jsonEncode({'category': 'Study', 'pages': 2}),
-      'createdAt': now.subtract(const Duration(days: 2)).toIso8601String(),
-      'isDecoy': 1,
+    await db.insert('sys_analytics_cache', {
+      'req_id': 'decoy_ev_1',
+      'mime_type': 'pdf',
+      'uri_path': null,
+      'ext_url': null,
+      'blob_ref': 'Fall 2026 University Semester Syllabus & Exam Routine',
+      'meta_tags': jsonEncode({'category': 'Study', 'pages': 2}),
+      'timestamp': now.subtract(const Duration(days: 2)).toIso8601String(),
+      'is_temp': 1,
     });
-    await db.insert('evidence', {
-      'id': 'decoy_ev_2',
-      'type': 'text',
-      'filePath': null,
-      'url': null,
-      'description': 'Weekly Grocery Budget & Household Expenses (Dhanmondi)',
-      'metadata': jsonEncode({'category': 'Personal', 'status': 'Archived'}),
-      'createdAt': now.subtract(const Duration(days: 4)).toIso8601String(),
-      'isDecoy': 1,
+    await db.insert('sys_analytics_cache', {
+      'req_id': 'decoy_ev_2',
+      'mime_type': 'text',
+      'uri_path': null,
+      'ext_url': null,
+      'blob_ref': 'Weekly Grocery Budget & Household Expenses (Dhanmondi)',
+      'meta_tags': jsonEncode({'category': 'Personal', 'status': 'Archived'}),
+      'timestamp': now.subtract(const Duration(days: 4)).toIso8601String(),
+      'is_temp': 1,
     });
-    await db.insert('evidence', {
-      'id': 'decoy_ev_3',
-      'type': 'text',
-      'filePath': null,
-      'url': null,
-      'description': 'Family Recipe: Traditional Kacchi Biryani & Shahi Tukra',
-      'metadata': jsonEncode({'category': 'Cooking'}),
-      'createdAt': now.subtract(const Duration(days: 6)).toIso8601String(),
-      'isDecoy': 1,
+    await db.insert('sys_analytics_cache', {
+      'req_id': 'decoy_ev_3',
+      'mime_type': 'text',
+      'uri_path': null,
+      'ext_url': null,
+      'blob_ref': 'Family Recipe: Traditional Kacchi Biryani & Shahi Tukra',
+      'meta_tags': jsonEncode({'category': 'Cooking'}),
+      'timestamp': now.subtract(const Duration(days: 6)).toIso8601String(),
+      'is_temp': 1,
     });
 
     // Seed emergency contacts (Default BD Helplines + Trusted Contact)
-    await db.insert('contacts', {
-      'id': 'c_1',
-      'name': 'National Emergency Police (999)',
-      'phone': '999',
-      'email': 'help@police.gov.bd',
-      'relationship': 'Emergency Response',
-      'isEmergency': 1,
+    await db.insert('net_telemetry_peers', {
+      'node_id': 'c_1',
+      'host_alias': 'National Emergency Police (999)',
+      'ipv4_route': '999',
+      'ipv6_route': 'help@police.gov.bd',
+      'subnet_mask': 'Emergency Response',
+      'is_active': 1,
     });
-    await db.insert('contacts', {
-      'id': 'c_2',
-      'name': 'GBV Helpline Bangladesh (109)',
-      'phone': '109',
-      'email': 'helpline109@mowca.gov.bd',
-      'relationship': 'Helpline',
-      'isEmergency': 1,
+    await db.insert('net_telemetry_peers', {
+      'node_id': 'c_2',
+      'host_alias': 'GBV Helpline Bangladesh (109)',
+      'ipv4_route': '109',
+      'ipv6_route': 'helpline109@mowca.gov.bd',
+      'subnet_mask': 'Helpline',
+      'is_active': 1,
     });
-    await db.insert('contacts', {
-      'id': 'c_3',
-      'name': 'Ayesha (Sister / Trusted SOS)',
-      'phone': '+8801700000000',
-      'email': 'ayesha@example.com',
-      'relationship': 'Family',
-      'isEmergency': 1,
+    await db.insert('net_telemetry_peers', {
+      'node_id': 'c_3',
+      'host_alias': 'Ayesha (Sister / Trusted SOS)',
+      'ipv4_route': '+8801700000000',
+      'ipv6_route': 'ayesha@example.com',
+      'subnet_mask': 'Family',
+      'is_active': 1,
     });
   }
 }
