@@ -1,0 +1,12 @@
+{
+  "@@locale": "bn",
+  "appTitle": "প্রতীতি",
+  "vaultAuthTitle": "ফরেনসিক ভল্ট প্রমাণীকরণ",
+  "vaultAuthSubtitle": "রেকর্ড অ্যাক্সেস করতে নিরাপত্তা পিন বা বায়োমেট্রিক্স ব্যবহার করুন",
+  "panicSequenceActive": "জরুরী অবস্থা সক্রিয়",
+  "panicOfflineReady": "অফলাইন এসএমএস পাঠানোর জন্য প্রস্তুত",
+  "panicHoldInstruction": "এসওএস ব্রডকাস্ট করতে ৩ সেকেন্ড চেপে ধরে রাখুন",
+  "supportBridgeTitle": "আইনি সহায়তা ও সমর্থন",
+  "decoySupportTitle": "ছাত্র পরিষেবা এবং ক্যাম্পাস ডিরেক্টরি",
+  "decoyVaultTitle": "ব্যক্তিগত নোট এবং ফাইল"
+}

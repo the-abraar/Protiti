@@ -1,0 +1,15 @@
+{
+  "@@locale": "en",
+  "appTitle": "Protiti (প্রতীতি)",
+  "@appTitle": {
+    "description": "The title of the application"
+  },
+  "vaultAuthTitle": "Forensic Vault Authentication",
+  "vaultAuthSubtitle": "Enter security PIN or use biometrics to access records",
+  "panicSequenceActive": "EMERGENCY SEQUENCE ACTIVE",
+  "panicOfflineReady": "OFFLINE SMS DISPATCH READY",
+  "panicHoldInstruction": "Press & Hold for 3 seconds to broadcast SOS",
+  "supportBridgeTitle": "Legal Aid & Support Bridge",
+  "decoySupportTitle": "Student Services & Campus Directory",
+  "decoyVaultTitle": "Personal Notes & Files"
+}

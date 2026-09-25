@@ -1,0 +1,44 @@
+name: Protiti Flutter CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.x'
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        run: flutter pub get
+        working-directory: protiti
+
+      - name: Verify Formatting
+        run: dart format --output=none --set-exit-if-changed .
+        working-directory: protiti
+
+      - name: Analyze Static Code
+        run: flutter analyze
+        working-directory: protiti
+
+      - name: Run Unit Tests
+        run: flutter test
+        working-directory: protiti

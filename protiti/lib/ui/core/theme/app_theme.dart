@@ -13,7 +13,7 @@ class AppTheme {
   // Brand Color Constants
   static const Color deepAmethyst = Color(0xFF4A154B);
   static const Color amethystLight = Color(0xFF722774);
-  static const Color teal = Color(0xFF008080);
+  static const Color teal = Color(0xFF26A69A); // Lightened to pass 4.5:1 on dark surfaces
   static const Color tealLight = Color(0xFF26A69A);
   static const Color crimson = Color(0xFFD32F2F);
   static const Color warmGold = Color(0xFFFFC107);
