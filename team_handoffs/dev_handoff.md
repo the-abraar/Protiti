@@ -93,7 +93,7 @@ $ flutter test
 
 ---
 
-## 5. Remaining Engineering Backlog
+## 5. Recently Completed Engineering Sprints (DKC Finalization)
 
 1. **Cryptographic GD Export (PDF Generation):**
    - Implement client-side PDF rendering of the General Diary complaint using `pdf` / `printing` packages.

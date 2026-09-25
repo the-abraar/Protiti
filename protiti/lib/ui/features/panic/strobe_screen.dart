@@ -17,7 +17,7 @@ class _StrobeScreenState extends State<StrobeScreen> {
   void initState() {
     super.initState();
     // 1. Force the hardware screen brightness to absolute maximum (1.0)
-    ScreenBrightness().setScreenBrightness(1.0);
+    ScreenBrightness().setApplicationScreenBrightness(1.0);
     
     // 2. Rapidly alternate the screen color every 100ms to create a blinding strobe
     _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
@@ -33,7 +33,7 @@ class _StrobeScreenState extends State<StrobeScreen> {
   void dispose() {
     _timer?.cancel();
     // Return to normal brightness when the strobe is dismissed
-    ScreenBrightness().resetScreenBrightness();
+    ScreenBrightness().resetApplicationScreenBrightness();
     super.dispose();
   }
 

@@ -402,13 +402,15 @@ class _PanicScreenState extends State<PanicScreen>
                     ],
                   ),
                 ),
+                ),
               ),
             ],
           );
         },
       ),
-    );
-  }
+    ),
+  );
+}
 
   Widget _buildDispatchResultCard(PanicResult result) {
     return Container(

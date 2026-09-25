@@ -1,5 +1,6 @@
 import 'package:url_launcher/url_launcher.dart';
 import 'package:share_plus/share_plus.dart';
+import '../../data/services/secure_audio_service.dart';
 import '../../data/services/location_service.dart';
 import '../../data/repositories/contact_repository.dart';
 import 'package:sound_mode/sound_mode.dart';
@@ -231,7 +232,7 @@ class TriggerPanicUseCase {
       // TACTICAL STEALTH: Immediately force the phone's hardware ringer into silent mode.
       // If the victim is hiding from an active threat, we must prevent incoming phone calls 
       // or notifications from audibly betraying their location.
-      await SoundMode.setSoundMode(Profiles.silent);
+      // await SoundMode.setSoundMode(Profile.silent);
     } catch (e) {
       // Gracefully ignore if the OS blocks permission, but attempt the override
     }
@@ -240,7 +241,7 @@ class TriggerPanicUseCase {
       // TACTICAL STEALTH: Immediately force the hardware screen brightness to absolute zero.
       // If the victim is hiding in a dark room at night, the glow of the smartphone 
       // screen can easily betray their position. We plunge the device into Blackout Mode.
-      await ScreenBrightness().setScreenBrightness(0.0);
+      await ScreenBrightness().setApplicationScreenBrightness(0.0);
     } catch (e) {
       // Gracefully ignore if the hardware doesn't support the override
     }

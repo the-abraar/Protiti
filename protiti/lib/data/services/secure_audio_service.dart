@@ -6,7 +6,7 @@ import 'package:uuid/uuid.dart';
 import 'encryption_service.dart';
 
 class SecureAudioService {
-  final Record _audioRecorder = Record();
+  final AudioRecorder _audioRecorder = AudioRecorder();
   final EncryptionService _encryptionService = EncryptionService();
   String? _tempFilePath;
 
@@ -16,9 +16,8 @@ class SecureAudioService {
       _tempFilePath = '${directory.path}/${const Uuid().v4()}.m4a';
       
       await _audioRecorder.start(
-        path: _tempFilePath,
-        encoder: AudioEncoder.aacLc,
-        bitRate: 128000,
+        const RecordConfig(encoder: AudioEncoder.aacLc, bitRate: 128000),
+        path: _tempFilePath!,
       );
     }
   }

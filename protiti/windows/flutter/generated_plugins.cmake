@@ -3,9 +3,23 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  audioplayers_windows
+  battery_plus
+  file_selector_windows
+  flutter_secure_storage_windows
+  geolocator_windows
+  local_auth_windows
+  printing
+  record_windows
+  screen_brightness_windows
+  secure_application
+  share_plus
+  url_launcher_windows
+  volume_controller
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST
+  jni
 )
 
 set(PLUGIN_BUNDLED_LIBRARIES)
