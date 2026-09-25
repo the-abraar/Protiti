@@ -46,27 +46,26 @@ dependencies:
   path_provider: ^2.1.6
   path: ^1.9.0
   image_picker: ^1.2.3
-  intl: ^0.20.3
+  intl: ^0.20.2
   url_launcher: ^6.3.2
   uuid: ^4.6.0
   http: ^1.6.0
   encrypt: ^5.0.3
   archive: ^3.6.1
   pdf: ^3.11.0
-  secure_application: ^2.2.0
+  secure_application: any
   sensors_plus: ^5.0.1
   record: ^5.0.5
   audioplayers: ^5.2.1
   flutter_local_notifications: ^17.1.2
-  flutter_jailbreak_detection: ^2.0.1
+  flutter_jailbreak_detection: any
   flutter_background_service: ^3.0.1
   nearby_connections: ^3.1.2
   printing: ^5.11.1
   crypto: ^3.0.3
   flutter_image_compress: ^2.3.0
   sound_mode: ^2.0.2
-  screen_brightness: ^3.0.0
-  flutter_dynamic_icon: ^3.0.1
+  screen_brightness: any
   http_certificate_pinning: ^3.0.0
   flutter_callkit_incoming: ^2.0.3
   torch_light: ^1.0.1
@@ -76,7 +75,7 @@ dependencies:
   ntp: ^2.0.0
   battery_plus: ^6.1.0
   volume_controller: ^3.0.0
-  network_info_plus: ^4.1.0
+  network_info_plus: ^8.2.1
 
 dev_dependencies:
   hardware_sos:
