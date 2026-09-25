@@ -1,12 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:secure_application/secure_application.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
 import '../../../data/services/database_service.dart';
 import '../../../data/repositories/evidence_repository.dart';
 import '../../../domain/models/evidence.dart';
+import 'package:provider/provider.dart';
+import 'vault_provider.dart';
+import 'secure_image_viewer.dart';
+import 'secure_audio_player.dart';
+import '../../../data/services/p2p_transfer_service.dart';
 import '../panic/panic_screen.dart';
 import '../complaint/complaint_wizard_screen.dart';
 import '../support/support_screen.dart';
 import '../auth/lock_screen.dart';
+import '../../../data/services/proximity_lock_service.dart';
+import '../../../data/services/bluetooth_tether_service.dart';
+import '../../../data/services/screen_cast_monitor.dart';
+import '../../../data/services/auth_service.dart';
 
 class VaultScreen extends StatefulWidget {
   final bool isDecoy;
@@ -17,20 +28,92 @@ class VaultScreen extends StatefulWidget {
   State<VaultScreen> createState() => _VaultScreenState();
 }
 
-class _VaultScreenState extends State<VaultScreen> {
+class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
   int _currentIndex = 0;
 
   late final List<Widget> _screens;
+  late final ProximityLockService _proximityService;
+  late final BluetoothTetherService _bluetoothTetherService;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    
+    _proximityService = ProximityLockService();
+    _bluetoothTetherService = BluetoothTetherService();
+    
+    // Only arm the proximity auto-lock if the victim is in the highly sensitive Real Vault
+    if (!widget.isDecoy) {
+      _proximityService.startListening(() async {
+        if (mounted) {
+          await AuthService().enforcePinHardLock();
+          // Immediately kill the vault session if the phone is flipped face-down
+          Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+        }
+      });
+
+      _bluetoothTetherService.startTetherMonitoring(() async {
+        if (mounted) {
+          await AuthService().enforcePinHardLock();
+          // The abuser ran away with the phone or disabled Bluetooth!
+          // Instantly destroy the vault session.
+          Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+        }
+      });
+
+      ScreenCastMonitor.startMonitoring(
+        onCastDetected: () async {
+          if (mounted) {
+            await AuthService().enforcePinHardLock();
+            // ACTIVE SPYING DETECTED!
+            // Instantly destroy the vault session and route back to the LockScreen.
+            Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+          }
+        },
+        onScreenshotAttempted: () async {
+          if (mounted) {
+            await AuthService().enforcePinHardLock();
+            // UNAUTHORIZED SCREENSHOT ATTEMPTED!
+            // Instantly destroy the vault session!
+            Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+          }
+        }
+      );
+    }
+
     _screens = [
       VaultGridScreen(isDecoy: widget.isDecoy),
       ComplaintWizardScreen(isDecoy: widget.isDecoy),
       PanicScreen(isDecoy: widget.isDecoy),
       SupportScreen(isDecoy: widget.isDecoy),
     ];
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    // CRITICAL: Prevent memory leaks and background battery drain
+    _proximityService.stopListening();
+    _bluetoothTetherService.stopMonitoring();
+    ScreenCastMonitor.stopMonitoring();
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+      // FORENSIC WIPE: Aggressively sanitize the OS clipboard to prevent 
+      // an abuser from pasting the victim's copied passwords or evidence notes.
+      Clipboard.setData(const ClipboardData(text: ''));
+
+      if (mounted) {
+        Navigator.of(context).pushAndRemoveUntil(
+          MaterialPageRoute(builder: (context) => const LockScreen()),
+          (Route<dynamic> route) => false,
+        );
+      }
+    }
   }
 
   void _lockVault() {
@@ -42,6 +125,13 @@ class _VaultScreenState extends State<VaultScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // If it's the real vault, lock the screen from screenshots!
+    if (!widget.isDecoy) {
+      SecureApplicationProvider.of(context, listen: false)?.secure();
+    } else {
+      SecureApplicationProvider.of(context, listen: false)?.open();
+    }
+    
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -56,13 +146,27 @@ class _VaultScreenState extends State<VaultScreen> {
             const SizedBox(width: 8),
             Text(
               widget.isDecoy
-                  ? 'Personal Notes & Files'
-                  : 'Protiti Forensic Vault',
+                  ? AppLocalizations.of(context)!.decoyVaultTitle
+                  : AppLocalizations.of(context)!.appTitle,
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ],
         ),
         actions: [
+          if (!widget.isDecoy)
+            IconButton(
+              icon: const Icon(Icons.wifi_tethering),
+              tooltip: 'Offline P2P Export',
+              onPressed: () async {
+                final p2pService = P2PTransferService();
+                await p2pService.startOfflineBroadcast("System_Diagnostic_Sync");
+                if (mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Offline P2P Beacon Activated')),
+                  );
+                }
+              },
+            ),
           IconButton(
             tooltip: 'Lock Vault Immediately',
             icon: const Icon(Icons.lock, color: Colors.white70),
@@ -109,7 +213,89 @@ class _VaultScreenState extends State<VaultScreen> {
               backgroundColor: widget.isDecoy
                   ? AppTheme.teal
                   : AppTheme.deepAmethyst,
-              onPressed: () => _showAddDialog(context),
+              onPressed: () {
+                if (widget.isDecoy) {
+                  _showAddDialog(context);
+                } else {
+                  showModalBottomSheet(
+                    context: context,
+                    backgroundColor: AppTheme.cardDark,
+                    builder: (ctx) => SafeArea(
+                      child: Wrap(
+                        children: [
+                          ListTile(
+                            leading: const Icon(Icons.note_add, color: AppTheme.warmGold),
+                            title: const Text('Add Text Note'),
+                            onTap: () {
+                              Navigator.pop(ctx);
+                              _showAddDialog(context);
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(Icons.camera_alt, color: AppTheme.crimson),
+                            title: const Text('Secure Camera Capture'),
+                            onTap: () async {
+                              Navigator.pop(ctx);
+                              await Provider.of<VaultProvider>(context, listen: false)
+                                  .captureAndSaveSecureImage();
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(Icons.mic, color: Colors.blueAccent),
+                            title: const Text('Secure Audio Wiretap'),
+                            onTap: () async {
+                              Navigator.pop(ctx);
+                              await Provider.of<VaultProvider>(context, listen: false)
+                                  .captureAndSaveSecureAudio(context);
+                            },
+                          ),
+                          ListTile(
+                            leading: const Icon(Icons.photo_library, color: Colors.blueAccent),
+                            title: const Text('Secure Gallery Import'),
+                            onTap: () async {
+                              Navigator.pop(ctx);
+                              final success = await Provider.of<VaultProvider>(context, listen: false)
+                                  .importAndScrubGalleryImage();
+                              
+                              if (success && mounted) {
+                                 // CRITICAL: We cannot silently delete from the public gallery due to OS rules.
+                                 // We MUST show a highly visible alert forcing the user to do it manually.
+                                 showDialog(
+                                   context: context,
+                                   builder: (ctx) => AlertDialog(
+                                     backgroundColor: AppTheme.cardDark,
+                                     title: Row(
+                                       children: const [
+                                         Icon(Icons.warning_amber, color: Colors.orange),
+                                         SizedBox(width: 10),
+                                         Text('Forensic Warning'),
+                                       ],
+                                     ),
+                                     content: const Text(
+                                       'Your evidence is now encrypted and secured in the Vault. \n\n'
+                                       'However, the original unencrypted photo is STILL in your phone\'s '
+                                       'public photo gallery. You must open your Photos app and manually '
+                                       'delete it (and clear your Recently Deleted folder) immediately to '
+                                       'ensure your safety.',
+                                       style: TextStyle(color: Colors.white70),
+                                     ),
+                                     actions: [
+                                       TextButton(
+                                         onPressed: () => Navigator.pop(ctx),
+                                         child: const Text('I Understand', style: TextStyle(color: Colors.orange)),
+                                       ),
+                                     ],
+                                   ),
+                                 );
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }
+              },
               icon: const Icon(Icons.add),
               label: Text(widget.isDecoy ? 'Add File' : 'Secure Evidence'),
             )
@@ -132,6 +318,9 @@ class _VaultScreenState extends State<VaultScreen> {
             children: [
               TextField(
                 controller: titleController,
+                autocorrect: false,
+                enableSuggestions: false,
+                keyboardType: TextInputType.visiblePassword,
                 decoration: InputDecoration(
                   labelText: widget.isDecoy
                       ? 'Document Title / Note'
@@ -149,7 +338,6 @@ class _VaultScreenState extends State<VaultScreen> {
               onPressed: () async {
                 final text = titleController.text.trim();
                 if (text.isNotEmpty) {
-                  final repo = EvidenceRepository(DatabaseService());
                   final newEvidence = Evidence(
                     id: DateTime.now().millisecondsSinceEpoch.toString(),
                     type: widget.isDecoy ? 'text' : 'screenshot',
@@ -157,10 +345,11 @@ class _VaultScreenState extends State<VaultScreen> {
                     createdAt: DateTime.now(),
                     isDecoy: widget.isDecoy,
                   );
-                  await repo.addEvidence(newEvidence);
+                  
+                  await Provider.of<VaultProvider>(context, listen: false).addEvidence(newEvidence);
+                  
                   if (context.mounted) {
                     Navigator.pop(ctx);
-                    setState(() {});
                   }
                 }
               },
@@ -169,36 +358,18 @@ class _VaultScreenState extends State<VaultScreen> {
           ],
         );
       },
-    );
+    ).then((_) {
+      // FORENSIC SANITIZATION: Instantly scrub the text controller from RAM
+      // when the dialog closes to prevent stalkerware memory scraping.
+      titleController.dispose();
+    });
   }
 }
 
-class VaultGridScreen extends StatefulWidget {
+class VaultGridScreen extends StatelessWidget {
   final bool isDecoy;
 
   const VaultGridScreen({super.key, this.isDecoy = false});
-
-  @override
-  State<VaultGridScreen> createState() => _VaultGridScreenState();
-}
-
-class _VaultGridScreenState extends State<VaultGridScreen> {
-  final EvidenceRepository _evidenceRepo = EvidenceRepository(
-    DatabaseService(),
-  );
-  late Future<List<Evidence>> _evidenceFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadEvidence();
-  }
-
-  void _loadEvidence() {
-    setState(() {
-      _evidenceFuture = _evidenceRepo.getEvidence(isDecoy: widget.isDecoy);
-    });
-  }
 
   IconData _getIconForType(String type) {
     switch (type.toLowerCase()) {
@@ -219,7 +390,7 @@ class _VaultGridScreenState extends State<VaultGridScreen> {
   }
 
   Color _getBadgeColor(String type) {
-    if (widget.isDecoy) return AppTheme.tealLight;
+    if (isDecoy) return AppTheme.tealLight;
     switch (type.toLowerCase()) {
       case 'audio':
         return AppTheme.crimson;
@@ -234,14 +405,13 @@ class _VaultGridScreenState extends State<VaultGridScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Evidence>>(
-      future: _evidenceFuture,
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
+    return Consumer<VaultProvider>(
+      builder: (context, provider, child) {
+        if (provider.isLoading) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final items = snapshot.data ?? [];
+        final items = provider.items;
 
         if (items.isEmpty) {
           return Center(
@@ -249,13 +419,13 @@ class _VaultGridScreenState extends State<VaultGridScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(
-                  widget.isDecoy ? Icons.folder_open : Icons.shield_outlined,
+                  isDecoy ? Icons.folder_open : Icons.shield_outlined,
                   size: 64,
                   color: Colors.grey,
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  widget.isDecoy
+                  isDecoy
                       ? 'No personal files saved yet'
                       : 'Forensic Vault is Empty',
                   style: const TextStyle(fontSize: 16, color: Colors.grey),
@@ -266,7 +436,7 @@ class _VaultGridScreenState extends State<VaultGridScreen> {
         }
 
         return RefreshIndicator(
-          onRefresh: () async => _loadEvidence(),
+          onRefresh: () => provider.loadEvidence(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -275,27 +445,27 @@ class _VaultGridScreenState extends State<VaultGridScreen> {
                   horizontal: 16,
                   vertical: 12,
                 ),
-                color: widget.isDecoy
+                color: isDecoy
                     ? Colors.grey[900]
                     : AppTheme.deepAmethyst.withValues(alpha: 0.25),
                 child: Row(
                   children: [
                     Icon(
-                      widget.isDecoy
+                      isDecoy
                           ? Icons.visibility_off_outlined
                           : Icons.verified_user_outlined,
                       size: 18,
-                      color: widget.isDecoy ? Colors.grey : AppTheme.tealLight,
+                      color: isDecoy ? Colors.grey : AppTheme.tealLight,
                     ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        widget.isDecoy
+                        isDecoy
                             ? 'Showing 3 innocent decoy files. Sensitive evidence is completely hidden.'
                             : 'Encrypted Forensic Storage: Real-time SHA-256 integrity hashing active.',
                         style: TextStyle(
                           fontSize: 12,
-                          color: widget.isDecoy
+                          color: isDecoy
                               ? Colors.grey[400]
                               : AppTheme.textPrimaryDark,
                         ),
@@ -311,7 +481,7 @@ class _VaultGridScreenState extends State<VaultGridScreen> {
                     crossAxisCount: 2,
                     crossAxisSpacing: 14,
                     mainAxisSpacing: 14,
-                    childAspectRatio: 0.82,
+                    mainAxisExtent: 220,
                   ),
                   itemCount: items.length,
                   itemBuilder: (context, index) {
@@ -319,16 +489,51 @@ class _VaultGridScreenState extends State<VaultGridScreen> {
                     final dateStr =
                         '${item.createdAt.day}/${item.createdAt.month}/${item.createdAt.year}';
 
-                    return Card(
-                      elevation: 3,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        side: BorderSide(
-                          color: widget.isDecoy
-                              ? Colors.white10
-                              : AppTheme.teal.withValues(alpha: 0.2),
+                    return InkWell(
+                      onTap: () {
+                        if (item.type == 'image' && item.filePath != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => SecureImageViewer(filePath: item.filePath!),
+                            ),
+                          );
+                        } else if (item.type == 'audio' && item.filePath != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => SecureAudioPlayer(filePath: item.filePath!),
+                            ),
+                          );
+                        } else {
+                          showDialog(
+                            context: context,
+                            builder: (ctx) => AlertDialog(
+                              backgroundColor: AppTheme.cardDark,
+                              title: const Text('Evidence Details'),
+                              content: SingleChildScrollView(
+                                child: Text(item.description),
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(ctx),
+                                  child: const Text('Close'),
+                                )
+                              ]
+                            )
+                          );
+                        }
+                      },
+                      child: Card(
+                        elevation: 3,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          side: BorderSide(
+                            color: isDecoy
+                                ? Colors.white10
+                                : AppTheme.teal.withValues(alpha: 0.2),
+                          ),
                         ),
-                      ),
                       child: Padding(
                         padding: const EdgeInsets.all(12),
                         child: Column(
@@ -392,7 +597,7 @@ class _VaultGridScreenState extends State<VaultGridScreen> {
                                     fontSize: 11,
                                   ),
                                 ),
-                                if (!widget.isDecoy)
+                                if (!isDecoy)
                                   const Icon(
                                     Icons.shield,
                                     size: 14,
