@@ -3,10 +3,15 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'wipe_service.dart';
 
+import 'dart:io';
+
 class RaspService {
   /// Initializes the Runtime Application Self-Protection (RASP) engine.
   /// This monitors the live RAM space for debuggers, emulators, and hooking frameworks (Frida).
   static Future<void> initializeRasp() async {
+    if (!Platform.isAndroid && !Platform.isIOS) {
+      return;
+    }
     final config = TalsecConfig(
       androidConfig: AndroidConfig(
         packageName: 'com.protiti.protiti',
@@ -31,7 +36,6 @@ class RaspService {
       onDeviceBinding: () => print('Device binding failed'),
       onDeviceID: () => print('Device ID tampered'),
       onSecureHardwareNotAvailable: () => print('Hardware keystore offline'),
-      onPasscodeNotSet: () => print('OS Passcode disabled'),
     );
 
     Talsec.instance.attachListener(callback);

@@ -1,4 +1,5 @@
 import 'package:flutter_dynamic_icon/flutter_dynamic_icon.dart';
+import 'package:flutter_dynamic_icon/flutter_dynamic_icon.dart';
 
 class CamouflageService {
   /// Rewrites the native OS manifest mapping to swap the home screen icon 

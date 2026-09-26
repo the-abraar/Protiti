@@ -1,12 +1,15 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:secure_application/secure_application.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart'; 
+import 'package:protiti/l10n/app_localizations.dart'; 
 import 'ui/core/theme/app_theme.dart';
 import 'ui/features/auth/lock_screen.dart';
 
 import 'data/services/background_sos_service.dart';
 import 'data/services/rasp_service.dart';
+
+import 'package:flutter_driver/driver_extension.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -38,12 +41,14 @@ class _ProtitiAppState extends State<ProtitiApp> {
 
   @override
   Widget build(BuildContext context) {
+    final isSupported = Platform.isAndroid || Platform.isIOS;
+    
     return MaterialApp(
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.dark,
+      themeMode: ThemeMode.light,
       localizationsDelegates: const [
         AppLocalizations.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -54,24 +59,26 @@ class _ProtitiAppState extends State<ProtitiApp> {
         Locale('en'),
         Locale('bn'),
       ],
-      home: SecureApplication(
-        nativeRemoveDelay: 100,
-        autoUnlockNative: true,
-        child: Builder(builder: (context) {
-          // Secures the app by blurring it in the background task switcher
-          // and blocking OS-level screenshots.
-          return SecureGate(
-            blurr: 40,
-            lockedBuilder: (context, secureNotifier) => const Scaffold(
-              backgroundColor: Colors.black,
-              body: Center(
-                child: Icon(Icons.shield_outlined, size: 64, color: Colors.grey),
-              ),
-            ),
-            child: const LockScreen(),
-          );
-        }),
-      ),
+      home: isSupported 
+        ? SecureApplication(
+            nativeRemoveDelay: 100,
+            autoUnlockNative: true,
+            child: Builder(builder: (context) {
+              // Secures the app by blurring it in the background task switcher
+              // and blocking OS-level screenshots.
+              return SecureGate(
+                blurr: 20,
+                lockedBuilder: (context, secureNotifier) => const Scaffold(
+                  backgroundColor: Color(0xFFF7F9FC),
+                  body: Center(
+                    child: Icon(Icons.lock_outline, size: 48, color: Color(0xFFA0AEC0)),
+                  ),
+                ),
+                child: const LockScreen(),
+              );
+            }),
+          )
+        : const LockScreen(),
     );
   }
 }

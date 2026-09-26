@@ -19,12 +19,20 @@ class DatabaseService {
 
   /// Retrieves or generates a secure random 256-bit passphrase for local encryption
   Future<String> getOrGenerateDbKey() async {
-    String? key = await _secureStorage.read(key: _encryptionKeyStorageKey);
+    String? key;
+    try {
+      key = await _secureStorage.read(key: _encryptionKeyStorageKey);
+    } catch (e) {
+      print('Warning: Secure storage unavailable. Using transient key.');
+    }
+    
     if (key == null || key.isEmpty) {
       final random = Random.secure();
       final values = List<int>.generate(32, (i) => random.nextInt(256));
       key = base64UrlEncode(values);
-      await _secureStorage.write(key: _encryptionKeyStorageKey, value: key);
+      try {
+        await _secureStorage.write(key: _encryptionKeyStorageKey, value: key);
+      } catch (_) {}
     }
     return key;
   }
@@ -46,20 +54,6 @@ class DatabaseService {
       onCreate: (db, version) async {
         await _createTables(db);
         await _seedInitialData(db);
-      },
-      onCorruption: (dbPath) async {
-        // FORENSIC RECOVERY: If the database is corrupted or tampered with,
-        // a fatal crash could lock the victim out of the life-saving SOS features.
-        // We must aggressively delete the compromised file to allow the engine to rebuild 
-        // a fresh schema, ensuring the Panic Screen is always accessible.
-        
-        final corruptedFile = File(dbPath);
-        if (corruptedFile.existsSync()) {
-          corruptedFile.deleteSync();
-        }
-        
-        // Note: After deletion, the sqflite framework will automatically 
-        // invoke onCreate() again to build a fresh, working database.
       },
       onUpgrade: (db, oldVersion, newVersion) async {
         if (oldVersion < 2) {

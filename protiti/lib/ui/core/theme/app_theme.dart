@@ -10,139 +10,118 @@ import 'package:flutter/material.dart';
 /// - Dark Mode: Soft Charcoal (#121212) with elevated cards (#1E1E1E)
 /// - Light Mode: Alabaster (#F8F9FA) with cards (#FFFFFF)
 class AppTheme {
-  // Brand Color Constants
-  static const Color deepAmethyst = Color(0xFF4A154B);
-  static const Color amethystLight = Color(0xFF722774);
-  static const Color teal = Color(0xFF26A69A); // Lightened to pass 4.5:1 on dark surfaces
-  static const Color tealLight = Color(0xFF26A69A);
-  static const Color crimson = Color(0xFFD32F2F);
-  static const Color warmGold = Color(0xFFFFC107);
+  // Soft, comforting palette based on prototype
+  static const Color primaryWhite = Color(0xFFFFFFFF);
+  static const Color surfaceLight = Color(0xFFF7F9FC);
+  static const Color textPrimary = Color(0xFF2D3748);
+  static const Color textSecondary = Color(0xFF718096);
+  static const Color accentSoft = Color(0xFFA0AEC0);
+  static const Color brandSecondary = Color(0xFF4A5568);
+  static const Color panicRed = Color(0xFFC53030);
 
-  // Surface & Neutral Colors
-  static const Color charcoalDark = Color(0xFF121212);
-  static const Color cardDark = Color(0xFF1E1E1E);
-  static const Color surfaceElevatedDark = Color(0xFF2A2A2A);
-  static const Color textPrimaryDark = Color(0xFFF1F1F1);
-  static const Color textSecondaryDark = Color(0xFFA0A0A0);
-
-  static const Color alabasterLight = Color(0xFFF8F9FA);
-  static const Color cardLight = Color(0xFFFFFFFF);
-  static const Color textPrimaryLight = Color(0xFF1A1A1A);
-  static const Color textSecondaryLight = Color(0xFF666666);
-
-  /// Dark Theme (Default for Protiti secure sessions)
-  static ThemeData get darkTheme {
+  /// Default Light Theme (Comforting & Clean)
+  static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.dark,
-      primaryColor: deepAmethyst,
-      scaffoldBackgroundColor: charcoalDark,
-      colorScheme: const ColorScheme.dark(
-        primary: deepAmethyst,
+      brightness: Brightness.light,
+      primaryColor: brandSecondary,
+      scaffoldBackgroundColor: surfaceLight,
+      colorScheme: const ColorScheme.light(
+        primary: brandSecondary,
         onPrimary: Colors.white,
-        primaryContainer: amethystLight,
-        secondary: teal,
+        secondary: accentSoft,
         onSecondary: Colors.white,
-        secondaryContainer: tealLight,
-        error: crimson,
+        error: panicRed,
         onError: Colors.white,
-        tertiary: warmGold,
-        onTertiary: Colors.black,
-        surface: cardDark,
-        onSurface: textPrimaryDark,
+        surface: primaryWhite,
+        onSurface: textPrimary,
       ),
       appBarTheme: const AppBarTheme(
-        backgroundColor: cardDark,
-        foregroundColor: textPrimaryDark,
+        backgroundColor: surfaceLight,
+        foregroundColor: textPrimary,
         elevation: 0,
-        centerTitle: false,
+        centerTitle: true,
       ),
       cardTheme: CardThemeData(
-        color: cardDark,
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        color: primaryWhite,
+        elevation: 1,
+        shadowColor: Colors.black.withOpacity(0.05),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: deepAmethyst,
+          backgroundColor: brandSecondary,
           foregroundColor: Colors.white,
+          elevation: 0,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(12),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
         ),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
-        backgroundColor: teal,
+        backgroundColor: brandSecondary,
         foregroundColor: Colors.white,
+        elevation: 2,
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: cardDark,
-        selectedItemColor: warmGold,
-        unselectedItemColor: textSecondaryDark,
+        backgroundColor: primaryWhite,
+        selectedItemColor: brandSecondary,
+        unselectedItemColor: accentSoft,
         type: BottomNavigationBarType.fixed,
         elevation: 8,
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: surfaceElevatedDark,
+        fillColor: primaryWhite,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: BorderSide.none,
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: accentSoft.withOpacity(0.3)),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: accentSoft.withOpacity(0.3)),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: teal, width: 1.5),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: brandSecondary, width: 1.5),
         ),
-        labelStyle: const TextStyle(color: textSecondaryDark),
+        labelStyle: const TextStyle(color: textSecondary),
       ),
     );
   }
 
-  /// Light Theme (Optional for readability under sunlight)
-  static ThemeData get lightTheme {
+  /// Keep dark theme for completeness, but make it softer
+  static ThemeData get darkTheme {
     return ThemeData(
       useMaterial3: true,
-      brightness: Brightness.light,
-      primaryColor: deepAmethyst,
-      scaffoldBackgroundColor: alabasterLight,
-      colorScheme: const ColorScheme.light(
-        primary: deepAmethyst,
-        onPrimary: Colors.white,
-        primaryContainer: amethystLight,
-        secondary: teal,
-        onSecondary: Colors.white,
-        error: crimson,
-        onError: Colors.white,
-        tertiary: warmGold,
-        surface: cardLight,
-        onSurface: textPrimaryLight,
+      brightness: Brightness.dark,
+      primaryColor: brandSecondary,
+      scaffoldBackgroundColor: const Color(0xFF1A202C),
+      colorScheme: const ColorScheme.dark(
+        primary: accentSoft,
+        onPrimary: Colors.black,
+        secondary: brandSecondary,
+        surface: Color(0xFF2D3748),
+        onSurface: Colors.white,
       ),
       appBarTheme: const AppBarTheme(
-        backgroundColor: Colors.white,
-        foregroundColor: deepAmethyst,
+        backgroundColor: Color(0xFF1A202C),
         elevation: 0,
-        centerTitle: false,
       ),
       cardTheme: CardThemeData(
-        color: cardLight,
-        elevation: 2,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      ),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: deepAmethyst,
-          foregroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-          ),
+        color: const Color(0xFF2D3748),
+        elevation: 1,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
         ),
       ),
       bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-        backgroundColor: cardLight,
-        selectedItemColor: deepAmethyst,
-        unselectedItemColor: textSecondaryLight,
-        type: BottomNavigationBarType.fixed,
+        backgroundColor: Color(0xFF2D3748),
+        selectedItemColor: Colors.white,
+        unselectedItemColor: accentSoft,
       ),
     );
   }

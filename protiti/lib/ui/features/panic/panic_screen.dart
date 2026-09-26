@@ -142,13 +142,13 @@ class _PanicScreenState extends State<PanicScreen>
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
               color: _isTriggered
-                  ? AppTheme.crimson.withValues(alpha: 0.2)
-                  : AppTheme.cardDark,
+                  ? AppTheme.panicRed.withValues(alpha: 0.2)
+                  : AppTheme.primaryWhite,
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: _isTriggered
-                    ? AppTheme.crimson
-                    : AppTheme.teal.withValues(alpha: 0.4),
+                    ? AppTheme.panicRed
+                    : AppTheme.accentSoft.withValues(alpha: 0.4),
               ),
             ),
             child: Row(
@@ -159,7 +159,7 @@ class _PanicScreenState extends State<PanicScreen>
                       ? Icons.warning_rounded
                       : Icons.offline_bolt_outlined,
                   size: 16,
-                  color: _isTriggered ? AppTheme.crimson : AppTheme.warmGold,
+                  color: _isTriggered ? AppTheme.panicRed : AppTheme.brandSecondary,
                 ),
                 const SizedBox(width: 8),
                 Text(
@@ -169,7 +169,7 @@ class _PanicScreenState extends State<PanicScreen>
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: _isTriggered ? AppTheme.crimson : AppTheme.warmGold,
+                    color: _isTriggered ? AppTheme.panicRed : AppTheme.brandSecondary,
                     letterSpacing: 0.5,
                   ),
                 ),
@@ -278,7 +278,7 @@ class _PanicScreenState extends State<PanicScreen>
             style: TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w600,
-              color: _isHolding ? AppTheme.warmGold : Colors.grey[300],
+              color: _isHolding ? AppTheme.brandSecondary : Colors.grey[300],
             ),
           ),
           const SizedBox(height: 8),
@@ -294,7 +294,7 @@ class _PanicScreenState extends State<PanicScreen>
           if (_isDispatching)
             const Padding(
               padding: EdgeInsets.all(16),
-              child: CircularProgressIndicator(color: AppTheme.crimson),
+              child: CircularProgressIndicator(color: AppTheme.panicRed),
             )
           else if (_lastResult != null)
             _buildDispatchResultCard(_lastResult!),
@@ -333,9 +333,9 @@ class _PanicScreenState extends State<PanicScreen>
                 child: CircularProgressIndicator(
                   value: _holdController.value,
                   strokeWidth: 8,
-                  backgroundColor: AppTheme.cardDark,
+                  backgroundColor: AppTheme.primaryWhite,
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    _isTriggered ? AppTheme.crimson : AppTheme.warmGold,
+                    _isTriggered ? AppTheme.panicRed : AppTheme.brandSecondary,
                   ),
                 ),
               ),
@@ -353,14 +353,14 @@ class _PanicScreenState extends State<PanicScreen>
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
                       colors: _isTriggered
-                          ? [AppTheme.crimson, const Color(0xFF8B0000)]
-                          : [const Color(0xFFE53935), AppTheme.crimson],
+                          ? [AppTheme.panicRed, const Color(0xFF8B0000)]
+                          : [const Color(0xFFE53935), AppTheme.panicRed],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: AppTheme.crimson.withValues(
+                        color: AppTheme.panicRed.withValues(
                           alpha: _isTriggered ? 0.7 : 0.4,
                         ),
                         blurRadius: _isHolding ? 40 : 25,
@@ -395,7 +395,7 @@ class _PanicScreenState extends State<PanicScreen>
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: AppTheme.warmGold,
+                            color: AppTheme.brandSecondary,
                             letterSpacing: 1.5,
                           ),
                         ),
@@ -417,9 +417,9 @@ class _PanicScreenState extends State<PanicScreen>
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.cardDark,
+        color: AppTheme.primaryWhite,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.crimson.withValues(alpha: 0.5)),
+        border: Border.all(color: AppTheme.panicRed.withValues(alpha: 0.5)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -457,7 +457,7 @@ class _PanicScreenState extends State<PanicScreen>
           const SizedBox(height: 4),
           SelectableText(
             result.locationDisplay,
-            style: const TextStyle(fontSize: 12, color: AppTheme.warmGold),
+            style: const TextStyle(fontSize: 12, color: AppTheme.brandSecondary),
           ),
           const SizedBox(height: 10),
           Text(
@@ -491,14 +491,14 @@ class _PanicScreenState extends State<PanicScreen>
       children: [
         Row(
           children: const [
-            Icon(Icons.phone_in_talk, size: 16, color: AppTheme.tealLight),
+            Icon(Icons.phone_in_talk, size: 16, color: AppTheme.brandSecondary),
             SizedBox(width: 8),
             Text(
               'Direct Bangladesh Emergency Hotlines',
               style: TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimaryDark,
+                color: AppTheme.textPrimary,
               ),
             ),
           ],
@@ -510,7 +510,7 @@ class _PanicScreenState extends State<PanicScreen>
               child: _buildHotlineCard(
                 '999',
                 'National Police / EMS',
-                AppTheme.crimson,
+                AppTheme.panicRed,
               ),
             ),
             const SizedBox(width: 10),
@@ -518,7 +518,7 @@ class _PanicScreenState extends State<PanicScreen>
               child: _buildHotlineCard(
                 '109',
                 'GBV Toll-Free BD',
-                AppTheme.tealLight,
+                AppTheme.brandSecondary,
               ),
             ),
           ],
@@ -530,7 +530,7 @@ class _PanicScreenState extends State<PanicScreen>
               child: _buildHotlineCard(
                 '10921',
                 'Violence Helpline',
-                AppTheme.warmGold,
+                AppTheme.brandSecondary,
               ),
             ),
             const SizedBox(width: 10),
@@ -554,7 +554,7 @@ class _PanicScreenState extends State<PanicScreen>
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
         decoration: BoxDecoration(
-          color: AppTheme.cardDark,
+          color: AppTheme.primaryWhite,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(color: accentColor.withValues(alpha: 0.3)),
         ),
@@ -607,7 +607,7 @@ class _PanicScreenState extends State<PanicScreen>
             children: const [
               Icon(
                 Icons.health_and_safety_outlined,
-                color: AppTheme.tealLight,
+                color: AppTheme.brandSecondary,
                 size: 28,
               ),
               SizedBox(width: 10),
@@ -655,7 +655,7 @@ class _PanicScreenState extends State<PanicScreen>
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: AppTheme.cardDark,
+        color: AppTheme.primaryWhite,
         borderRadius: BorderRadius.circular(10),
         border: Border.all(color: Colors.white10),
       ),
@@ -682,10 +682,10 @@ class _PanicScreenState extends State<PanicScreen>
           ),
           TextButton.icon(
             onPressed: () => _callHotline(phone),
-            icon: const Icon(Icons.call, size: 16, color: AppTheme.tealLight),
+            icon: const Icon(Icons.call, size: 16, color: AppTheme.brandSecondary),
             label: Text(
               phone,
-              style: const TextStyle(color: AppTheme.tealLight, fontSize: 12),
+              style: const TextStyle(color: AppTheme.brandSecondary, fontSize: 12),
             ),
           ),
         ],

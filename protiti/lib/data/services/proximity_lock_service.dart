@@ -1,3 +1,4 @@
+import 'package:proximity_sensor/proximity_sensor.dart';
 import 'dart:async';
 import 'package:proximity_sensor/proximity_sensor.dart';
 

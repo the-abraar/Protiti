@@ -118,7 +118,7 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
               children: [
                 const Icon(
                   Icons.gavel_outlined,
-                  color: AppTheme.tealLight,
+                  color: AppTheme.brandSecondary,
                   size: 22,
                 ),
                 const SizedBox(width: 8),
@@ -163,7 +163,7 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                   children: [
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.deepAmethyst,
+                        backgroundColor: AppTheme.brandSecondary,
                       ),
                       onPressed: details.onStepContinue,
                       child: Text(
@@ -240,7 +240,7 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppTheme.cardDark,
+                        color: AppTheme.primaryWhite,
                         borderRadius: BorderRadius.circular(8),
                         border: Border.all(color: Colors.white10),
                       ),
@@ -248,7 +248,7 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                         children: const [
                           Icon(
                             Icons.check_circle,
-                            color: AppTheme.tealLight,
+                            color: AppTheme.brandSecondary,
                             size: 20,
                           ),
                           SizedBox(width: 8),
@@ -264,7 +264,7 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                     const SizedBox(height: 12),
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.teal,
+                        backgroundColor: AppTheme.accentSoft,
                       ),
                       onPressed: () {},
                       icon: const Icon(Icons.add_photo_alternate_outlined),
@@ -283,10 +283,10 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                 content: Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: AppTheme.cardDark,
+                    color: AppTheme.primaryWhite,
                     borderRadius: BorderRadius.circular(10),
                     border: Border.all(
-                      color: AppTheme.warmGold.withValues(alpha: 0.4),
+                      color: AppTheme.brandSecondary.withValues(alpha: 0.4),
                     ),
                   ),
                   child: Column(
@@ -296,7 +296,7 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                         'General Diary Format (সাধারণ ডায়েরি):',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: AppTheme.warmGold,
+                          color: AppTheme.brandSecondary,
                           fontSize: 13,
                         ),
                       ),
@@ -330,7 +330,7 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
             children: const [
               Icon(
                 Icons.note_alt_outlined,
-                color: AppTheme.tealLight,
+                color: AppTheme.brandSecondary,
                 size: 24,
               ),
               SizedBox(width: 8),
@@ -373,7 +373,7 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
           ),
           const SizedBox(height: 16),
           ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.teal),
+            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.accentSoft),
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Personal note saved.')),

@@ -81,8 +81,8 @@ class GenerateComplaintUseCase {
                       text:
                           'Type: ${e['type']?.toUpperCase()} | Desc: ${e['description']}\nSHA-256: ${e['hash']}',
                     ),
+                  ),
                 ),
-              ],
             pw.SizedBox(height: 30),
             pw.Center(
               child: pw.Column(

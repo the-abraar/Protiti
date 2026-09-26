@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:protiti/l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
 import '../../../data/services/auth_service.dart';
 import '../../core/theme/app_theme.dart';
@@ -230,7 +230,7 @@ class _LockScreenState extends State<LockScreen> {
                 : 'Enable Calculator Stealth Disguise',
             icon: Icon(
               _isCalculatorMode ? Icons.lock_outline : Icons.calculate_outlined,
-              color: AppTheme.warmGold,
+              color: AppTheme.brandSecondary,
             ),
             onPressed: () async {
               setState(() {
@@ -278,36 +278,33 @@ class _LockScreenState extends State<LockScreen> {
 
   Widget _buildStandardLockBody() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.symmetric(vertical: 16),
+      padding: const EdgeInsets.symmetric(vertical: 32),
       child: Column(
         children: [
           const SizedBox(height: 12),
-          // Shield Logo Icon
+          // Clean Lock Icon
           Container(
-            padding: const EdgeInsets.all(18),
+            padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: AppTheme.deepAmethyst.withValues(alpha: 0.2),
-              border: Border.all(color: AppTheme.deepAmethyst, width: 2),
+              color: AppTheme.surfaceLight,
+              border: Border.all(color: AppTheme.accentSoft.withOpacity(0.5), width: 2),
             ),
             child: const Icon(
-              Icons.shield_outlined,
-              size: 56,
-              color: AppTheme.tealLight,
+              Icons.lock_outline_rounded,
+              size: 48,
+              color: AppTheme.brandSecondary,
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           GestureDetector(
             onTap: () {
               _crashTapCount++;
               
               if (_crashTapCount >= 5) {
-                // Force an immediate native process termination.
-                // To the OS and the abuser, this looks like a hard, unrecoverable crash.
                 SystemChannels.platform.invokeMethod('SystemNavigator.pop');
               }
               
-              // Reset the counter if the user stops tapping
               Future.delayed(const Duration(seconds: 2), () {
                 if (mounted) {
                   setState(() {
@@ -317,49 +314,46 @@ class _LockScreenState extends State<LockScreen> {
               });
             },
             onLongPress: () async {
-              // 1. Permanently disable FaceID for the next launch
               await _authService.enforcePinHardLock();
-              
-              // 2. Trigger the thermal decoy
               if (!mounted) return;
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const ThermalDecoyScreen()),
               );
             },
-            child: Text(
-              AppLocalizations.of(context)!.vaultAuthTitle,
-              style: const TextStyle(
-                fontSize: 20,
+            child: const Text(
+              'Protiti (প্রতীতি)',
+              style: TextStyle(
+                fontSize: 28,
                 fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimaryDark,
+                color: AppTheme.textPrimary,
               ),
             ),
           ),
-          const SizedBox(height: 8),
-          Text(
-            AppLocalizations.of(context)!.vaultAuthSubtitle,
-            style: TextStyle(fontSize: 13, color: Colors.grey[400]),
+          const SizedBox(height: 4),
+          const Text(
+            'My Notes',
+            style: TextStyle(fontSize: 15, color: AppTheme.textSecondary, fontWeight: FontWeight.w500),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 32),
           
           if (_isCompromised)
             Container(
-              margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.red.withValues(alpha: 0.2),
-                borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: Colors.red),
+                color: AppTheme.panicRed.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppTheme.panicRed.withOpacity(0.3)),
               ),
               child: Row(
                 children: const [
-                  Icon(Icons.gpp_bad, color: Colors.red),
-                  SizedBox(width: 10),
+                  Icon(Icons.warning_amber_rounded, color: AppTheme.panicRed),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'WARNING: Device OS Compromised (Rooted). Encrypted data may be vulnerable to stalkerware.',
-                      style: TextStyle(color: Colors.redAccent, fontSize: 12),
+                      'Security Alert: Device may be compromised. Please proceed with caution.',
+                      style: TextStyle(color: AppTheme.panicRed, fontSize: 13, fontWeight: FontWeight.w500),
                     ),
                   ),
                 ],
@@ -372,14 +366,14 @@ class _LockScreenState extends State<LockScreen> {
             children: List.generate(4, (index) {
               final isFilled = index < _enteredPin.length;
               return Container(
-                margin: const EdgeInsets.symmetric(horizontal: 10),
+                margin: const EdgeInsets.symmetric(horizontal: 12),
                 width: 16,
                 height: 16,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isFilled ? AppTheme.warmGold : Colors.transparent,
+                  color: isFilled ? AppTheme.brandSecondary : Colors.transparent,
                   border: Border.all(
-                    color: isFilled ? AppTheme.warmGold : Colors.grey[600]!,
+                    color: isFilled ? AppTheme.brandSecondary : AppTheme.accentSoft,
                     width: 2,
                   ),
                 ),
@@ -388,46 +382,46 @@ class _LockScreenState extends State<LockScreen> {
           ),
 
           if (_errorMessage.isNotEmpty) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: 16),
             Text(
               _errorMessage,
               style: const TextStyle(
-                color: AppTheme.crimson,
-                fontSize: 13,
+                color: AppTheme.panicRed,
+                fontSize: 14,
                 fontWeight: FontWeight.w500,
               ),
             ),
           ],
 
-          const SizedBox(height: 24),
+          const SizedBox(height: 40),
 
           // Numeric Keypad
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 40),
+            padding: const EdgeInsets.symmetric(horizontal: 48),
             child: Column(
               children: [
                 _buildKeypadRow(['1', '2', '3']),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
                 _buildKeypadRow(['4', '5', '6']),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
                 _buildKeypadRow(['7', '8', '9']),
-                const SizedBox(height: 16),
+                const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     // Biometric Button
                     if (!_isBiometricLocked)
                       _buildActionButton(
-                        icon: Icons.fingerprint,
+                        icon: Icons.fingerprint_rounded,
                         onTap: _authenticateBiometric,
                         tooltip: 'Biometric Unlock',
                       )
                     else
-                      const SizedBox(width: 72, height: 72),
+                      const SizedBox(width: 76, height: 76),
                     _buildNumberButton('0'),
                     // Backspace Button
                     _buildActionButton(
-                      icon: Icons.backspace_outlined,
+                      icon: Icons.backspace_rounded,
                       onTap: _onBackspace,
                       tooltip: 'Delete',
                     ),
@@ -436,10 +430,7 @@ class _LockScreenState extends State<LockScreen> {
               ],
             ),
           ),
-
           const SizedBox(height: 20),
-
-          const SizedBox(height: 10),
         ],
       ),
     );
@@ -454,26 +445,33 @@ class _LockScreenState extends State<LockScreen> {
 
   Widget _buildNumberButton(String digit) {
     return InkWell(
-      splashColor: Colors.transparent,
-      highlightColor: Colors.transparent,
+      splashColor: AppTheme.surfaceLight,
+      highlightColor: AppTheme.surfaceLight,
       enableFeedback: false,
       onTap: () => _onNumberTap(digit),
-      borderRadius: BorderRadius.circular(40),
+      borderRadius: BorderRadius.circular(38),
       child: Container(
-        width: 72,
-        height: 72,
+        width: 76,
+        height: 76,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: AppTheme.cardDark,
-          border: Border.all(color: Colors.white10),
+          color: AppTheme.primaryWhite,
+          border: Border.all(color: AppTheme.surfaceLight, width: 2),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.02),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            )
+          ],
         ),
         alignment: Alignment.center,
         child: Text(
           digit,
           style: const TextStyle(
-            fontSize: 26,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+            fontSize: 28,
+            fontWeight: FontWeight.w600,
+            color: AppTheme.textPrimary,
           ),
         ),
       ),

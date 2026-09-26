@@ -55,7 +55,7 @@ dependencies:
   pdf: ^3.11.0
   secure_application: any
   sensors_plus: ^5.0.1
-  record: ^5.0.5
+  record: any
   audioplayers: ^5.2.1
   flutter_local_notifications: ^17.1.2
   flutter_jailbreak_detection: any
@@ -76,6 +76,9 @@ dependencies:
   battery_plus: ^6.1.0
   volume_controller: ^3.0.0
   network_info_plus: ^8.2.1
+  flutter_dynamic_icon: ^2.1.0
+  proximity_sensor: ^2.0.0
+  record_linux: any
 
 dev_dependencies:
   hardware_sos:
@@ -135,3 +138,5 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+
+

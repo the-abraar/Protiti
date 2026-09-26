@@ -1,3 +1,4 @@
+import 'package:volume_controller/volume_controller.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:volume_controller/volume_controller.dart';
 
@@ -9,7 +10,7 @@ class AcousticDeterrentService {
   Future<void> triggerLoudSiren() async {
     try {
       // 1. Force the hardware media volume to absolute maximum (1.0)
-      await VolumeController().setVolume(1.0);
+      await VolumeController.instance.setVolume(1.0);
       
       // 2. Loop a high-decibel siren asset indefinitely
       _player.setReleaseMode(ReleaseMode.loop);

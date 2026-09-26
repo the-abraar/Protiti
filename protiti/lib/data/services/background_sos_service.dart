@@ -15,6 +15,9 @@ import 'dart:async';
 
 class BackgroundSosService {
   static Future<void> initializeService() async {
+    if (!Platform.isAndroid && !Platform.isIOS) {
+      return;
+    }
     final service = FlutterBackgroundService();
     
     await service.configure(

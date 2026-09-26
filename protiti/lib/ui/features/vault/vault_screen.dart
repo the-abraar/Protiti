@@ -1,7 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:secure_application/secure_application.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:protiti/l10n/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
 import '../../../data/services/database_service.dart';
 import '../../../data/repositories/evidence_repository.dart';
@@ -127,10 +129,12 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     // If it's the real vault, lock the screen from screenshots!
-    if (!widget.isDecoy) {
-      SecureApplicationProvider.of(context, listen: false)?.secure();
-    } else {
-      SecureApplicationProvider.of(context, listen: false)?.open();
+    if (Platform.isAndroid || Platform.isIOS) {
+      if (!widget.isDecoy) {
+        SecureApplicationProvider.of(context, listen: false)?.secure();
+      } else {
+        SecureApplicationProvider.of(context, listen: false)?.open();
+      }
     }
     
     return Scaffold(
@@ -142,7 +146,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                   ? Icons.folder_shared_outlined
                   : Icons.lock_clock_outlined,
               size: 20,
-              color: widget.isDecoy ? AppTheme.teal : AppTheme.warmGold,
+              color: widget.isDecoy ? AppTheme.accentSoft : AppTheme.brandSecondary,
             ),
             const SizedBox(width: 8),
             Text(
@@ -212,29 +216,29 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
       floatingActionButton: _currentIndex == 0
           ? FloatingActionButton.extended(
               backgroundColor: widget.isDecoy
-                  ? AppTheme.teal
-                  : AppTheme.deepAmethyst,
+                  ? AppTheme.accentSoft
+                  : AppTheme.brandSecondary,
               onPressed: () {
                 if (widget.isDecoy) {
                   _showAddDialog(context);
                 } else {
                   showModalBottomSheet(
                     context: context,
-                    backgroundColor: AppTheme.cardDark,
+                    backgroundColor: AppTheme.primaryWhite,
                     builder: (ctx) => SafeArea(
                       child: Wrap(
                         children: [
                           ListTile(
-                            leading: const Icon(Icons.note_add, color: AppTheme.warmGold),
-                            title: const Text('Add Text Note'),
+                            leading: const Icon(Icons.note_add, color: AppTheme.brandSecondary),
+                            title: const Text('Add Text Note', style: TextStyle(color: AppTheme.textPrimary)),
                             onTap: () {
                               Navigator.pop(ctx);
                               _showAddDialog(context);
                             },
                           ),
                           ListTile(
-                            leading: const Icon(Icons.camera_alt, color: AppTheme.crimson),
-                            title: const Text('Secure Camera Capture'),
+                            leading: const Icon(Icons.camera_alt, color: AppTheme.brandSecondary),
+                            title: const Text('Secure Camera Capture', style: TextStyle(color: AppTheme.textPrimary)),
                             onTap: () async {
                               Navigator.pop(ctx);
                               await Provider.of<VaultProvider>(context, listen: false)
@@ -242,8 +246,8 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                             },
                           ),
                           ListTile(
-                            leading: const Icon(Icons.mic, color: Colors.blueAccent),
-                            title: const Text('Secure Audio Wiretap'),
+                            leading: const Icon(Icons.mic, color: AppTheme.brandSecondary),
+                            title: const Text('Secure Audio Record', style: TextStyle(color: AppTheme.textPrimary)),
                             onTap: () async {
                               Navigator.pop(ctx);
                               await Provider.of<VaultProvider>(context, listen: false)
@@ -251,8 +255,8 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                             },
                           ),
                           ListTile(
-                            leading: const Icon(Icons.photo_library, color: Colors.blueAccent),
-                            title: const Text('Secure Gallery Import'),
+                            leading: const Icon(Icons.photo_library, color: AppTheme.brandSecondary),
+                            title: const Text('Secure Gallery Import', style: TextStyle(color: AppTheme.textPrimary)),
                             onTap: () async {
                               Navigator.pop(ctx);
                               final success = await Provider.of<VaultProvider>(context, listen: false)
@@ -264,12 +268,12 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                                  showDialog(
                                    context: context,
                                    builder: (ctx) => AlertDialog(
-                                     backgroundColor: AppTheme.cardDark,
+                                     backgroundColor: AppTheme.primaryWhite,
                                      title: Row(
                                        children: const [
-                                         Icon(Icons.warning_amber, color: Colors.orange),
+                                         Icon(Icons.warning_amber, color: AppTheme.panicRed),
                                          SizedBox(width: 10),
-                                         Text('Forensic Warning'),
+                                         Text('Action Required', style: TextStyle(color: AppTheme.textPrimary)),
                                        ],
                                      ),
                                      content: const Text(
@@ -278,12 +282,12 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                                        'public photo gallery. You must open your Photos app and manually '
                                        'delete it (and clear your Recently Deleted folder) immediately to '
                                        'ensure your safety.',
-                                       style: TextStyle(color: Colors.white70),
+                                       style: TextStyle(color: AppTheme.textSecondary),
                                      ),
                                      actions: [
                                        TextButton(
                                          onPressed: () => Navigator.pop(ctx),
-                                         child: const Text('I Understand', style: TextStyle(color: Colors.orange)),
+                                         child: const Text('I Understand', style: TextStyle(color: AppTheme.brandSecondary)),
                                        ),
                                      ],
                                    ),
@@ -310,9 +314,10 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          backgroundColor: AppTheme.cardDark,
+          backgroundColor: AppTheme.primaryWhite,
           title: Text(
             widget.isDecoy ? 'Add Personal Document' : 'Secure New Evidence',
+            style: const TextStyle(color: AppTheme.textPrimary),
           ),
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -322,6 +327,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                 autocorrect: false,
                 enableSuggestions: false,
                 keyboardType: TextInputType.visiblePassword,
+                style: const TextStyle(color: AppTheme.textPrimary),
                 decoration: InputDecoration(
                   labelText: widget.isDecoy
                       ? 'Document Title / Note'
@@ -333,7 +339,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel'),
+              child: const Text('Cancel', style: TextStyle(color: AppTheme.textSecondary)),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -391,16 +397,16 @@ class VaultGridScreen extends StatelessWidget {
   }
 
   Color _getBadgeColor(String type) {
-    if (isDecoy) return AppTheme.tealLight;
+    if (isDecoy) return AppTheme.brandSecondary;
     switch (type.toLowerCase()) {
       case 'audio':
-        return AppTheme.crimson;
+        return AppTheme.panicRed;
       case 'screenshot':
-        return AppTheme.warmGold;
+        return AppTheme.brandSecondary;
       case 'pdf':
-        return AppTheme.tealLight;
+        return AppTheme.brandSecondary;
       default:
-        return AppTheme.teal;
+        return AppTheme.accentSoft;
     }
   }
 
@@ -447,8 +453,8 @@ class VaultGridScreen extends StatelessWidget {
                   vertical: 12,
                 ),
                 color: isDecoy
-                    ? Colors.grey[900]
-                    : AppTheme.deepAmethyst.withValues(alpha: 0.25),
+                    ? Colors.grey[100]
+                    : AppTheme.surfaceLight,
                 child: Row(
                   children: [
                     Icon(
@@ -456,19 +462,19 @@ class VaultGridScreen extends StatelessWidget {
                           ? Icons.visibility_off_outlined
                           : Icons.verified_user_outlined,
                       size: 18,
-                      color: isDecoy ? Colors.grey : AppTheme.tealLight,
+                      color: isDecoy ? Colors.grey : AppTheme.brandSecondary,
                     ),
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
                         isDecoy
-                            ? 'Showing 3 innocent decoy files. Sensitive evidence is completely hidden.'
-                            : 'Encrypted Forensic Storage: Real-time SHA-256 integrity hashing active.',
+                            ? 'Showing 3 innocent decoy files.'
+                            : 'Your evidence is stored securely and privately.',
                         style: TextStyle(
                           fontSize: 12,
                           color: isDecoy
-                              ? Colors.grey[400]
-                              : AppTheme.textPrimaryDark,
+                              ? Colors.grey[600]
+                              : AppTheme.textPrimary,
                         ),
                       ),
                     ),
@@ -510,10 +516,10 @@ class VaultGridScreen extends StatelessWidget {
                           showDialog(
                             context: context,
                             builder: (ctx) => AlertDialog(
-                              backgroundColor: AppTheme.cardDark,
-                              title: const Text('Evidence Details'),
+                              backgroundColor: AppTheme.primaryWhite,
+                              title: const Text('Evidence Details', style: TextStyle(color: AppTheme.textPrimary)),
                               content: SingleChildScrollView(
-                                child: Text(item.description),
+                                child: Text(item.description, style: const TextStyle(color: AppTheme.textPrimary)),
                               ),
                               actions: [
                                 TextButton(
@@ -526,13 +532,13 @@ class VaultGridScreen extends StatelessWidget {
                         }
                       },
                       child: Card(
-                        elevation: 3,
+                        elevation: 1,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                           side: BorderSide(
                             color: isDecoy
-                                ? Colors.white10
-                                : AppTheme.teal.withValues(alpha: 0.2),
+                                ? Colors.black12
+                                : AppTheme.accentSoft.withValues(alpha: 0.2),
                           ),
                         ),
                       child: Padding(
@@ -563,7 +569,7 @@ class VaultGridScreen extends StatelessWidget {
                                     vertical: 2,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: Colors.white10,
+                                    color: AppTheme.surfaceLight,
                                     borderRadius: BorderRadius.circular(4),
                                   ),
                                   child: Text(
@@ -571,7 +577,7 @@ class VaultGridScreen extends StatelessWidget {
                                     style: const TextStyle(
                                       fontSize: 9,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.grey,
+                                      color: AppTheme.textSecondary,
                                     ),
                                   ),
                                 ),
@@ -585,6 +591,7 @@ class VaultGridScreen extends StatelessWidget {
                               style: const TextStyle(
                                 fontWeight: FontWeight.w600,
                                 fontSize: 13,
+                                color: AppTheme.textPrimary,
                               ),
                             ),
                             const SizedBox(height: 6),
@@ -594,7 +601,7 @@ class VaultGridScreen extends StatelessWidget {
                                 Text(
                                   dateStr,
                                   style: const TextStyle(
-                                    color: Colors.grey,
+                                    color: AppTheme.textSecondary,
                                     fontSize: 11,
                                   ),
                                 ),
@@ -602,7 +609,7 @@ class VaultGridScreen extends StatelessWidget {
                                   const Icon(
                                     Icons.shield,
                                     size: 14,
-                                    color: AppTheme.tealLight,
+                                    color: AppTheme.accentSoft,
                                   ),
                               ],
                             ),

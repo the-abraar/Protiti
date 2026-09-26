@@ -1,6 +1,7 @@
+import 'package:sqflite_sqlcipher/sqflite.dart';
 import '../../domain/models/contact.dart';
 import '../services/database_service.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_sqlcipher/sqflite.dart';
 
 class ContactRepository {
   final DatabaseService dbService;

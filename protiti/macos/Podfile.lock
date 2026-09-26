@@ -1,0 +1,58 @@
+PODS:
+  - audioplayers_darwin (0.0.1):
+    - FlutterMacOS
+  - flutter_local_notifications (0.0.1):
+    - FlutterMacOS
+  - FlutterMacOS (1.0.0)
+  - FMDB/Core (2.7.12)
+  - FMDB/SQLCipher (2.7.12):
+    - FMDB/Core
+    - SQLCipher (~> 4.6)
+  - printing (1.0.0):
+    - FlutterMacOS
+  - sqflite_sqlcipher (0.0.1):
+    - FlutterMacOS
+    - FMDB/SQLCipher (~> 2.7.5)
+    - SQLCipher (= 4.10.0)
+  - SQLCipher (4.10.0):
+    - SQLCipher/standard (= 4.10.0)
+  - SQLCipher/common (4.10.0)
+  - SQLCipher/standard (4.10.0):
+    - SQLCipher/common
+
+DEPENDENCIES:
+  - audioplayers_darwin (from `Flutter/ephemeral/.symlinks/plugins/audioplayers_darwin/macos`)
+  - flutter_local_notifications (from `Flutter/ephemeral/.symlinks/plugins/flutter_local_notifications/macos`)
+  - FlutterMacOS (from `Flutter/ephemeral`)
+  - printing (from `Flutter/ephemeral/.symlinks/plugins/printing/macos`)
+  - sqflite_sqlcipher (from `Flutter/ephemeral/.symlinks/plugins/sqflite_sqlcipher/macos`)
+
+SPEC REPOS:
+  trunk:
+    - FMDB
+    - SQLCipher
+
+EXTERNAL SOURCES:
+  audioplayers_darwin:
+    :path: Flutter/ephemeral/.symlinks/plugins/audioplayers_darwin/macos
+  flutter_local_notifications:
+    :path: Flutter/ephemeral/.symlinks/plugins/flutter_local_notifications/macos
+  FlutterMacOS:
+    :path: Flutter/ephemeral
+  printing:
+    :path: Flutter/ephemeral/.symlinks/plugins/printing/macos
+  sqflite_sqlcipher:
+    :path: Flutter/ephemeral/.symlinks/plugins/sqflite_sqlcipher/macos
+
+SPEC CHECKSUMS:
+  audioplayers_darwin: 761f2948df701d05b5db603220c384fb55720012
+  flutter_local_notifications: 7e5a17a1dbc00d83dc10d43c2c4c05f2ceed233c
+  FlutterMacOS: d0db08ddef1a9af05a5ec4b724367152bb0500b1
+  FMDB: 728731dd336af3936ce00f91d9d8495f5718a0e6
+  printing: c4cf83c78fd684f9bc318e6aadc18972aa48f617
+  sqflite_sqlcipher: a4c2f17db76d2f86dfe044937d3a851d8880cbb9
+  SQLCipher: eb79c64049cb002b4e9fcb30edb7979bf4706dfc
+
+PODFILE CHECKSUM: 13edfb9e70ac3646927b8e6c9a212ad1d0fa29b2
+
+COCOAPODS: 1.17.0

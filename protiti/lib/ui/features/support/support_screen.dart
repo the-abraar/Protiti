@@ -25,7 +25,7 @@ class SupportScreen extends StatelessWidget {
       children: [
         Row(
           children: const [
-            Icon(Icons.support_agent, color: AppTheme.tealLight, size: 24),
+            Icon(Icons.support_agent, color: AppTheme.brandSecondary, size: 24),
             SizedBox(width: 8),
             Text(
               'Legal Aid & Support Bridge',
@@ -44,7 +44,7 @@ class SupportScreen extends StatelessWidget {
           specialty: 'Pro-Bono Legal Aid & Cyber Litigations',
           phone: '+88028391970',
           location: 'Dhaka (National Coverage)',
-          color: AppTheme.deepAmethyst,
+          color: AppTheme.brandSecondary,
         ),
         const SizedBox(height: 12),
         _buildSupportCard(
@@ -52,7 +52,7 @@ class SupportScreen extends StatelessWidget {
           specialty: 'Human Rights, Legal Counseling & Shelter',
           phone: '01726222222',
           location: 'Dhaka',
-          color: AppTheme.teal,
+          color: AppTheme.accentSoft,
         ),
         const SizedBox(height: 12),
         _buildSupportCard(
@@ -60,7 +60,7 @@ class SupportScreen extends StatelessWidget {
           specialty: 'Immediate Medical, Legal, & Forensic Support',
           phone: '+880255165088',
           location: 'Dhaka Medical College Hospital',
-          color: AppTheme.crimson,
+          color: AppTheme.panicRed,
         ),
         const SizedBox(height: 12),
         _buildSupportCard(
@@ -68,7 +68,7 @@ class SupportScreen extends StatelessWidget {
           specialty: 'Women Legal Protection & Crisis Intervention',
           phone: '+88029587422',
           location: 'Sufia Kamal Bhaban, Dhaka',
-          color: AppTheme.warmGold,
+          color: AppTheme.brandSecondary,
         ),
       ],
     );
@@ -105,7 +105,7 @@ class SupportScreen extends StatelessWidget {
                   ),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.call, color: AppTheme.tealLight),
+                  icon: const Icon(Icons.call, color: AppTheme.brandSecondary),
                   onPressed: () => _makePhoneCall(phone),
                   tooltip: 'Call $name',
                 ),
@@ -116,7 +116,7 @@ class SupportScreen extends StatelessWidget {
               specialty,
               style: const TextStyle(
                 fontSize: 12,
-                color: AppTheme.tealLight,
+                color: AppTheme.brandSecondary,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -156,7 +156,7 @@ class SupportScreen extends StatelessWidget {
       children: [
         Row(
           children: const [
-            Icon(Icons.school_outlined, color: AppTheme.tealLight, size: 24),
+            Icon(Icons.school_outlined, color: AppTheme.brandSecondary, size: 24),
             SizedBox(width: 8),
             Text(
               'Student Services & Campus Directory',
@@ -175,7 +175,7 @@ class SupportScreen extends StatelessWidget {
           specialty: 'Transcript & Course Enrollments',
           phone: '+88029661900',
           location: 'Administrative Building',
-          color: AppTheme.teal,
+          color: AppTheme.accentSoft,
         ),
         const SizedBox(height: 12),
         _buildSupportCard(
@@ -183,7 +183,7 @@ class SupportScreen extends StatelessWidget {
           specialty: 'Internship Placement & Skill Development',
           phone: '+88029661920',
           location: 'TSC 2nd Floor, Dhaka',
-          color: AppTheme.deepAmethyst,
+          color: AppTheme.brandSecondary,
         ),
       ],
     );
