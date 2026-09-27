@@ -13,6 +13,7 @@ import 'secure_audio_service.dart';
 import 'package:hardware_sos/hardware_sos.dart' as hardware_sos;
 import 'dart:async';
 
+@pragma('vm:entry-point')
 class BackgroundSosService {
   static Future<void> initializeService() async {
     if (!Platform.isAndroid && !Platform.isIOS) {

@@ -9,11 +9,13 @@ import 'ui/features/auth/lock_screen.dart';
 import 'data/services/background_sos_service.dart';
 import 'data/services/rasp_service.dart';
 
-import 'package:flutter_driver/driver_extension.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await BackgroundSosService.initializeService();
+  // Temporarily disabled:
+  // Starts a foreground service requiring location/mic permissions.
+  // Since permissions aren't granted on first launch, it crashes the app after ~10 seconds.
+  // await BackgroundSosService.initializeService();
   
   // Arm the Runtime Application Self-Protection (RASP) Engine
   await RaspService.initializeRasp();

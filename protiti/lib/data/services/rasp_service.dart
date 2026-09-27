@@ -15,27 +15,31 @@ class RaspService {
     final config = TalsecConfig(
       androidConfig: AndroidConfig(
         packageName: 'com.protiti.protiti',
-        signingCertHashes: ['INSERT_PROD_CERT_HASH_HERE'],
+        signingCertHashes: ['lkK94jMU4dKwO3ec3Z6r6q+3OKnwpVY+3h/DeoxriUM='],
+        // Allow direct ADB/sideloaded installs (not just Play Store)
+        supportedStores: ['adb'],
       ),
       iosConfig: IOSConfig(
         bundleIds: ['com.protiti.protiti'],
         teamId: 'INSERT_TEAM_ID_HERE',
       ),
       watcherMail: 'security@typesafe.ai',
-      isProd: kReleaseMode, // Ensures aggressive protection in production
+      isProd: kReleaseMode,
     );
 
     // Setup the Threat Callbacks
     final callback = ThreatCallback(
       onAppIntegrity: () => _detonate('App signature modified'),
-      onDebug: () => _detonate('Active debugger attached'),
+      // onDebug fires when developer mode is on — do NOT detonate, only log.
+      // Detonating here crashes the app during normal testing/sideloading.
+      onDebug: () => debugPrint('[RASP] Debugger / developer mode detected'),
       onHooks: () => _detonate('Frida/Xposed hooking framework detected in RAM'),
-      onSimulator: () => _detonate('Emulator execution detected'),
-      onPrivilegedAccess: () => print('Root/Jailbreak warning logged'),
-      onObfuscationIssues: () => print('Obfuscation missing'),
-      onDeviceBinding: () => print('Device binding failed'),
-      onDeviceID: () => print('Device ID tampered'),
-      onSecureHardwareNotAvailable: () => print('Hardware keystore offline'),
+      onSimulator: () => debugPrint('[RASP] Emulator detected'),
+      onPrivilegedAccess: () => debugPrint('Root/Jailbreak warning logged'),
+      onObfuscationIssues: () => debugPrint('Obfuscation missing'),
+      onDeviceBinding: () => debugPrint('Device binding failed'),
+      onDeviceID: () => debugPrint('Device ID tampered'),
+      onSecureHardwareNotAvailable: () => debugPrint('Hardware keystore offline'),
     );
 
     Talsec.instance.attachListener(callback);

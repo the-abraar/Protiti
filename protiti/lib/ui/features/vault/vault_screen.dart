@@ -46,44 +46,57 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
     _proximityService = ProximityLockService();
     _bluetoothTetherService = BluetoothTetherService();
     
-    // Only arm the proximity auto-lock if the victim is in the highly sensitive Real Vault
+    // Temporarily disabled for testing:
+    // Security monitors (Bluetooth tether, proximity sensor, screen cast)
+    // are triggering and kicking the user back to the lock screen.
+    /*
     if (!widget.isDecoy) {
-      _proximityService.startListening(() async {
-        if (mounted) {
-          await AuthService().enforcePinHardLock();
-          // Immediately kill the vault session if the phone is flipped face-down
-          Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
-        }
-      });
+      Future.delayed(const Duration(seconds: 2), () {
+        if (!mounted) return;
 
-      _bluetoothTetherService.startTetherMonitoring(() async {
-        if (mounted) {
-          await AuthService().enforcePinHardLock();
-          // The abuser ran away with the phone or disabled Bluetooth!
-          // Instantly destroy the vault session.
-          Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
-        }
-      });
+        _proximityService.startListening(() {
+          if (mounted) {
+            AuthService().enforcePinHardLock();
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (_) => const LockScreen()),
+              (route) => false,
+            );
+          }
+        });
 
-      ScreenCastMonitor.startMonitoring(
-        onCastDetected: () async {
+        _bluetoothTetherService.startTetherMonitoring(() {
           if (mounted) {
-            await AuthService().enforcePinHardLock();
-            // ACTIVE SPYING DETECTED!
-            // Instantly destroy the vault session and route back to the LockScreen.
-            Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
+            AuthService().enforcePinHardLock();
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (_) => const LockScreen()),
+              (route) => false,
+            );
           }
-        },
-        onScreenshotAttempted: () async {
-          if (mounted) {
-            await AuthService().enforcePinHardLock();
-            // UNAUTHORIZED SCREENSHOT ATTEMPTED!
-            // Instantly destroy the vault session!
-            Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
-          }
-        }
-      );
+        });
+
+        ScreenCastMonitor.startMonitoring(
+          onCastDetected: () async {
+            if (mounted) {
+              await AuthService().enforcePinHardLock();
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const LockScreen()),
+                (route) => false,
+              );
+            }
+          },
+          onScreenshotAttempted: () async {
+            if (mounted) {
+              await AuthService().enforcePinHardLock();
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const LockScreen()),
+                (route) => false,
+              );
+            }
+          },
+        );
+      });
     }
+    */
 
     _screens = [
       VaultGridScreen(isDecoy: widget.isDecoy),
@@ -91,12 +104,24 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
       PanicScreen(isDecoy: widget.isDecoy),
       SupportScreen(isDecoy: widget.isDecoy),
     ];
+
+    // Enable/disable screenshot protection ONCE after the first frame.
+    // Must NOT be called from build() — doing so triggers SecureGate to 
+    // show its lockedBuilder overlay on every rebuild, causing the gray screen.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final secureProvider = SecureApplicationProvider.of(context, listen: false);
+      if (!widget.isDecoy) {
+        secureProvider?.secure();
+      } else {
+        secureProvider?.open();
+      }
+    });
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    // CRITICAL: Prevent memory leaks and background battery drain
     _proximityService.stopListening();
     _bluetoothTetherService.stopMonitoring();
     ScreenCastMonitor.stopMonitoring();
@@ -105,11 +130,10 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
-      // FORENSIC WIPE: Aggressively sanitize the OS clipboard to prevent 
-      // an abuser from pasting the victim's copied passwords or evidence notes.
+    // Only lock on 'paused' (app sent to background). 
+    // 'inactive' fires mid-transition and would instantly bounce the user back.
+    if (state == AppLifecycleState.paused) {
       Clipboard.setData(const ClipboardData(text: ''));
-
       if (mounted) {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => const LockScreen()),
@@ -128,15 +152,6 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    // If it's the real vault, lock the screen from screenshots!
-    if (Platform.isAndroid || Platform.isIOS) {
-      if (!widget.isDecoy) {
-        SecureApplicationProvider.of(context, listen: false)?.secure();
-      } else {
-        SecureApplicationProvider.of(context, listen: false)?.open();
-      }
-    }
-    
     return Scaffold(
       appBar: AppBar(
         title: Row(
