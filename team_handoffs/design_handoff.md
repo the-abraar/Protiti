@@ -124,25 +124,25 @@ flowchart TD
     Launch[App Launch] --> LaunchCheck{Launch Persona?}
     LaunchCheck -- Normal Mode --> AuthCheck{Biometric Auth}
     AuthCheck -- Pass (Master PIN) --> GenuineVault[Genuine Evidence Vault]
-    AuthCheck -- Duress PIN (0000=) --> DecoyVault[Decoy Duress Vault]
+    AuthCheck -- Duress PIN (9999=) --> DecoyVault[Decoy Duress Vault]
     
     LaunchCheck -- Disguise Mode --> CalcUI[Functional Calculator Disguise]
     CalcUI -- Math Operations --> StandardCalc[Normal Arithmetic Output]
-    CalcUI -- Secret PIN: 1971= --> GenuineVault
-    CalcUI -- Secret PIN: 0000= --> DecoyVault
+    CalcUI -- Secret PIN: 1234= --> GenuineVault
+    CalcUI -- Secret PIN: 9999= --> DecoyVault
 
     GenuineVault --> QuickExitTrigger{Quick Exit Gesture / Face Down}
     QuickExitTrigger -- Triggered (<300ms) --> WipeRAM[Wipe RAM Cache & Switch to Calc]
 ```
 
 ### 1. Multi-Persona Disguises
-* **Persona A: "Smart Calc" (Official Disguise):** A fully functional calculator app that performs accurate arithmetic. Entering the master unlock code (e.g., `1971=`) immediately unlocks the Genuine Vault. Entering `0000=` unlocks the Decoy Vault.
+* **Persona A: "Smart Calc" (Official Disguise):** A fully functional calculator app that performs accurate arithmetic. Entering the master unlock code (`1234=`) immediately unlocks the Genuine Vault. Entering the duress code (`9999=`) unlocks the Decoy Vault.
 * **Persona B: "Daily Notes" (Alternative Disguise):** An offline grocery and study notepad. Long-pressing the top navigation bar opens the hidden PIN prompt.
 * **Persona C: "Protiti Journal" (Default Unmasked Persona):** A reflective personal journal brand that does not overtly advertise "GBV" or "police evidence".
 
 ### 2. Dual-Vault (Duress PIN) Architecture
 * **Master PIN / Fingerprint:** Decrypts the master SQLCipher database containing forensic screenshots, audio recordings, timestamps, and police GD drafts.
-* **Duress PIN (`0000=`):** If coerced at knifepoint or under abusive family supervision, entering the Duress PIN decrypts an entirely isolated **Decoy Database** populated with realistic university course materials, harmless recipes, and campus photography. No forensic logs or evidence records are visible, and zero UI hints indicate that another partition exists.
+* **Duress PIN (`9999`):** If coerced at knifepoint or under abusive family supervision, entering the Duress PIN decrypts an entirely isolated **Decoy Database** populated with realistic university course materials, harmless recipes, and campus photography. No forensic logs or evidence records are visible, and zero UI hints indicate that another partition exists.
 
 ### 3. Dynamic Launcher Icon Switching (OS Implementation)
 * **Android:** Configured via multiple `<activity-alias>` declarations in `AndroidManifest.xml`. When Disguise Mode is toggled in Settings, `PackageManager.setComponentEnabledSetting()` disables the `ProtitiMainActivity` alias and enables `CalculatorMainActivity` with an innocuous calculator icon (`ic_calculator.png`).
@@ -166,7 +166,7 @@ flowchart TD
 * **Thumbnail Container (h-24):** High-contrast dark gradient with platform badge top-left (Facebook blue, Instagram gradient, WhatsApp green, SMS red) and `HASHED` forensic badge top-right.
 * **Integrity Tag:** Cryptographic status pill in `JetBrains Mono` (`SHA-256 SEALED`).
 * **Metadata Footnote:** Exact timestamp in BDT (Bangladesh Standard Time, UTC+6) and file size.
-* **Interactive Inspection Modal:** Tapping an evidence card triggers an inspector displaying the complete 64-character SHA-256 hash, device hardware key attestation (Android StrongBox / iOS Secure Enclave), and legal admissibility classification under Cyber Security Act 2023.
+* **Interactive Inspection Modal:** Tapping an evidence card triggers an inspector displaying the complete 64-character SHA-256 hash, device hardware key attestation (Android StrongBox / iOS Secure Enclave), and legal admissibility classification under the Cyber Protection Act, 2026.
 
 ### 2. Stepper & Legal GD Automator
 * **Progress Tracker:** 4-segment linear indicator displaying active, completed, and pending steps.
@@ -204,7 +204,7 @@ flowchart TD
 
 - [x] **Theme Token Integration:** Verified `AppTheme.darkTheme` and `AppTheme.lightTheme` in Flutter codebase.
 - [ ] **Custom Font Bundling:** Add Google Fonts (`Poppins`, `Inter`, `Hind Siliguri`, `JetBrains Mono`) to `pubspec.yaml` assets for offline accessibility.
-- [ ] **Dual-Database Encryption:** Configure `sqflite` + `sqlcipher_flutter_libs` with distinct encryption keys derived from Master PIN vs. Duress PIN (`0000`).
+- [ ] **Dual-Database Encryption:** Configure `sqflite` + `sqlcipher_flutter_libs` with distinct encryption keys derived from Master PIN vs. Duress PIN (`9999`).
 - [ ] **Window Security Flag:** Add `FLAG_SECURE` in Android `MainActivity.kt` to disable screenshots and OS app switcher caching.
 - [ ] **Proximity Sensor Listener:** Bind `sensors_plus` to listen for face-down flip gestures and execute immediate calculator disguise fallback.
 - [ ] **Panic Button Haptic Feedback:** Bind `vibration` / `haptic_feedback` to the 3-second hold-down animation cycle.

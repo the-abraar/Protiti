@@ -94,17 +94,18 @@
 - **Phase 1 (Months 1-3): Foundation & Legal Vetting**
   - Finalize on-device SQLCipher vault, Duress PIN, and e-GD schema.
   - BLAST/BNWLA forensic hash validation and trauma-informed usability testing.
-- **Phase 2 (Months 4-6): Home Division Pilot & Campus Outreach**
-  - "Train the Trainer" workshops across university dorms and student unions.
-  - Distribute 10,000 discrete survivor toolkits and pocket safety guides.
-- **Phase 3 (Months 7-8): National Handover & Showcase**
+- **Phase 2 (Months 4-6): Dhaka Division Pilot & Campus Outreach**
+  - "Train the Trainer" workshops across 5 Dhaka Division university dorms and student unions (DU, JU, Eden Mohila College, BRACU, NSU).
+  - Distribute 5,000 discrete survivor toolkits and pocket safety guides.
+- **Phase 3 (Months 7-8): National Roadmap & Showcase**
   - Pilot evaluation, policy showcase with Cyber Police Centre, and open-sourcing the e-GD framework.
-- **BDT 50,000 Seed Grant Allocation (Home Division Pilot):**
-  - Survivor Toolkits & Pocket Guides (36% | BDT 18,200)
-  - Campus Workshop Logistics (22% | BDT 11,200)
+  - Present the audited Dhaka Pilot results alongside the (unfunded) National 8-Division Expansion Roadmap.
+- **BDT 50,000 Seed Grant Allocation (Dhaka Division Pilot Only):**
+  - Survivor Toolkits & Handbooks (16% | BDT 8,000)
+  - Campus Workshop Logistics — 10 Activations (40% | BDT 20,000)
   - Ambassador Ground Logistics & Travel (24% | BDT 12,000)
   - Hotline Triage Connectivity (12% | BDT 6,000)
-  - Audit & Documentation (6% | BDT 2,600)
+  - Audit & National Roadmap Prep (8% | BDT 4,000)
   - *Strictly BDT 0 spent on stipends or personal honoraria.*
 
 *Visual Suggestion:* A clear, structured timeline or Gantt chart moving from left to right, transitioning from dark (development) to light (launch/impact).

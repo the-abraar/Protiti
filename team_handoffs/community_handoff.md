@@ -109,46 +109,46 @@ flowchart TD
 
 ---
 
-## 4. 8-Division Rollout Schedule & Campus Anchor Matrix
+## 4. Campus Anchor Matrix — Dhaka Pilot (Funded) & National Roadmap (Phase 2, Illustrative)
 
-The rollout spans the entire 8-month fellowship lifecycle, covering all 8 administrative divisions of Bangladesh:
+**Grant Scope:** Per DKC Fellowship rules (one division per team), the BDT 50,000 seed grant funds **only the Dhaka Division Pilot** (Month 1–8, all 5 Dhaka campuses). The other 7 divisions below are the **Phase 2 National Expansion Roadmap** — illustrative targets for the period after the fellowship, contingent on additional funding/partnership secured at the February 2027 National Showcase. See `pitch_materials/budget_50k.md` and `pitch_materials/eight_divisions_rollout.md` for full detail.
 
-| Division | Primary Campus Anchors | Priority Thanas & Hotspots | Community & Dialect Focus | Timeline |
-|---|---|---|---|---|
-| **Dhaka** | DU, JU, Eden Mohila College, BRACU, NSU | Shahbagh, Dhanmondi, Badda, Bhatara, Savar Model | High-density dormitories, non-consensual deepfakes, online blackmail | Month 1–2 (Oct–Nov 2026) |
-| **Chattogram** | CU (Hathazari), AUW, CUET, Chittagong College | Hathazari Model, Kotwali, Panchlaish, Rangamati Sadar | Commercial cyber fraud; indigenous CHT women's network; Chittagonian dialect adaptation | Month 3 (Dec 2026) |
-| **Sylhet** | SUST (Kumargaon), SAU, MC College | Jalalabad, Kotwali Model Sylhet, Beanibazar | Transnational/diaspora harassment, conservative social stigma, Sylheti dialect | Month 3 (Dec 2026) |
-| **Rajshahi** | RU (Motihar), RUET, Rajshahi College | Motihar, Boalia Model, Godagari, Bogura Sadar | Off-campus student housing ("Mess") hidden camera protection, BLAST clinic integration | Month 4 (Jan 2027) |
-| **Khulna** | KU (Gollamari), KUET, BL College, JUST | Harintana, Khalishpur, Daulatpur, Kotwali Jashore | Coastal trafficking intersections, romance scams, Union Digital Centre (UDC) outreach | Month 5 (Feb 2027) |
-| **Barishal** | BU (Karnakathi), BM College, PSTU | Bandar (River port), Kotwali Model Barishal, Bakerganj | Riverine connectivity constraints; offline toolkit distribution; voice-guided literacy | Month 5 (Feb 2027) |
-| **Rangpur** | BRUR, Carmichael College, HSTU (Dinajpur) | Tajhat, Kotwali Rangpur, Dinajpur Sadar, Kurigram | Child marriage prevention via blackmail interdiction; indigenous Santal community inclusion | Month 4 (Jan 2027) |
-| **Mymensingh** | BAU, JKKNIU (Trishal), Ananda Mohan College | Kotwali Model Mymensingh, Trishal, Netrokona Sadar | Rural campus sprawling layouts; indigenous Garo youth inclusion along border upazilas | Month 6 (Mar 2027) |
-| **National** | All 8 Divisional Hubs Consolidated | National Police Cyber Desks & Proctorial Offices | **DKC National Showcase (Feb 2027)** & Final Handover (Apr–May 2027) | Month 7–8 (Apr–May 2027) |
+| Division | Primary Campus Anchors | Priority Thanas & Hotspots | Community & Dialect Focus | Timeline | Funding Status |
+|---|---|---|---|---|---|
+| **Dhaka** | DU, JU, Eden Mohila College, BRACU, NSU | Shahbagh, Dhanmondi, Badda, Bhatara, Savar Model | High-density dormitories, non-consensual deepfakes, online blackmail | Month 1–8 (Oct 2026–May 2027) | **Fellowship-Funded Pilot (BDT 50,000)** |
+| **Chattogram** | CU (Hathazari), AUW, CUET, Chittagong College | Hathazari Model, Kotwali, Panchlaish, Rangamati Sadar | Commercial cyber fraud; indigenous CHT women's network; Chittagonian dialect adaptation | Phase 2, Month 1–2 | Illustrative — post-fellowship |
+| **Sylhet** | SUST (Kumargaon), SAU, MC College | Jalalabad, Kotwali Model Sylhet, Beanibazar | Transnational/diaspora harassment, conservative social stigma, Sylheti dialect | Phase 2, Month 1–2 | Illustrative — post-fellowship |
+| **Rajshahi** | RU (Motihar), RUET, Rajshahi College | Motihar, Boalia Model, Godagari, Bogura Sadar | Off-campus student housing ("Mess") hidden camera protection, BLAST clinic integration | Phase 2, Month 3–4 | Illustrative — post-fellowship |
+| **Khulna** | KU (Gollamari), KUET, BL College, JUST | Harintana, Khalishpur, Daulatpur, Kotwali Jashore | Coastal trafficking intersections, romance scams, Union Digital Centre (UDC) outreach | Phase 2, Month 5–6 | Illustrative — post-fellowship |
+| **Barishal** | BU (Karnakathi), BM College, PSTU | Bandar (River port), Kotwali Model Barishal, Bakerganj | Riverine connectivity constraints; offline toolkit distribution; voice-guided literacy | Phase 2, Month 5–6 | Illustrative — post-fellowship |
+| **Rangpur** | BRUR, Carmichael College, HSTU (Dinajpur) | Tajhat, Kotwali Rangpur, Dinajpur Sadar, Kurigram | Child marriage prevention via blackmail interdiction; indigenous Santal community inclusion | Phase 2, Month 3–4 | Illustrative — post-fellowship |
+| **Mymensingh** | BAU, JKKNIU (Trishal), Ananda Mohan College | Kotwali Model Mymensingh, Trishal, Netrokona Sadar | Rural campus sprawling layouts; indigenous Garo youth inclusion along border upazilas | Phase 2, Month 7–8 | Illustrative — post-fellowship |
+| **National** | Dhaka Pilot Data + All 8 Divisional Hubs (Phase 2) | National Police Cyber Desks & Proctorial Offices | **DKC National Showcase (Feb 2027)** presents Dhaka Pilot results + Phase 2 Roadmap; Final Fellowship Handover (Apr–May 2027) | Month 5 & 7–8 | Fellowship-funded documentation only |
 
 ---
 
-## 5. BDT 50,000 Seed Grant Allocation Breakdown
+## 5. BDT 50,000 Seed Grant Allocation Breakdown (Dhaka Division Pilot Only)
 
-The budget strictly follows the fellowship rules: **BDT 50,000 total, disbursed in two equal tranches of BDT 25,000, 100% dedicated to project execution with zero personal stipends or overhead deductions**.
+The budget strictly follows the fellowship rules: **BDT 50,000 total, disbursed in two equal tranches of BDT 25,000, 100% dedicated to project execution with zero personal stipends or overhead deductions, entirely within Dhaka Division** (8 Ambassadors, 10 Campus Activations, 5,000 Toolkits). Full line-item detail in `pitch_materials/budget_50k.md`.
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
-│             PROJECT PROTITI — BDT 50,000 SEED GRANT BUDGET             │
+│      PROJECT PROTITI — BDT 50,000 SEED GRANT BUDGET (DHAKA PILOT)      │
 ├─────────────────────────────────────────────────┬──────────┬───────────┤
 │ Category Description                            │ BDT Cost │ % Share   │
 ├─────────────────────────────────────────────────┼──────────┼───────────┤
-│ Cat A: Survivor Toolkits & Field Print Assets   │  18,200  │   36.4%   │
-│ Cat B: Campus & Community Workshop Logistics    │  11,200  │   22.4%   │
-│ Cat C: Ambassador Local Transport (8 Divisions) │  12,000  │   24.0%   │
-│ Cat D: Digital Connectivity & Hotline SIMs      │   6,000  │   12.0%   │
-│ Cat E: Inter-Divisional Courier & Audit Docs    │   2,600  │    5.2%   │
+│ Cat A: Survivor Toolkits & Handbooks             │   8,000  │   16.0%   │
+│ Cat B: Campus Workshop Logistics (10 Activations)│  20,000  │   40.0%   │
+│ Cat C: Ambassador Local Transport (8 Ambassadors)│  12,000  │   24.0%   │
+│ Cat D: Digital Connectivity & Hotline SIMs       │   6,000  │   12.0%   │
+│ Cat E: Audit Docs & National Roadmap Prep        │   4,000  │    8.0%   │
 ├─────────────────────────────────────────────────┼──────────┼───────────┤
-│ GRAND TOTAL (Strictly zero stipend)             │  50,000  │  100.0%   │
+│ GRAND TOTAL (Strictly zero stipend)              │  50,000  │  100.0%   │
 └─────────────────────────────────────────────────┴──────────┴───────────┘
 ```
 
-* **Tranche 1 (BDT 25,000 | Oct 2026):** 6,000 folding survivor cards (BDT 7,800); 80 Master Handbooks (BDT 5,200); Refreshments for 4 workshops (BDT 4,400); Stationery for 4 hubs (BDT 1,200); Ambassador travel pool for 4 hubs (BDT 6,000); Regional courier dispatch (BDT 400).
-* **Tranche 2 (BDT 25,000 | Jan 2027):** 4,000 folding survivor cards (BDT 5,200); Refreshments for remaining 4 workshops (BDT 4,400); Stationery for 4 hubs (BDT 1,200); Ambassador travel pool for 4 hubs (BDT 6,000); 8 Dedicated SIMs & data packs (BDT 6,000); Courier & audit binder documentation (BDT 2,200).
+* **Tranche 1 (BDT 25,000 | Oct 2026):** 5,000 folding survivor cards (BDT 6,500); Refreshments for 5 campus activations (BDT 8,250); Stationery for 5 activations (BDT 1,250); Kiosk signage for 5 activations (BDT 500); Ambassador travel pool, 4 months (BDT 6,000); 3 dedicated SIMs + partial data (BDT 1,700); Local courier (BDT 800).
+* **Tranche 2 (BDT 25,000 | Jan 2027):** 23 Ambassador/Partner handbooks (BDT 1,500); Refreshments for remaining 5 campus activations (BDT 8,250); Stationery for 5 activations (BDT 1,250); Kiosk signage for 5 activations (BDT 500); Ambassador travel pool, 4 months (BDT 6,000); Remaining data packs + kiosk hotspots (BDT 4,300); Audit binder + National Roadmap dossier (BDT 3,200).
 
 ---
 

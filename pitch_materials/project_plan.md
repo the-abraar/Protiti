@@ -58,7 +58,7 @@ flowchart TD
   * Secure export via password-protected ZIP or encrypted PDF.
 * **GD-Automator**:
   * Step-by-step wizard to collect details of the harassment.
-  * Maps inputs to relevant sections of the Bangladesh Cyber Security Act.
+  * Maps inputs to relevant sections of the Bangladesh Cyber Protection Act, 2026.
   * Generates a legally formatted General Diary (GD) template.
   * Supports both English and Bengali outputs.
   * Integration with a local database of division-specific police station addresses.
@@ -133,7 +133,7 @@ erDiagram
 * **Data Deletion Policies**: Implementing secure erase logic (overwriting data blocks prior to standard deletion) to ensure unrecoverability of deleted sensitive evidence.
 
 ## 7. Legal Logic Engine
-* **Cyber Security Act Mapping**: A local logic tree (JSON/YAML based) maps user-reported scenarios (e.g., "non-consensual image sharing", "cyberbullying") to specific clauses and sections of the Bangladesh Cyber Security Act.
+* **Cyber Protection Act, 2026 Mapping**: A local logic tree (JSON/YAML based) maps user-reported scenarios (e.g., "non-consensual image sharing", "cyberbullying") to specific clauses and sections of the Bangladesh Cyber Protection Act, 2026.
 * **GD Template Structure**: Uses the `pdf` package to generate formatted documents that meet the structural requirements of local Bangladesh police stations.
 * **Police Station Integration**: A bundled, localized database of stations categorized by Division, District, and Thana.
 * **Multi-Language Output**: Full localization support to switch the generated GD output seamlessly between Bengali (primary legal language) and English.
@@ -154,11 +154,11 @@ erDiagram
 
 ## 9. Team Requirements
 * **Lead Developer (Flutter)**: Responsible for cross-platform architecture, security implementation, and core UI/UX coding.
-* **Legal Advisor (Bangladesh Law)**: Crucial for validating GD templates, ensuring accurate Cyber Security Act mapping, and legal viability.
+* **Legal Advisor (Bangladesh Law)**: Crucial for validating GD templates, ensuring accurate Cyber Protection Act, 2026 mapping, and legal viability.
 * **UI/UX Designer**: Focus on trauma-informed design, accessibility, and intuitive flows for users under stress.
 * **Community Manager**: Handles user onboarding, training programs, and integration with local support networks (DKC fellowship alignment).
 
 ## 10. Risk Assessment
 * **Technical Risks**: Encryption key loss, database corruption. *Mitigation*: Offer highly secure, optional, user-managed encrypted local backups and robust data integrity checks.
-* **Legal Risks**: Rapid changes in the Cyber Security Act or police procedures. *Mitigation*: App architecture designed for easy OTA updates of the legal logic JSON tree without requiring full app updates.
+* **Legal Risks**: Rapid changes in the Cyber Protection Act, 2026 or police procedures. *Mitigation*: App architecture designed for easy OTA updates of the legal logic JSON tree without requiring full app updates.
 * **User Safety Risks**: Abuser discovering the app on the victim's phone. *Mitigation*: App disguise (Calculator mode), discreet push notifications, and "shake to hide" emergency obfuscation.

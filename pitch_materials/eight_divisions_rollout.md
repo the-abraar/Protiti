@@ -1,14 +1,16 @@
-# Project Protiti (প্রতীতি) — 8-Division Rollout & Grassroots Implementation Plan
+# Project Protiti (প্রতীতি) — National Architecture & Phase 2 Expansion Roadmap
 **DKC Digital Respect & Cohesion Fellowship 2026 | UNDP Bangladesh & SURGE**
 *Theme: Gender-Based Online Violence | Cross-Cutting Lens: Gender Equity & Youth Empowerment*
+
+> **Grant Scope Clarification:** Per DKC Fellowship rules, each selected team implements in **one** administrative division. The BDT 50,000 seed grant funds a concentrated **Dhaka Division Pilot only** — 8 Ambassadors, 10 campus activations, 5,000 survivor toolkits (full detail in `budget_50k.md`). Everything in **this** document — the 8-division rollout, 64-ambassador network, and divisional profiles below — is the **Phase 2 National Expansion Roadmap**: illustrative evidence that the Protiti software, legal schema, and e-GD taxonomy are architected to scale nationally, to be pitched at the February 2027 National Showcase and pursued through separate post-fellowship partnerships/funding. It is **not** funded by the current BDT 50,000 grant, and no divisional activity described below occurs during the 8-month fellowship period unless explicitly marked "Dhaka Division Pilot."
 
 ---
 
 ## Executive Summary & Strategic Approach
 
-Online gender-based violence (OGBV) in Bangladesh is not uniform: the digital threats faced by a female student in Dhaka's university dormitories differ fundamentally from those faced by an indigenous youth in the Chittagong Hill Tracts or an artisan woman in rural Barishal. Project Protiti's 8-Division Rollout Strategy bridges this divide through a hyper-localized, decentralised campus-to-community model.
+Online gender-based violence (OGBV) in Bangladesh is not uniform: the digital threats faced by a female student in Dhaka's university dormitories differ fundamentally from those faced by an indigenous youth in the Chittagong Hill Tracts or an artisan woman in rural Barishal. Project Protiti's architecture is designed to bridge this divide nationally through a hyper-localized, decentralised campus-to-community model — **once it expands beyond the current fellowship-funded pilot.**
 
-Over an **8-month fellowship lifecycle (October 2026 – May 2027)**, Protiti deploys a cadre of **64 trained Female Campus & Community Ambassadors (8 per division)** across all 8 administrative divisions of Bangladesh. The strategy pairs mobile evidence vault dissemination with physical survivor toolkits, local police *Thana* engagement, and strategic NGO partnerships (BRAC, BNWLA, BLAST, PCSW).
+The **fellowship-funded Dhaka Division Pilot (October 2026 – May 2027, BDT 50,000)** deploys **8 trained Female Campus Ambassadors** across Dhaka Division's university campuses. The Phase 2 vision illustrated in this document — a cadre of **64 trained Female Campus & Community Ambassadors (8 per division)** across all 8 administrative divisions of Bangladesh — is the national scale-up target for the period **after** the fellowship, pending additional funding/partnership secured at the February 2027 National Showcase. The strategy pairs mobile evidence vault dissemination with physical survivor toolkits, local police *Thana* engagement, and strategic NGO partnerships (BRAC, BNWLA, BLAST, PCSW).
 
 ```mermaid
 flowchart TD
@@ -39,30 +41,45 @@ flowchart TD
 
 ---
 
-## 1. Phased 8-Month Implementation Roadmap
+## 1a. Fellowship-Funded Dhaka Division Pilot Timeline (Actual — BDT 50,000)
 
-The DKC Fellowship operates on an intensive 8-month timeline with milestone reviews, residential bootcamps, and a national showcase.
+This is what the current BDT 50,000 seed grant actually funds, month by month. All activity below is confined to Dhaka Division.
 
-```mermaid
-flowchart LR
-    P1["Phase 1: Foundation & Co-Design (M1-M2: Oct-Nov 2026)"] --> P2["Phase 2: Regional Deployment (M3-M5: Dec 2026-Feb 2027)"]
-    P2 --> P3["Phase 3: National Scale & Showcase (M6-M8: Mar-May 2027)"]
-```
-
-| Fellowship Month | Calendar Period | Milestone Focus | Divisional Activity & Key Outputs |
+| Fellowship Month | Calendar Period | Milestone Focus | Dhaka Division Activity & Key Outputs |
 |---|---|---|---|
 | **Month 1** | October 2026 | **Innovation Bootcamp & Pilot Co-Design** | • Attend 3-day residential Innovation Bootcamp in Dhaka.<br>• Refine App v1.0 (Cyber Protection Act 2026 mapping, Duress PIN, e-GD draft).<br>• Pilot launch in Dhaka Division (DU, JU, Eden Mohila College).<br>• Disburse Seed Grant Tranche 1 (BDT 25,000). |
-| **Month 2** | November 2026 | **Dhaka Consolidation & Tooling** | • Dhaka Ambassador Cohort (8 fellows) onboarded & certified.<br>• Print 1st run of discreet survivor toolkits (wallet cards, offline guides).<br>• Conduct formal liaison with Police Cyber Support for Women (PCSW) & Dhaka Met Police. |
-| **Month 3** | December 2026 | **Eastern Corridor: Chattogram & Sylhet** | • Attend 2-day residential Progress Bootcamp.<br>• Onboard Chattogram (CU, AUW) and Sylhet (SUST, MC College) ambassadors.<br>• Roll out dialect-adapted toolkits (Chittagonian and Sylheti glossaries).<br>• Initiate CHT ethnic minority student outreach in Chattogram. |
-| **Month 4** | January 2027 | **Northern Corridor: Rajshahi & Rangpur** | • Onboard Rajshahi (RU, RUET) and Rangpur (BRUR, HSTU) ambassadors.<br>• Off-campus student housing ("Mess") safety campaign against non-consensual filming.<br>• Midterm implementation review; Seed Grant Tranche 2 (BDT 25,000) disbursement. |
-| **Month 5** | February 2027 | **Southern Belt: Khulna & Barishal + National Showcase** | • Onboard Khulna (KU, JUST) and Barishal (BU, BM College) ambassadors.<br>• Rural/coastal offline workshops via BRAC Community Centres and Union Digital Centres (UDCs).<br>• **DKC National Showcase Event (February 2027)** — Present halfway empirical data to UNDP/EU. |
-| **Month 6** | March 2027 | **Central North: Mymensingh & National Ring** | • Onboard Mymensingh (BAU, JKKNIU) ambassadors.<br>• Indigenous Garo youth outreach in Netrokona/Sherpur border areas.<br>• Consolidate 8-division bug fixes, legal template updates, and e-GD submissions. |
-| **Month 7** | April 2027 | **Institutional Handover & Sustainability** | • University Proctor & Student Affairs office institutionalization.<br>• Connect campus anti-harassment cells directly to Protiti app resource channels.<br>• Joint audit with BNWLA and BLAST on case resolution and GD acceptance rates. |
-| **Month 8** | May 2027 | **Fellowship Consolidation & Open Source Release** | • Final impact evaluation report submitted to SURGE / UNDP PTIB.<br>• Protiti Legal Logic Engine released as open-source public good.<br>• Transition ambassadors to lifelong DKC Alumni Peacebuilding Network. |
+| **Month 2** | November 2026 | **Dhaka Ambassador Onboarding & First Activations** | • Dhaka Ambassador Cohort (8 fellows) onboarded & certified.<br>• Print 1st run of 5,000 discreet survivor toolkits (wallet cards).<br>• First 2-3 campus activations (DU, JU, Eden Mohila College). |
+| **Month 3** | December 2026 | **Progress Bootcamp & Deepening Dhaka Engagement** | • Attend 2-day residential Progress Bootcamp.<br>• Expand campus activations to BRACU and NSU.<br>• Conduct formal liaison with Police Cyber Support for Women (PCSW) & Dhaka Met Police. |
+| **Month 4** | January 2027 | **Dhaka Pilot Saturation** | • Remaining campus activations (10 total across the 5 Dhaka campuses).<br>• Midterm implementation review; Seed Grant Tranche 2 (BDT 25,000) disbursement. |
+| **Month 5** | February 2027 | **National Showcase** | • **DKC National Showcase Event (February 2027)** — present audited Dhaka Division Pilot results and the Phase 2 National Expansion Roadmap (Section 2 below) to UNDP/EU. |
+| **Month 6** | March 2027 | **Dhaka Consolidation** | • Consolidate Dhaka bug fixes, legal template updates, and e-GD submissions.<br>• Prepare open-source release plan for the Legal Logic Engine. |
+| **Month 7** | April 2027 | **Institutional Handover & Sustainability** | • DU/JU/Eden Mohila College/BRACU/NSU Proctor & Student Affairs office institutionalization.<br>• Connect campus anti-harassment cells directly to Protiti app resource channels.<br>• Joint audit with BNWLA and BLAST on Dhaka Division case resolution and GD acceptance rates. |
+| **Month 8** | May 2027 | **Fellowship Consolidation & Open Source Release** | • Final impact evaluation report submitted to SURGE / UNDP PTIB.<br>• Protiti Legal Logic Engine released as open-source public good.<br>• Ambassadors transition to lifelong DKC Alumni Peacebuilding Network; pursue Phase 2 partnerships for national expansion. |
 
 ---
 
-## 2. Division-by-Division Operational Profiles
+## 1b. Phase 2: Illustrative National Expansion Timeline (Post-Fellowship, Indicative — Not Funded by This Grant)
+
+The timeline below illustrates how Protiti's architecture *could* scale nationally in the 8 months following the fellowship (tentatively June 2027 – January 2028), contingent on securing separate funding or institutional partnership at the February 2027 National Showcase. It is presented to demonstrate technical and operational scalability, not as a fellowship deliverable.
+
+```mermaid
+flowchart LR
+    P1["Phase 1: Dhaka Pilot (Fellowship-Funded, M1-M8: Oct 2026-May 2027)"] --> P2["Phase 2: Regional Deployment (Illustrative, Post-Fellowship)"]
+    P2 --> P3["Phase 3: National Scale (Illustrative, Post-Fellowship)"]
+```
+
+| Illustrative Month | Milestone Focus | Divisional Activity & Key Outputs |
+|---|---|---|
+| **Month 1-2** | **Eastern Corridor: Chattogram & Sylhet** | • Onboard Chattogram (CU, AUW) and Sylhet (SUST, MC College) ambassadors.<br>• Roll out dialect-adapted toolkits (Chittagonian and Sylheti glossaries).<br>• Initiate CHT ethnic minority student outreach in Chattogram. |
+| **Month 3-4** | **Northern Corridor: Rajshahi & Rangpur** | • Onboard Rajshahi (RU, RUET) and Rangpur (BRUR, HSTU) ambassadors.<br>• Off-campus student housing ("Mess") safety campaign against non-consensual filming. |
+| **Month 5-6** | **Southern Belt: Khulna & Barishal** | • Onboard Khulna (KU, JUST) and Barishal (BU, BM College) ambassadors.<br>• Rural/coastal offline workshops via BRAC Community Centres and Union Digital Centres (UDCs). |
+| **Month 7-8** | **Central North: Mymensingh & National Ring** | • Onboard Mymensingh (BAU, JKKNIU) ambassadors.<br>• Indigenous Garo youth outreach in Netrokona/Sherpur border areas.<br>• Consolidate 8-division bug fixes, legal template updates, and e-GD submissions. |
+
+---
+
+## 2. Division-by-Division Operational Profiles (Phase 2 — Illustrative, Post-Fellowship)
+
+*These profiles describe the Phase 2 National Expansion targets, not current fellowship activity. Only the Dhaka profile below reflects work funded by the BDT 50,000 seed grant; the remaining 7 profiles are included to demonstrate that Protiti's operational model has been researched and designed to scale nationally.*
 
 Each division possesses distinct socio-technological vulnerabilities, key institutional anchors, target Thanas, and community partners:
 
@@ -205,7 +222,7 @@ Each division possesses distinct socio-technological vulnerabilities, key instit
 
 ## 3. Train-the-Trainer (ToT) Campus Ambassador Syllabus
 
-The 64 Ambassadors undergo a rigorous, accredited **2-Day Hybrid Intensive Curriculum** combining legal fluency, app navigation, trauma de-escalation, and safeguarding.
+The 8 Dhaka Division Pilot Ambassadors (fellowship-funded) undergo a rigorous, accredited **2-Day Hybrid Intensive Curriculum** combining legal fluency, app navigation, trauma de-escalation, and safeguarding. The same curriculum is designed to scale to the full 64-Ambassador national cohort in Phase 2.
 
 ```
 ┌────────────────────────────────────────────────────────────────────────┐
@@ -311,18 +328,18 @@ flowchart TD
 
 ## 6. Comprehensive Monitoring, Evaluation & Impact KPIs
 
-Success over the 8-month implementation lifecycle is measured through rigorous quantitative metrics and qualitative verification:
+Success is measured through rigorous quantitative metrics and qualitative verification. The **Fellowship Target** column is what the BDT 50,000 grant is actually accountable for (Dhaka Division Pilot only); the **Phase 2 Illustrative Target** column shows what the same model would deliver at full 8-division national scale, contingent on post-fellowship funding.
 
-| Category | Fellowship Target Metric | Measurement Frequency | Verification Method |
-|---|---|---|---|
-| **Ambassador Network** | 64 Fully Certified Female Ambassadors across 8 Divisions (8 per division) | Month 2, 4, 6 | Training logs, attendance records, practical exam scores |
-| **Direct Peer Outreach** | 8,000+ Female University & College Students reached via workshops & kiosks | Bi-weekly | Workshop attendance slips, campus kiosk registration tally |
-| **Survivor Toolkits Distributed** | 12,000 Physical discreet cards & offline guides disseminated | Monthly | Inventory distribution logs across 8 divisions |
-| **App Installations & Vault Security** | 3,500+ Secure Vaults activated; 0 security leaks | Monthly | Client-side anonymized telemetry (privacy-preserving counter) |
-| **Actionable Complaints Filed** | 500+ Structurally sound GDs / e-GDs generated with cryptographic metadata | Bi-monthly | Anonymized user survey & partner legal aid desk intake records |
-| **Law Enforcement Acceptance** | >85% GD acceptance rate at target Thanas without rejection for formatting | Quarterly | Partner liaison reports (BNWLA & PCSW feedback loop) |
-| **Crisis Escalations** | 100% of severe threats connected to PCSW / BNWLA / 999 within 15 minutes | Real-time | Emergency referral log (Support Bridge desk) |
-| **Ambassador Safeguarding** | 0 Safety breaches, zero student doxxing, zero unaddressed trauma cases | Ongoing / Weekly | Weekly check-in logs with Mental Health Officer |
+| Category | Fellowship Target (Dhaka Pilot, BDT 50K) | Phase 2 Illustrative Target (National, Post-Fellowship) | Measurement Frequency | Verification Method |
+|---|---|---|---|---|
+| **Ambassador Network** | 8 Fully Certified Female Ambassadors (Dhaka Division) | 64 Ambassadors across 8 Divisions (8 per division) | Month 2, 4, 6 | Training logs, attendance records, practical exam scores |
+| **Direct Peer Outreach** | 3,000+ Female University & College Students reached via 10 campus activations & kiosks | 8,000+ Students reached nationally | Bi-weekly | Workshop attendance slips, campus kiosk registration tally |
+| **Survivor Toolkits Distributed** | 5,000 Physical discreet wallet cards disseminated in Dhaka Division | 12,000 Cards & offline guides disseminated nationally | Monthly | Inventory distribution logs |
+| **App Installations & Vault Security** | 1,000+ Secure Vaults activated; 0 security leaks | 3,500+ Secure Vaults activated nationally; 0 security leaks | Monthly | Client-side anonymized telemetry (privacy-preserving counter) |
+| **Actionable Complaints Filed** | 120+ Structurally sound GDs / e-GDs generated with cryptographic metadata | 500+ Nationally | Bi-monthly | Anonymized user survey & partner legal aid desk intake records |
+| **Law Enforcement Acceptance** | >85% GD acceptance rate at Dhaka target Thanas without rejection for formatting | >85% Nationally | Quarterly | Partner liaison reports (BNWLA & PCSW feedback loop) |
+| **Crisis Escalations** | 100% of severe threats connected to PCSW / BNWLA / 999 within 15 minutes | 100% Nationally | Real-time | Emergency referral log (Support Bridge desk) |
+| **Ambassador Safeguarding** | 0 Safety breaches, zero student doxxing, zero unaddressed trauma cases | 0 Nationally | Ongoing / Weekly | Weekly check-in logs with Mental Health Officer |
 
 ---
 *Authored by Project Protiti Community & Outreach Team | DKC Digital Respect & Cohesion Fellowship 2026*

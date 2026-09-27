@@ -378,7 +378,7 @@ def create_deck():
 
     impact_points = [
         ("80%+ Reduction in Evidence Destruction", "Survivors preserve bitwise intact records instead of deleting traumatic chats."),
-        ("10,000 Discrete Toolkits Distributed", "Pocket-sized safety cards distributed across major campus dormitories and halls."),
+        ("5,000 Discrete Toolkits Distributed", "Pocket-sized safety cards distributed across Dhaka Division campus dormitories and halls."),
         ("3x Increase in Admissible e-GDs Filed", "Eliminating bureaucratic rejection at local police stations via standardized schema."),
         ("100% Pro-Bono Legal Escalation", "Immediate referral to BLAST's 2,500 panel lawyers for indigent victims."),
         ("24/7 Offline Emergency Redundancy", "SMS-based coordinates ensure rural safety even in zero-data mobile blackouts.")
@@ -412,10 +412,10 @@ def create_deck():
     phases = [
         ("Phase 1: Foundation & Audit (M1–M3)", "Oct – Dec 2026",
          "Finalize on-device SQLCipher vault, Duress PIN, e-GD schema. Conduct BLAST forensic hash validation. Attend Innovation Bootcamp."),
-        ("Phase 2: Pilot Rollout & Outreach (M4–M6)", "Jan – Mar 2027",
-         "Roll out 'Train the Trainer' workshops across campus dorms. Distribute 10,000 survivor toolkits. Attend Progress Bootcamp."),
-        ("Phase 3: Impact Showcase & Policy (M7–M8)", "Apr – May 2027",
-         "National showcase with Cyber Police Centre & UNDP. Open-source the e-GD legal framework. Transition to alumni network.")
+        ("Phase 2: Dhaka Division Pilot (M4–M6)", "Jan – Mar 2027",
+         "Roll out 'Train the Trainer' workshops across Dhaka Division campus dorms (DU, JU, Eden Mohila College, BRACU, NSU). Distribute 5,000 survivor toolkits. Attend Progress Bootcamp."),
+        ("Phase 3: Impact Showcase & National Roadmap (M7–M8)", "Apr – May 2027",
+         "National showcase with Cyber Police Centre & UNDP presenting audited Dhaka Pilot results plus the National 8-Division Expansion Roadmap. Open-source the e-GD legal framework. Transition to alumni network.")
     ]
     for idx, (p_title, p_time, p_desc) in enumerate(phases):
         p = tf_rd.paragraphs[0] if idx == 0 else tf_rd.add_paragraph()
@@ -429,18 +429,18 @@ def create_deck():
         p2.font.size = Pt(9.5)
         p2.font.color.rgb = OFF_WHITE
 
-    # Right: BDT 50,000 Budget Breakdown
-    create_card(s7, Inches(6.75), Inches(1.8), Inches(5.78), Inches(5.1), title="BDT 50,000 SEED GRANT ALLOCATION", border_color=GOLD)
+    # Right: BDT 50,000 Budget Breakdown (Dhaka Division Pilot — see budget_50k.md)
+    create_card(s7, Inches(6.75), Inches(1.8), Inches(5.78), Inches(5.1), title="BDT 50,000 SEED GRANT — DHAKA DIVISION PILOT", border_color=GOLD)
     tb_bg = s7.shapes.add_textbox(Inches(6.95), Inches(2.4), Inches(5.35), Inches(4.3))
     tf_bg = tb_bg.text_frame
     tf_bg.word_wrap = True
 
     budget_items = [
-        ("Survivor Toolkits & Wallet Cards (36%)", "BDT 18,200", "10,000 discrete folding survivor cards @ BDT 1.30 + 80 Master Handbooks."),
-        ("Campus Workshop Logistics (22%)", "BDT 11,200", "Logistics, case studies, and refreshments for 8 campus hall training sessions."),
-        ("Ambassador Ground Logistics (24%)", "BDT 12,000", "Voucher-backed transit subsidies for female student ambassadors."),
-        ("Hotline Triage Connectivity (12%)", "BDT 6,000", "Dedicated project SIMs & data packages for emergency case triage."),
-        ("Audit & UNDP Documentation (6%)", "BDT 2,600", "Receipt archiving, legal stationery, and compliance reporting.")
+        ("Survivor Toolkits & Handbooks (16%)", "BDT 8,000", "5,000 discrete folding survivor cards @ BDT 1.30 + 23 Ambassador/Partner Handbooks."),
+        ("Campus Workshop Logistics (40%)", "BDT 20,000", "Refreshments, materials & signage for 10 campus activations across 5 Dhaka Division universities."),
+        ("Ambassador Ground Logistics (24%)", "BDT 12,000", "Voucher-backed transit subsidies for 8 female student ambassadors, 8 months."),
+        ("Hotline Triage Connectivity (12%)", "BDT 6,000", "Dedicated project SIMs, data packages & kiosk hotspots for emergency case triage."),
+        ("Audit & National Roadmap Prep (8%)", "BDT 4,000", "Receipt archiving, compliance reporting, and the Phase 2 National Expansion Roadmap dossier.")
     ]
     for idx, (b_cat, b_amt, b_desc) in enumerate(budget_items):
         p = tf_bg.paragraphs[0] if idx == 0 else tf_bg.add_paragraph()
