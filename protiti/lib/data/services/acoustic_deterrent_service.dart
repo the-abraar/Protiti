@@ -1,6 +1,5 @@
 import 'package:volume_controller/volume_controller.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:volume_controller/volume_controller.dart';
 
 class AcousticDeterrentService {
   final AudioPlayer _player = AudioPlayer();

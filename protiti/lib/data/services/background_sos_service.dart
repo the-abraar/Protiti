@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'dart:io';
 import 'package:flutter_background_service/flutter_background_service.dart';
 // Note: flutter_background_service_android doesn't exist separately anymore, the android platform is integrated into the core package.

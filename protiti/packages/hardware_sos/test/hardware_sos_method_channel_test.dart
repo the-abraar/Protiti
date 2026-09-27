@@ -5,22 +5,24 @@ import 'package:hardware_sos/hardware_sos_method_channel.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  MethodChannelHardwareSos platform = MethodChannelHardwareSos();
-  const MethodChannel channel = MethodChannel('hardware_sos');
+  final MethodChannelHardwareSos platform = MethodChannelHardwareSos();
+  const EventChannel channel = EventChannel('hardware_sos_events');
 
   setUp(() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-          return '42';
-        });
+        .setMockStreamHandler(channel, MockStreamHandler.inline(
+      onListen: (Object? arguments, MockStreamHandlerEventSink events) {
+        events.success('triple_press_power_button');
+      },
+    ));
   });
 
   tearDown(() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(channel, null);
+        .setMockStreamHandler(channel, null);
   });
 
-  test('getPlatformVersion', () async {
-    expect(await platform.getPlatformVersion(), '42');
+  test('sosEvents forwards native event channel payloads', () async {
+    expect(await platform.sosEvents.first, 'triple_press_power_button');
   });
 }

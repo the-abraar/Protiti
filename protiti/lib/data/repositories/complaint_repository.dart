@@ -1,7 +1,7 @@
 import 'dart:convert';
 import '../../domain/models/complaint.dart';
 import '../services/database_service.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:sqflite_sqlcipher/sqflite.dart';
 
 class ComplaintRepository {
   final DatabaseService dbService;

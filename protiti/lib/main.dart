@@ -6,13 +6,12 @@ import 'package:protiti/l10n/app_localizations.dart';
 import 'ui/core/theme/app_theme.dart';
 import 'ui/features/auth/lock_screen.dart';
 
-import 'data/services/background_sos_service.dart';
 import 'data/services/rasp_service.dart';
 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Temporarily disabled:
+  // Temporarily disabled (re-add the `background_sos_service.dart` import above when re-enabling):
   // Starts a foreground service requiring location/mic permissions.
   // Since permissions aren't granted on first launch, it crashes the app after ~10 seconds.
   // await BackgroundSosService.initializeService();

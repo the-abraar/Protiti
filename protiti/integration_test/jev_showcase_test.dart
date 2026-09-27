@@ -97,6 +97,8 @@ void main() {
                   child: Column(
                     children: [
                       Text('Classification: $resultType', style: TextStyle(fontSize: 20, color: Colors.green.shade900, fontWeight: FontWeight.bold)),
+                      SizedBox(height: 4),
+                      Text('Expected: $expected', style: TextStyle(fontSize: 14, color: Colors.green.shade700)),
                       SizedBox(height: 8),
                       Text('Severity Score: $resultScore/10', style: TextStyle(fontSize: 20, color: Colors.red.shade900, fontWeight: FontWeight.bold)),
                     ]

@@ -2,7 +2,6 @@ import 'package:sqflite_sqlcipher/sqflite.dart';
 import 'dart:convert';
 import '../../domain/models/evidence.dart';
 import '../services/database_service.dart';
-import 'package:sqflite_sqlcipher/sqflite.dart';
 
 class EvidenceRepository {
   final DatabaseService dbService;

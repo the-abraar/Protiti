@@ -81,9 +81,6 @@ dependencies:
   record_linux: any
 
 dev_dependencies:
-  hardware_sos:
-    path: packages/hardware_sos
-
   flutter_test:
     sdk: flutter
 

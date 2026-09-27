@@ -8,7 +8,7 @@ class MockHardwareSosPlatform
     with MockPlatformInterfaceMixin
     implements HardwareSosPlatform {
   @override
-  Future<String?> getPlatformVersion() => Future.value('42');
+  Stream<String> get sosEvents => Stream.value('triple_press_power_button');
 }
 
 void main() {
@@ -18,11 +18,11 @@ void main() {
     expect(initialPlatform, isInstanceOf<MethodChannelHardwareSos>());
   });
 
-  test('getPlatformVersion', () async {
+  test('sosEvents', () async {
     HardwareSos hardwareSosPlugin = HardwareSos();
     MockHardwareSosPlatform fakePlatform = MockHardwareSosPlatform();
     HardwareSosPlatform.instance = fakePlatform;
 
-    expect(await hardwareSosPlugin.getPlatformVersion(), '42');
+    expect(await hardwareSosPlugin.sosEvents.first, 'triple_press_power_button');
   });
 }

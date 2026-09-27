@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:protiti/l10n/app_localizations.dart';
 import 'package:flutter/services.dart';
 import '../../../data/services/auth_service.dart';
 import '../../core/theme/app_theme.dart';

@@ -3,7 +3,6 @@ import 'package:share_plus/share_plus.dart';
 import '../../data/services/secure_audio_service.dart';
 import '../../data/services/location_service.dart';
 import '../../data/repositories/contact_repository.dart';
-import 'package:sound_mode/sound_mode.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import '../../data/services/cloud_sms_service.dart';
 import 'package:battery_plus/battery_plus.dart';

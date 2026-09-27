@@ -14,11 +14,10 @@ import 'package:hardware_sos/hardware_sos.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('getPlatformVersion test', (WidgetTester tester) async {
+  testWidgets('sosEvents exposes a broadcast stream', (WidgetTester tester) async {
     final HardwareSos plugin = HardwareSos();
-    final String? version = await plugin.getPlatformVersion();
-    // The version string depends on the host platform running the test, so
-    // just assert that some non-empty string is returned.
-    expect(version?.isNotEmpty, true);
+    // No hardware trigger fires during this test; just assert the platform
+    // channel is wired up and returns a stream without throwing.
+    expect(plugin.sosEvents, isA<Stream<String>>());
   });
 }

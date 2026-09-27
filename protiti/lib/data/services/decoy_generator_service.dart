@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 import '../../domain/models/evidence.dart';
-import 'database_service.dart';
 import '../repositories/evidence_repository.dart';
 
 class DecoyGeneratorService {

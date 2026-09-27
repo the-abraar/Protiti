@@ -1,12 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:secure_application/secure_application.dart';
 import 'package:protiti/l10n/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
-import '../../../data/services/database_service.dart';
-import '../../../data/repositories/evidence_repository.dart';
 import '../../../domain/models/evidence.dart';
 import 'package:provider/provider.dart';
 import 'vault_provider.dart';
@@ -20,7 +16,6 @@ import '../auth/lock_screen.dart';
 import '../../../data/services/proximity_lock_service.dart';
 import '../../../data/services/bluetooth_tether_service.dart';
 import '../../../data/services/screen_cast_monitor.dart';
-import '../../../data/services/auth_service.dart';
 
 class VaultScreen extends StatefulWidget {
   final bool isDecoy;
