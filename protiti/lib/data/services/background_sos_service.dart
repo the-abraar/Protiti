@@ -2,6 +2,8 @@ import 'dart:io';
 import 'package:flutter_background_service/flutter_background_service.dart';
 // Note: flutter_background_service_android doesn't exist separately anymore, the android platform is integrated into the core package.
 // Actually, it's just flutter_background_service for the core classes.
+import 'package:geolocator/geolocator.dart';
+import 'package:record/record.dart';
 import 'shake_to_sos_service.dart';
 import '../../domain/use_cases/trigger_panic.dart';
 import 'location_service.dart';
@@ -14,12 +16,52 @@ import 'dart:async';
 
 @pragma('vm:entry-point')
 class BackgroundSosService {
+  /// Requests the location + microphone permissions the Android manifest
+  /// declares for this foreground service (`foregroundServiceType=
+  /// "location|microphone"`). Android refuses to start a foreground service
+  /// with a declared type unless the matching runtime permission is already
+  /// granted, so this must succeed before [initializeService] is called —
+  /// calling it unconditionally is what used to crash the app on first launch.
+  static Future<bool> _requestRequiredPermissions() async {
+    if (!Platform.isAndroid) return true;
+    try {
+      var locationPermission = await Geolocator.checkPermission();
+      if (locationPermission == LocationPermission.denied) {
+        locationPermission = await Geolocator.requestPermission();
+      }
+      final hasLocation = locationPermission == LocationPermission.always ||
+          locationPermission == LocationPermission.whileInUse;
+
+      final hasMic = await AudioRecorder().hasPermission();
+
+      return hasLocation && hasMic;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Requests the required permissions and starts the service only if they
+  /// were granted. Safe to call repeatedly (e.g. every time the lock screen
+  /// loads) — it silently no-ops if the service is already running or if
+  /// permissions are still denied, and never throws.
+  static Future<bool> ensureStarted() async {
+    if (!Platform.isAndroid && !Platform.isIOS) return false;
+    try {
+      if (!await _requestRequiredPermissions()) return false;
+      await initializeService();
+      return true;
+    } catch (_) {
+      return false;
+    }
+  }
+
   static Future<void> initializeService() async {
     if (!Platform.isAndroid && !Platform.isIOS) {
       return;
     }
     final service = FlutterBackgroundService();
-    
+    if (await service.isRunning()) return;
+
     await service.configure(
       androidConfiguration: AndroidConfiguration(
         onStart: onStart,

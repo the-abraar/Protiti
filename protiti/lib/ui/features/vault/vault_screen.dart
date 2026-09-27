@@ -12,10 +12,12 @@ import '../../../data/services/p2p_transfer_service.dart';
 import '../panic/panic_screen.dart';
 import '../complaint/complaint_wizard_screen.dart';
 import '../support/support_screen.dart';
+import '../settings/settings_screen.dart';
 import '../auth/lock_screen.dart';
 import '../../../data/services/proximity_lock_service.dart';
 import '../../../data/services/bluetooth_tether_service.dart';
 import '../../../data/services/screen_cast_monitor.dart';
+import '../../../data/services/auth_service.dart';
 
 class VaultScreen extends StatefulWidget {
   final bool isDecoy;
@@ -41,10 +43,10 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
     _proximityService = ProximityLockService();
     _bluetoothTetherService = BluetoothTetherService();
     
-    // Temporarily disabled for testing:
-    // Security monitors (Bluetooth tether, proximity sensor, screen cast)
-    // are triggering and kicking the user back to the lock screen.
-    /*
+    // Security monitors (Bluetooth tether, proximity sensor, screen cast).
+    // Only armed for the real vault: false-triggering in decoy mode would
+    // itself be a giveaway that something unusual is happening. A 2-second
+    // grace period lets the screen finish settling before anything can arm.
     if (!widget.isDecoy) {
       Future.delayed(const Duration(seconds: 2), () {
         if (!mounted) return;
@@ -91,7 +93,6 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
         );
       });
     }
-    */
 
     _screens = [
       VaultGridScreen(isDecoy: widget.isDecoy),
@@ -171,19 +172,30 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
           if (!widget.isDecoy)
             IconButton(
               icon: const Icon(Icons.wifi_tethering),
-              tooltip: 'Offline P2P Export',
+              tooltip: AppLocalizations.of(context)!.offlineP2pExportTooltip,
               onPressed: () async {
                 final p2pService = P2PTransferService();
                 await p2pService.startOfflineBroadcast("System_Diagnostic_Sync");
                 if (mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Offline P2P Beacon Activated')),
+                    SnackBar(content: Text(AppLocalizations.of(context)!.offlineP2pBeaconActivated)),
                   );
                 }
               },
             ),
+          if (!widget.isDecoy)
+            IconButton(
+              icon: const Icon(Icons.settings_outlined),
+              tooltip: AppLocalizations.of(context)!.safetySettingsTooltip,
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const SettingsScreen()),
+                );
+              },
+            ),
           IconButton(
-            tooltip: 'Lock Vault Immediately',
+            tooltip: AppLocalizations.of(context)!.lockVaultTooltip,
             icon: const Icon(Icons.lock, color: Colors.white70),
             onPressed: _lockVault,
           ),
@@ -201,17 +213,23 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
         items: [
           BottomNavigationBarItem(
             icon: Icon(widget.isDecoy ? Icons.folder : Icons.shield),
-            label: widget.isDecoy ? 'Files' : 'Vault',
+            label: widget.isDecoy
+                ? AppLocalizations.of(context)!.navFiles
+                : AppLocalizations.of(context)!.navVault,
           ),
           BottomNavigationBarItem(
             icon: Icon(widget.isDecoy ? Icons.edit_note : Icons.description),
-            label: widget.isDecoy ? 'Notes' : 'Report',
+            label: widget.isDecoy
+                ? AppLocalizations.of(context)!.navNotes
+                : AppLocalizations.of(context)!.navReport,
           ),
           BottomNavigationBarItem(
             icon: Icon(
               widget.isDecoy ? Icons.info_outline : Icons.warning_amber,
             ),
-            label: widget.isDecoy ? 'Safety' : 'Panic SOS',
+            label: widget.isDecoy
+                ? AppLocalizations.of(context)!.navSafety
+                : AppLocalizations.of(context)!.navPanicSos,
           ),
           BottomNavigationBarItem(
             icon: Icon(
@@ -219,7 +237,9 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                   ? Icons.contact_support_outlined
                   : Icons.support_agent,
             ),
-            label: widget.isDecoy ? 'Help' : 'Support',
+            label: widget.isDecoy
+                ? AppLocalizations.of(context)!.navHelp
+                : AppLocalizations.of(context)!.navSupport,
           ),
         ],
       ),
@@ -240,7 +260,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                         children: [
                           ListTile(
                             leading: const Icon(Icons.note_add, color: AppTheme.brandSecondary),
-                            title: const Text('Add Text Note', style: TextStyle(color: AppTheme.textPrimary)),
+                            title: Text(AppLocalizations.of(context)!.addTextNote, style: const TextStyle(color: AppTheme.textPrimary)),
                             onTap: () {
                               Navigator.pop(ctx);
                               _showAddDialog(context);
@@ -248,7 +268,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                           ),
                           ListTile(
                             leading: const Icon(Icons.camera_alt, color: AppTheme.brandSecondary),
-                            title: const Text('Secure Camera Capture', style: TextStyle(color: AppTheme.textPrimary)),
+                            title: Text(AppLocalizations.of(context)!.secureCameraCapture, style: const TextStyle(color: AppTheme.textPrimary)),
                             onTap: () async {
                               Navigator.pop(ctx);
                               await Provider.of<VaultProvider>(context, listen: false)
@@ -257,7 +277,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                           ),
                           ListTile(
                             leading: const Icon(Icons.mic, color: AppTheme.brandSecondary),
-                            title: const Text('Secure Audio Record', style: TextStyle(color: AppTheme.textPrimary)),
+                            title: Text(AppLocalizations.of(context)!.secureAudioRecord, style: const TextStyle(color: AppTheme.textPrimary)),
                             onTap: () async {
                               Navigator.pop(ctx);
                               await Provider.of<VaultProvider>(context, listen: false)
@@ -266,12 +286,12 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                           ),
                           ListTile(
                             leading: const Icon(Icons.photo_library, color: AppTheme.brandSecondary),
-                            title: const Text('Secure Gallery Import', style: TextStyle(color: AppTheme.textPrimary)),
+                            title: Text(AppLocalizations.of(context)!.secureGalleryImport, style: const TextStyle(color: AppTheme.textPrimary)),
                             onTap: () async {
                               Navigator.pop(ctx);
                               final success = await Provider.of<VaultProvider>(context, listen: false)
                                   .importAndScrubGalleryImage();
-                              
+
                               if (success && mounted) {
                                  // CRITICAL: We cannot silently delete from the public gallery due to OS rules.
                                  // We MUST show a highly visible alert forcing the user to do it manually.
@@ -280,24 +300,20 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                                    builder: (ctx) => AlertDialog(
                                      backgroundColor: AppTheme.primaryWhite,
                                      title: Row(
-                                       children: const [
-                                         Icon(Icons.warning_amber, color: AppTheme.panicRed),
-                                         SizedBox(width: 10),
-                                         Text('Action Required', style: TextStyle(color: AppTheme.textPrimary)),
+                                       children: [
+                                         const Icon(Icons.warning_amber, color: AppTheme.panicRed),
+                                         const SizedBox(width: 10),
+                                         Text(AppLocalizations.of(context)!.actionRequiredTitle, style: const TextStyle(color: AppTheme.textPrimary)),
                                        ],
                                      ),
-                                     content: const Text(
-                                       'Your evidence is now encrypted and secured in the Vault. \n\n'
-                                       'However, the original unencrypted photo is STILL in your phone\'s '
-                                       'public photo gallery. You must open your Photos app and manually '
-                                       'delete it (and clear your Recently Deleted folder) immediately to '
-                                       'ensure your safety.',
-                                       style: TextStyle(color: AppTheme.textSecondary),
+                                     content: Text(
+                                       AppLocalizations.of(context)!.galleryDeleteWarning,
+                                       style: const TextStyle(color: AppTheme.textSecondary),
                                      ),
                                      actions: [
                                        TextButton(
                                          onPressed: () => Navigator.pop(ctx),
-                                         child: const Text('I Understand', style: TextStyle(color: AppTheme.brandSecondary)),
+                                         child: Text(AppLocalizations.of(context)!.iUnderstand, style: const TextStyle(color: AppTheme.brandSecondary)),
                                        ),
                                      ],
                                    ),
@@ -312,7 +328,9 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                 }
               },
               icon: const Icon(Icons.add),
-              label: Text(widget.isDecoy ? 'Add File' : 'Secure Evidence'),
+              label: Text(widget.isDecoy
+                  ? AppLocalizations.of(context)!.addFileFab
+                  : AppLocalizations.of(context)!.secureEvidenceFab),
             )
           : null,
     );
@@ -326,7 +344,9 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
         return AlertDialog(
           backgroundColor: AppTheme.primaryWhite,
           title: Text(
-            widget.isDecoy ? 'Add Personal Document' : 'Secure New Evidence',
+            widget.isDecoy
+                ? AppLocalizations.of(context)!.addPersonalDocument
+                : AppLocalizations.of(context)!.secureNewEvidence,
             style: const TextStyle(color: AppTheme.textPrimary),
           ),
           content: Column(
@@ -340,8 +360,8 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                 style: const TextStyle(color: AppTheme.textPrimary),
                 decoration: InputDecoration(
                   labelText: widget.isDecoy
-                      ? 'Document Title / Note'
-                      : 'Evidence Description',
+                      ? AppLocalizations.of(context)!.documentTitleLabel
+                      : AppLocalizations.of(context)!.evidenceDescriptionLabel,
                 ),
               ),
             ],
@@ -349,7 +369,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Cancel', style: TextStyle(color: AppTheme.textSecondary)),
+              child: Text(AppLocalizations.of(context)!.cancel, style: const TextStyle(color: AppTheme.textSecondary)),
             ),
             ElevatedButton(
               onPressed: () async {
@@ -362,15 +382,15 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                     createdAt: DateTime.now(),
                     isDecoy: widget.isDecoy,
                   );
-                  
+
                   await Provider.of<VaultProvider>(context, listen: false).addEvidence(newEvidence);
-                  
+
                   if (context.mounted) {
                     Navigator.pop(ctx);
                   }
                 }
               },
-              child: const Text('Save'),
+              child: Text(AppLocalizations.of(context)!.save),
             ),
           ],
         );
@@ -443,8 +463,8 @@ class VaultGridScreen extends StatelessWidget {
                 const SizedBox(height: 16),
                 Text(
                   isDecoy
-                      ? 'No personal files saved yet'
-                      : 'Forensic Vault is Empty',
+                      ? AppLocalizations.of(context)!.noPersonalFilesYet
+                      : AppLocalizations.of(context)!.forensicVaultEmpty,
                   style: const TextStyle(fontSize: 16, color: Colors.grey),
                 ),
               ],
@@ -478,8 +498,8 @@ class VaultGridScreen extends StatelessWidget {
                     Expanded(
                       child: Text(
                         isDecoy
-                            ? 'Showing 3 innocent decoy files.'
-                            : 'Your evidence is stored securely and privately.',
+                            ? AppLocalizations.of(context)!.showingDecoyFiles
+                            : AppLocalizations.of(context)!.evidenceStoredSecurely,
                         style: TextStyle(
                           fontSize: 12,
                           color: isDecoy
@@ -527,14 +547,14 @@ class VaultGridScreen extends StatelessWidget {
                             context: context,
                             builder: (ctx) => AlertDialog(
                               backgroundColor: AppTheme.primaryWhite,
-                              title: const Text('Evidence Details', style: TextStyle(color: AppTheme.textPrimary)),
+                              title: Text(AppLocalizations.of(context)!.evidenceDetailsTitle, style: const TextStyle(color: AppTheme.textPrimary)),
                               content: SingleChildScrollView(
                                 child: Text(item.description, style: const TextStyle(color: AppTheme.textPrimary)),
                               ),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(ctx),
-                                  child: const Text('Close'),
+                                  child: Text(AppLocalizations.of(context)!.close),
                                 )
                               ]
                             )

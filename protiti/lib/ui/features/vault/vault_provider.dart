@@ -33,14 +33,14 @@ class VaultProvider extends ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     
-    _items = await _repository.getEvidence(isDecoy: isDecoy);
-    
+    _items = await _repository.getEvidence();
+
     // If the decoy vault is suspiciously empty, dynamically generate organic content
     if (isDecoy && _items.isEmpty) {
       final decoyService = DecoyGeneratorService(_repository);
       await decoyService.seedDynamicDecoys();
       // Reload the newly seeded items
-      _items = await _repository.getEvidence(isDecoy: isDecoy);
+      _items = await _repository.getEvidence();
     }
     
     _isLoading = false;

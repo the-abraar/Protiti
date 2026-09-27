@@ -11,11 +11,13 @@ import 'data/services/rasp_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Temporarily disabled (re-add the `background_sos_service.dart` import above when re-enabling):
-  // Starts a foreground service requiring location/mic permissions.
-  // Since permissions aren't granted on first launch, it crashes the app after ~10 seconds.
-  // await BackgroundSosService.initializeService();
-  
+  // The background SOS service (hardware button / shake-to-SOS / geofence)
+  // requests its own location + microphone permissions and starts itself
+  // once they're granted — see BackgroundSosService.ensureStarted(), called
+  // from LockScreen.initState(). Starting it unconditionally here crashes on
+  // Android 14+, which requires a foreground service's declared permission
+  // types to already be granted before the service can start.
+
   // Arm the Runtime Application Self-Protection (RASP) Engine
   await RaspService.initializeRasp();
   

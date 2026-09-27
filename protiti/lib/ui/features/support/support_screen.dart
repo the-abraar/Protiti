@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:protiti/l10n/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
 
 class SupportScreen extends StatelessWidget {
@@ -17,7 +18,7 @@ class SupportScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isDecoy) {
-      return _buildDecoySupportView();
+      return _buildDecoySupportView(context);
     }
 
     return ListView(
@@ -40,6 +41,7 @@ class SupportScreen extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         _buildSupportCard(
+          context: context,
           name: 'BLAST (Bangladesh Legal Aid & Services Trust)',
           specialty: 'Pro-Bono Legal Aid & Cyber Litigations',
           phone: '+88028391970',
@@ -48,6 +50,7 @@ class SupportScreen extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _buildSupportCard(
+          context: context,
           name: 'Ain o Salish Kendra (ASK)',
           specialty: 'Human Rights, Legal Counseling & Shelter',
           phone: '01726222222',
@@ -56,6 +59,7 @@ class SupportScreen extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _buildSupportCard(
+          context: context,
           name: 'One-Stop Crisis Centre (OCC - DMCH)',
           specialty: 'Immediate Medical, Legal, & Forensic Support',
           phone: '+880255165088',
@@ -64,6 +68,7 @@ class SupportScreen extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _buildSupportCard(
+          context: context,
           name: 'Bangladesh Mahila Parishad',
           specialty: 'Women Legal Protection & Crisis Intervention',
           phone: '+88029587422',
@@ -75,6 +80,7 @@ class SupportScreen extends StatelessWidget {
   }
 
   Widget _buildSupportCard({
+    required BuildContext context,
     required String name,
     required String specialty,
     required String phone,
@@ -107,7 +113,7 @@ class SupportScreen extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.call, color: AppTheme.brandSecondary),
                   onPressed: () => _makePhoneCall(phone),
-                  tooltip: 'Call $name',
+                  tooltip: AppLocalizations.of(context)!.callContactTooltip(name),
                 ),
               ],
             ),
@@ -150,7 +156,7 @@ class SupportScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDecoySupportView() {
+  Widget _buildDecoySupportView(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -171,6 +177,7 @@ class SupportScreen extends StatelessWidget {
         ),
         const SizedBox(height: 16),
         _buildSupportCard(
+          context: context,
           name: 'Academic Affairs & Registrar',
           specialty: 'Transcript & Course Enrollments',
           phone: '+88029661900',
@@ -179,6 +186,7 @@ class SupportScreen extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         _buildSupportCard(
+          context: context,
           name: 'Student Career Counseling Centre',
           specialty: 'Internship Placement & Skill Development',
           phone: '+88029661920',

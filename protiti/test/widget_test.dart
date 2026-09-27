@@ -8,9 +8,11 @@ void main() {
     await tester.pumpWidget(const ProtitiApp());
     await tester.pumpAndSettle();
 
-    // Verify Title and Vault Authentication header
-    expect(find.text('Protiti (প্রতীতি)'), findsOneWidget);
-    expect(find.text('Forensic Vault Authentication'), findsOneWidget);
+    // Verify Title and lock screen heading.
+    // The brand name renders twice (AppBar title + body heading), so this
+    // only asserts it appears at all rather than exactly once.
+    expect(find.text('Protiti (প্রতীতি)'), findsWidgets);
+    expect(find.text('My Notes'), findsOneWidget);
 
     // Verify Keypad digits are present
     expect(find.text('1'), findsOneWidget);

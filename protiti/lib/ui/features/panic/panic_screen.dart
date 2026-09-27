@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:protiti/l10n/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
 import '../../../data/services/location_service.dart';
 import '../../../data/services/database_service.dart';
+import '../../../data/services/native_sms_service.dart';
 import '../../../data/repositories/contact_repository.dart';
 import '../../../domain/use_cases/trigger_panic.dart';
 import '../../../data/services/secure_audio_service.dart';
@@ -43,6 +45,12 @@ class _PanicScreenState extends State<PanicScreen>
       contactRepository: ContactRepository(DatabaseService()),
       audioService: SecureAudioService(),
     );
+
+    // Pre-arm the silent-SMS permission now, while nothing is wrong, so a
+    // real trigger never has to surface the OS permission dialog on-screen.
+    if (!widget.isDecoy) {
+      NativeSmsService.requestPermission();
+    }
 
     // Continuous pulse animation for SOS visibility
     _pulseController = AnimationController(
@@ -441,7 +449,7 @@ class _PanicScreenState extends State<PanicScreen>
               IconButton(
                 icon: const Icon(Icons.close, size: 18, color: Colors.grey),
                 onPressed: _resetEmergency,
-                tooltip: 'Disarm SOS',
+                tooltip: AppLocalizations.of(context)!.disarmSosTooltip,
               ),
             ],
           ),

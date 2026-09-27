@@ -5,6 +5,8 @@ import '../../data/services/location_service.dart';
 import '../../data/repositories/contact_repository.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import '../../data/services/cloud_sms_service.dart';
+import '../../data/services/native_sms_service.dart';
+import 'dart:io';
 import 'package:battery_plus/battery_plus.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
@@ -190,39 +192,63 @@ class TriggerPanicUseCase {
     if (cloudSuccess) {
       dispatchSuccess = true;
     } else {
-      // NETWORK FAILED: Fallback to local offline SMS (Leaves a trace, but guarantees delivery)
+      // NETWORK FAILED: Fallback to local offline SMS.
       dispatchMethod = 'local_sms';
-      try {
-        final separator = ',';
-        final recipientStr = recipientNumbers.join(separator);
-        final smsUri = Uri(
-          scheme: 'sms',
-          path: recipientStr,
-          queryParameters: {'body': message},
-        );
 
-        if (await canLaunchUrl(smsUri)) {
-          await launchUrl(smsUri);
-          dispatchSuccess = true;
-        } else {
-          // Fallback to generic share sheet
-          await SharePlus.instance.share(
-            ShareParams(text: message, subject: 'EMERGENCY SOS [Protiti]'),
-          );
-          dispatchSuccess = true;
-          dispatchMethod = 'share_fallback';
-        }
-      } catch (_) {
-        // Last-resort fallback to SharePlus
+      // TACTICAL STEALTH: On Android, hand the message straight to the
+      // cellular radio via SmsManager. This never opens the Messages app,
+      // so nothing appears on-screen for an abuser to see or stop.
+      bool sentSilently = false;
+      if (Platform.isAndroid) {
         try {
-          await SharePlus.instance.share(
-            ShareParams(text: message, subject: 'EMERGENCY SOS [Protiti]'),
+          sentSilently = await NativeSmsService.sendSilently(
+            recipients: recipientNumbers,
+            message: message,
           );
-          dispatchSuccess = true;
-          dispatchMethod = 'share_fallback';
         } catch (_) {
-          dispatchSuccess = false;
-          dispatchMethod = 'failed';
+          sentSilently = false;
+        }
+      }
+
+      if (sentSilently) {
+        dispatchSuccess = true;
+      } else {
+        // Silent dispatch unavailable (iOS, permission not yet granted, or
+        // no radio) — fall back to the SMS-app intent. This still
+        // guarantees delivery, but surfaces a visible compose screen.
+        try {
+          final separator = ',';
+          final recipientStr = recipientNumbers.join(separator);
+          final smsUri = Uri(
+            scheme: 'sms',
+            path: recipientStr,
+            queryParameters: {'body': message},
+          );
+
+          if (await canLaunchUrl(smsUri)) {
+            await launchUrl(smsUri);
+            dispatchSuccess = true;
+            dispatchMethod = 'local_sms_visible';
+          } else {
+            // Fallback to generic share sheet
+            await SharePlus.instance.share(
+              ShareParams(text: message, subject: 'EMERGENCY SOS [Protiti]'),
+            );
+            dispatchSuccess = true;
+            dispatchMethod = 'share_fallback';
+          }
+        } catch (_) {
+          // Last-resort fallback to SharePlus
+          try {
+            await SharePlus.instance.share(
+              ShareParams(text: message, subject: 'EMERGENCY SOS [Protiti]'),
+            );
+            dispatchSuccess = true;
+            dispatchMethod = 'share_fallback';
+          } catch (_) {
+            dispatchSuccess = false;
+            dispatchMethod = 'failed';
+          }
         }
       }
     }

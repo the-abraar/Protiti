@@ -21,7 +21,9 @@ void main() {
     });
 
     test('Entering Invalid PIN returns failed', () async {
-      final status = await authService.verifyPin('0000');
+      // '0000' is reserved as the nuclear-wipe PIN, so use a PIN that is
+      // neither the real, duress, nor wipe PIN to test the failure path.
+      final status = await authService.verifyPin('5555');
       expect(status, AuthStatus.failed);
     });
   });

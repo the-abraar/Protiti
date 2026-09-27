@@ -20,6 +20,12 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.DETECT_SCREEN_CAPTURE" />
+    <!-- Lets the offline SOS path hand the SMS radio a message directly via
+         SmsManager instead of opening the visible Messages app compose UI,
+         which would otherwise show the outgoing alert on-screen to anyone
+         watching over the survivor's shoulder. Not available on Play Store
+         distribution; this app is distributed via direct/ADB install. -->
+    <uses-permission android:name="android.permission.SEND_SMS" />
 
     <application
         android:label="Protiti"

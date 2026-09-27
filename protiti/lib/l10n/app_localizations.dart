@@ -151,6 +151,276 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Personal Notes & Files'**
   String get decoyVaultTitle;
+
+  /// No description provided for @myNotesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'My Notes'**
+  String get myNotesSubtitle;
+
+  /// No description provided for @lockoutMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Maximum attempts exceeded. Vault locked for 15 minutes.'**
+  String get lockoutMessage;
+
+  /// No description provided for @wipeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Critical Error: Application Data Corrupted. Resetting...'**
+  String get wipeMessage;
+
+  /// No description provided for @incorrectPinMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect PIN. Please re-enter.'**
+  String get incorrectPinMessage;
+
+  /// No description provided for @compromisedDeviceWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Security Alert: Device may be compromised. Please proceed with caution.'**
+  String get compromisedDeviceWarning;
+
+  /// No description provided for @biometricUnlockTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometric Unlock'**
+  String get biometricUnlockTooltip;
+
+  /// No description provided for @deleteTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get deleteTooltip;
+
+  /// No description provided for @switchToStandardLockTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch to Standard Lock'**
+  String get switchToStandardLockTooltip;
+
+  /// No description provided for @enableCalculatorDisguiseTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Calculator Stealth Disguise'**
+  String get enableCalculatorDisguiseTooltip;
+
+  /// No description provided for @calculatorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculator'**
+  String get calculatorLabel;
+
+  /// No description provided for @navVault.
+  ///
+  /// In en, this message translates to:
+  /// **'Vault'**
+  String get navVault;
+
+  /// No description provided for @navFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Files'**
+  String get navFiles;
+
+  /// No description provided for @navReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get navReport;
+
+  /// No description provided for @navNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get navNotes;
+
+  /// No description provided for @navPanicSos.
+  ///
+  /// In en, this message translates to:
+  /// **'Panic SOS'**
+  String get navPanicSos;
+
+  /// No description provided for @navSafety.
+  ///
+  /// In en, this message translates to:
+  /// **'Safety'**
+  String get navSafety;
+
+  /// No description provided for @navSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'Support'**
+  String get navSupport;
+
+  /// No description provided for @navHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Help'**
+  String get navHelp;
+
+  /// No description provided for @secureEvidenceFab.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure Evidence'**
+  String get secureEvidenceFab;
+
+  /// No description provided for @addFileFab.
+  ///
+  /// In en, this message translates to:
+  /// **'Add File'**
+  String get addFileFab;
+
+  /// No description provided for @offlineP2pExportTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline P2P Export'**
+  String get offlineP2pExportTooltip;
+
+  /// No description provided for @offlineP2pBeaconActivated.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline P2P Beacon Activated'**
+  String get offlineP2pBeaconActivated;
+
+  /// No description provided for @safetySettingsTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Safety Settings'**
+  String get safetySettingsTooltip;
+
+  /// No description provided for @lockVaultTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock Vault Immediately'**
+  String get lockVaultTooltip;
+
+  /// No description provided for @addTextNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Text Note'**
+  String get addTextNote;
+
+  /// No description provided for @secureCameraCapture.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure Camera Capture'**
+  String get secureCameraCapture;
+
+  /// No description provided for @secureAudioRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure Audio Record'**
+  String get secureAudioRecord;
+
+  /// No description provided for @secureGalleryImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure Gallery Import'**
+  String get secureGalleryImport;
+
+  /// No description provided for @actionRequiredTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Action Required'**
+  String get actionRequiredTitle;
+
+  /// No description provided for @galleryDeleteWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Your evidence is now encrypted and secured in the Vault. \n\nHowever, the original unencrypted photo is STILL in your phone\'s public photo gallery. You must open your Photos app and manually delete it (and clear your Recently Deleted folder) immediately to ensure your safety.'**
+  String get galleryDeleteWarning;
+
+  /// No description provided for @iUnderstand.
+  ///
+  /// In en, this message translates to:
+  /// **'I Understand'**
+  String get iUnderstand;
+
+  /// No description provided for @addPersonalDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Personal Document'**
+  String get addPersonalDocument;
+
+  /// No description provided for @secureNewEvidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure New Evidence'**
+  String get secureNewEvidence;
+
+  /// No description provided for @documentTitleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Document Title / Note'**
+  String get documentTitleLabel;
+
+  /// No description provided for @evidenceDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence Description'**
+  String get evidenceDescriptionLabel;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @evidenceDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence Details'**
+  String get evidenceDetailsTitle;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @forensicVaultEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Forensic Vault is Empty'**
+  String get forensicVaultEmpty;
+
+  /// No description provided for @noPersonalFilesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No personal files saved yet'**
+  String get noPersonalFilesYet;
+
+  /// No description provided for @evidenceStoredSecurely.
+  ///
+  /// In en, this message translates to:
+  /// **'Your evidence is stored securely and privately.'**
+  String get evidenceStoredSecurely;
+
+  /// No description provided for @showingDecoyFiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Showing 3 innocent decoy files.'**
+  String get showingDecoyFiles;
+
+  /// No description provided for @disarmSosTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Disarm SOS'**
+  String get disarmSosTooltip;
+
+  /// No description provided for @callContactTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Call {name}'**
+  String callContactTooltip(String name);
 }
 
 class _AppLocalizationsDelegate

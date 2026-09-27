@@ -6,11 +6,13 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 class WipeService {
   /// Executes a scorched-earth forensic wipe of all application data.
   static Future<void> executeNuclearWipe() async {
-    // 1. Erase the SQLite Database containing all text/metadata
+    // 1. Erase both the real and decoy SQLite databases containing all text/metadata
     final dbPath = await getDatabasesPath();
-    final dbFile = File('$dbPath/protiti_vault.db');
-    if (dbFile.existsSync()) {
-      dbFile.deleteSync();
+    for (final name in ['app_state.db', 'app_cache.db']) {
+      final dbFile = File('$dbPath/$name');
+      if (dbFile.existsSync()) {
+        dbFile.deleteSync();
+      }
     }
     
     // 2. Shred all physical encrypted evidence files (Photos/Audio)

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:protiti/l10n/app_localizations.dart';
 import '../../../data/services/auth_service.dart';
 import '../../core/theme/app_theme.dart';
 import '../vault/vault_screen.dart';
@@ -11,6 +12,8 @@ import '../../../data/services/wipe_service.dart';
 import '../../../data/services/threat_detection_service.dart';
 import '../../../data/services/camouflage_service.dart';
 import '../../../data/services/alibi_service.dart';
+import '../../../data/services/disguise_settings_service.dart';
+import '../../../data/services/background_sos_service.dart';
 import 'thermal_decoy_screen.dart';
 
 class LockScreen extends StatefulWidget {
@@ -40,6 +43,23 @@ class _LockScreenState extends State<LockScreen> {
     super.initState();
     _scanThreats();
     _checkBiometricStatus();
+    _applyLaunchDisguisePreference();
+    // Fire-and-forget: requests location/mic permissions and starts the
+    // hardware-button/shake/geofence SOS service once they're granted.
+    // Safe to call on every lock screen load — it no-ops if already running.
+    BackgroundSosService.ensureStarted();
+  }
+
+  /// If the survivor has enabled "Always launch as calculator" in Settings,
+  /// open straight into the disguise instead of briefly revealing the
+  /// branded Protiti lock screen — important on a shared/monitored device
+  /// where there's no time to remember to tap the disguise toggle.
+  Future<void> _applyLaunchDisguisePreference() async {
+    final alwaysCalculator =
+        await DisguiseSettingsService.getAlwaysLaunchAsCalculator();
+    if (alwaysCalculator && mounted) {
+      setState(() => _isCalculatorMode = true);
+    }
   }
 
   Future<void> _checkBiometricStatus() async {
@@ -87,8 +107,8 @@ class _LockScreenState extends State<LockScreen> {
     if (status == AuthStatus.lockedOut) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-           const SnackBar(
-            content: Text('Maximum attempts exceeded. Vault locked for 15 minutes.'),
+           SnackBar(
+            content: Text(AppLocalizations.of(context)!.lockoutMessage),
             backgroundColor: Colors.red,
           )
         );
@@ -101,8 +121,8 @@ class _LockScreenState extends State<LockScreen> {
       await WipeService.executeNuclearWipe();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Critical Error: Application Data Corrupted. Resetting...'),
+          SnackBar(
+            content: Text(AppLocalizations.of(context)!.wipeMessage),
             backgroundColor: Colors.red,
           )
         );
@@ -117,7 +137,7 @@ class _LockScreenState extends State<LockScreen> {
       HapticFeedback.heavyImpact();
       setState(() {
         _enteredPin = '';
-        _errorMessage = 'Incorrect PIN. Please re-enter.';
+        _errorMessage = AppLocalizations.of(context)!.incorrectPinMessage;
       });
     }
   }
@@ -135,7 +155,7 @@ class _LockScreenState extends State<LockScreen> {
       MaterialPageRoute(
         builder: (context) => ChangeNotifierProvider(
           create: (_) => VaultProvider(
-            EvidenceRepository(DatabaseService()),
+            EvidenceRepository(DatabaseService(isDecoy: isDecoy)),
             isDecoy: isDecoy,
           ),
           child: VaultScreen(isDecoy: isDecoy),
@@ -216,7 +236,9 @@ class _LockScreenState extends State<LockScreen> {
           : Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text(
-          _isCalculatorMode ? 'Calculator' : 'Protiti (প্রতীতি)',
+          _isCalculatorMode
+              ? AppLocalizations.of(context)!.calculatorLabel
+              : 'Protiti (প্রতীতি)',
           style: const TextStyle(
             fontWeight: FontWeight.w600,
             letterSpacing: 0.5,
@@ -225,8 +247,8 @@ class _LockScreenState extends State<LockScreen> {
         actions: [
           IconButton(
             tooltip: _isCalculatorMode
-                ? 'Switch to Standard Lock'
-                : 'Enable Calculator Stealth Disguise',
+                ? AppLocalizations.of(context)!.switchToStandardLockTooltip
+                : AppLocalizations.of(context)!.enableCalculatorDisguiseTooltip,
             icon: Icon(
               _isCalculatorMode ? Icons.lock_outline : Icons.calculate_outlined,
               color: AppTheme.brandSecondary,
@@ -330,12 +352,12 @@ class _LockScreenState extends State<LockScreen> {
             ),
           ),
           const SizedBox(height: 4),
-          const Text(
-            'My Notes',
-            style: TextStyle(fontSize: 15, color: AppTheme.textSecondary, fontWeight: FontWeight.w500),
+          Text(
+            AppLocalizations.of(context)!.myNotesSubtitle,
+            style: const TextStyle(fontSize: 15, color: AppTheme.textSecondary, fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 32),
-          
+
           if (_isCompromised)
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -346,13 +368,13 @@ class _LockScreenState extends State<LockScreen> {
                 border: Border.all(color: AppTheme.panicRed.withOpacity(0.3)),
               ),
               child: Row(
-                children: const [
-                  Icon(Icons.warning_amber_rounded, color: AppTheme.panicRed),
-                  SizedBox(width: 12),
+                children: [
+                  const Icon(Icons.warning_amber_rounded, color: AppTheme.panicRed),
+                  const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'Security Alert: Device may be compromised. Please proceed with caution.',
-                      style: TextStyle(color: AppTheme.panicRed, fontSize: 13, fontWeight: FontWeight.w500),
+                      AppLocalizations.of(context)!.compromisedDeviceWarning,
+                      style: const TextStyle(color: AppTheme.panicRed, fontSize: 13, fontWeight: FontWeight.w500),
                     ),
                   ),
                 ],
@@ -413,7 +435,7 @@ class _LockScreenState extends State<LockScreen> {
                       _buildActionButton(
                         icon: Icons.fingerprint_rounded,
                         onTap: _authenticateBiometric,
-                        tooltip: 'Biometric Unlock',
+                        tooltip: AppLocalizations.of(context)!.biometricUnlockTooltip,
                       )
                     else
                       const SizedBox(width: 76, height: 76),
@@ -422,7 +444,7 @@ class _LockScreenState extends State<LockScreen> {
                     _buildActionButton(
                       icon: Icons.backspace_rounded,
                       onTap: _onBackspace,
-                      tooltip: 'Delete',
+                      tooltip: AppLocalizations.of(context)!.deleteTooltip,
                     ),
                   ],
                 ),
