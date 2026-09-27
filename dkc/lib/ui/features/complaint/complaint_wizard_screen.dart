@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:printing/printing.dart';
+import '../../../domain/models/complaint.dart';
 import '../../../domain/use_cases/generate_complaint.dart';
+import '../../../data/repositories/complaint_repository.dart';
+import '../../../data/services/database_service.dart';
 import '../../core/theme/app_theme.dart';
+import '../vault/vault_provider.dart';
 
 class ComplaintWizardScreen extends StatefulWidget {
   final bool isDecoy;
@@ -74,9 +79,11 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
 
   Future<void> _generateAndExportPDF() async {
     final useCase = GenerateComplaintUseCase();
+    final vaultEvidence =
+        Provider.of<VaultProvider>(context, listen: false).items;
 
-    final path = await useCase.execute(
-      [], // Empty list for now until evidence provider is explicitly linked here
+    final result = await useCase.execute(
+      vaultEvidence,
       {
         'title': _titleController.text,
         'description': _descController.text,
@@ -86,12 +93,37 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
 
     if (!mounted) return;
 
+    // Persist the dossier so it survives app termination and shows up in
+    // any future "My Complaints" history view.
+    try {
+      final repository = ComplaintRepository(DatabaseService(isDecoy: false));
+      await repository.saveComplaint(
+        Complaint(
+          id: result.dossierId,
+          type: 'GD',
+          title: _titleController.text,
+          description: _descController.text,
+          evidenceIds: vaultEvidence.map((e) => e.id).toList(),
+          generatedText: result.generatedText,
+          targetPoliceStation: _stationController.text,
+          status: 'GENERATED',
+          createdAt: DateTime.now(),
+        ),
+      );
+    } catch (e) {
+      // Export can still proceed even if the local history save fails.
+    }
+
     // Use printing package to present the PDF for native export/sharing
     try {
-      final file = File(path);
+      final file = File(result.pdfPath);
       final bytes = await file.readAsBytes();
-      await Printing.sharePdf(bytes: bytes, filename: 'GD_Complaint.pdf');
+      await Printing.sharePdf(
+        bytes: bytes,
+        filename: '${result.dossierId}.pdf',
+      );
     } catch (e) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Failed to export PDF: $e'),
@@ -234,43 +266,63 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
               Step(
                 title: const Text('Attach Verified Evidence'),
                 subtitle: const Text('Link cryptographic items from vault'),
-                content: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppTheme.primaryWhite,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.white10),
-                      ),
-                      child: Row(
-                        children: const [
-                          Icon(
-                            Icons.check_circle,
-                            color: AppTheme.brandSecondary,
-                            size: 20,
+                content: Consumer<VaultProvider>(
+                  builder: (context, vaultProvider, _) {
+                    final items = vaultProvider.items;
+                    final summary = items.isEmpty
+                        ? 'No vault evidence yet. Anything you save in the Vault tab is attached to this GD automatically.'
+                        : '${items.length} vault evidence item${items.length == 1 ? '' : 's'} will be attached '
+                              '(${items.map((e) => e.type).toSet().join(', ')}), each with a SHA-256 hash.';
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryWhite,
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.white10),
                           ),
-                          SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              '3 vault evidence items selected (WhatsApp Screenshots, Call Recordings with SHA-256 hashes)',
-                              style: TextStyle(fontSize: 12),
-                            ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                items.isEmpty
+                                    ? Icons.info_outline
+                                    : Icons.check_circle,
+                                color: AppTheme.brandSecondary,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Text(
+                                  summary,
+                                  style: const TextStyle(fontSize: 12),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.accentSoft,
-                      ),
-                      onPressed: () {},
-                      icon: const Icon(Icons.add_photo_alternate_outlined),
-                      label: const Text('Select Additional Evidence'),
-                    ),
-                  ],
+                        ),
+                        const SizedBox(height: 12),
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.accentSoft,
+                          ),
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Add more evidence from the Vault tab, then come back — it is attached automatically.',
+                                ),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.add_photo_alternate_outlined),
+                          label: const Text('Select Additional Evidence'),
+                        ),
+                      ],
+                    );
+                  },
                 ),
                 isActive: _currentStep >= 1,
                 state: _currentStep > 1
@@ -291,8 +343,8 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Text(
+                    children: [
+                      const Text(
                         'General Diary Format (সাধারণ ডায়েরি):',
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
@@ -300,12 +352,43 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                           fontSize: 13,
                         ),
                       ),
-                      SizedBox(height: 8),
-                      Text(
+                      const SizedBox(height: 8),
+                      const Text(
                         'To: The Officer-in-Charge (OC)\n'
                         'Subject: Application for lodging General Diary regarding cyber harassment and extortion.\n\n'
                         'I, the undersigned, hereby report that I have been subjected to continuous cyber stalking and extortion. Attached hereto are cryptographic forensic exhibits bearing integrity verification hashes.',
                         style: TextStyle(fontSize: 12, height: 1.4),
+                      ),
+                      const SizedBox(height: 16),
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: Colors.amber.withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(
+                            color: Colors.amber.withValues(alpha: 0.4),
+                          ),
+                        ),
+                        child: const Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.info_outline,
+                              size: 16,
+                              color: Colors.amber,
+                            ),
+                            SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                'This generates an offline PDF dossier with a cryptographic QR verification code -- it is NOT '
+                                'submitted live to gd.police.gov.bd or any government system (no public API exists for that). '
+                                'Present the exported PDF to the Duty Officer at your Thana, or forward it to the PCSW '
+                                'helpline (01320000888) for priority escalation.',
+                                style: TextStyle(fontSize: 11, height: 1.3),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),

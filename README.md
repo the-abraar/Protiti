@@ -28,7 +28,7 @@ A Digital Evidence Vault app designed for women facing online harassment in Bang
 ### Project Structure
 
 ```
-protiti/
+dkc/
 └── lib/
     ├── data/
     │   ├── models/         # DB/API models
