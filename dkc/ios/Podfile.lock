@@ -1,15 +1,123 @@
 PODS:
+  - audioplayers_darwin (0.0.1):
+    - Flutter
+  - CryptoSwift (1.10.0)
   - Flutter (1.0.0)
+  - flutter_background_service_ios (0.0.3):
+    - Flutter
+  - flutter_callkit_incoming (0.0.1):
+    - CryptoSwift
+    - Flutter
+  - flutter_dynamic_icon (0.0.1):
+    - Flutter
+  - flutter_jailbreak_detection (1.0.0):
+    - Flutter
+    - IOSSecuritySuite
+  - flutter_local_notifications (0.0.1):
+    - Flutter
+  - FMDB/Core (2.7.12)
+  - FMDB/SQLCipher (2.7.12):
+    - FMDB/Core
+    - SQLCipher (~> 4.6)
+  - freerasp (1.0.0):
+    - Flutter
+  - IOSSecuritySuite (2.2.0)
+  - Mute (0.6.1)
+  - printing (1.0.0):
+    - Flutter
+  - secure_application (0.0.1):
+    - Flutter
+  - sensors_plus (0.0.1):
+    - Flutter
+  - sound_mode (0.0.1):
+    - Flutter
+    - Mute (~> 0.6.0)
+  - sqflite_sqlcipher (0.0.1):
+    - Flutter
+    - FMDB/SQLCipher (~> 2.7.5)
+    - SQLCipher (= 4.10.0)
+  - SQLCipher (4.10.0):
+    - SQLCipher/standard (= 4.10.0)
+  - SQLCipher/common (4.10.0)
+  - SQLCipher/standard (4.10.0):
+    - SQLCipher/common
+  - torch_light (0.0.1):
+    - Flutter
 
 DEPENDENCIES:
+  - audioplayers_darwin (from `.symlinks/plugins/audioplayers_darwin/ios`)
   - Flutter (from `Flutter`)
+  - flutter_background_service_ios (from `.symlinks/plugins/flutter_background_service_ios/ios`)
+  - flutter_callkit_incoming (from `.symlinks/plugins/flutter_callkit_incoming/ios`)
+  - flutter_dynamic_icon (from `.symlinks/plugins/flutter_dynamic_icon/ios`)
+  - flutter_jailbreak_detection (from `.symlinks/plugins/flutter_jailbreak_detection/ios`)
+  - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
+  - freerasp (from `.symlinks/plugins/freerasp/ios`)
+  - printing (from `.symlinks/plugins/printing/ios`)
+  - secure_application (from `.symlinks/plugins/secure_application/ios`)
+  - sensors_plus (from `.symlinks/plugins/sensors_plus/ios`)
+  - sound_mode (from `.symlinks/plugins/sound_mode/ios`)
+  - sqflite_sqlcipher (from `.symlinks/plugins/sqflite_sqlcipher/ios`)
+  - torch_light (from `.symlinks/plugins/torch_light/ios`)
+
+SPEC REPOS:
+  trunk:
+    - CryptoSwift
+    - FMDB
+    - IOSSecuritySuite
+    - Mute
+    - SQLCipher
 
 EXTERNAL SOURCES:
+  audioplayers_darwin:
+    :path: ".symlinks/plugins/audioplayers_darwin/ios"
   Flutter:
     :path: Flutter
+  flutter_background_service_ios:
+    :path: ".symlinks/plugins/flutter_background_service_ios/ios"
+  flutter_callkit_incoming:
+    :path: ".symlinks/plugins/flutter_callkit_incoming/ios"
+  flutter_dynamic_icon:
+    :path: ".symlinks/plugins/flutter_dynamic_icon/ios"
+  flutter_jailbreak_detection:
+    :path: ".symlinks/plugins/flutter_jailbreak_detection/ios"
+  flutter_local_notifications:
+    :path: ".symlinks/plugins/flutter_local_notifications/ios"
+  freerasp:
+    :path: ".symlinks/plugins/freerasp/ios"
+  printing:
+    :path: ".symlinks/plugins/printing/ios"
+  secure_application:
+    :path: ".symlinks/plugins/secure_application/ios"
+  sensors_plus:
+    :path: ".symlinks/plugins/sensors_plus/ios"
+  sound_mode:
+    :path: ".symlinks/plugins/sound_mode/ios"
+  sqflite_sqlcipher:
+    :path: ".symlinks/plugins/sqflite_sqlcipher/ios"
+  torch_light:
+    :path: ".symlinks/plugins/torch_light/ios"
 
 SPEC CHECKSUMS:
+  audioplayers_darwin: ccf9c770ee768abb07e26d90af093f7bab1c12ab
+  CryptoSwift: e2e7776512f250e66205955da748e7a4e4abffe0
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  flutter_background_service_ios: 00d31bdff7b4bfe06d32375df358abe0329cf87e
+  flutter_callkit_incoming: cb8138af67cda6dd981f7101a5d709003af21502
+  flutter_dynamic_icon: 9b73b8d673f589e913991cc025c007823c59ed19
+  flutter_jailbreak_detection: a74360daaf5cbc80639959463b4b1395873c90b5
+  flutter_local_notifications: ad39620c743ea4c15127860f4b5641649a988100
+  FMDB: 728731dd336af3936ce00f91d9d8495f5718a0e6
+  freerasp: d77275f774facb901f52e9608e5bd34768728363
+  IOSSecuritySuite: ba76f34cb367b9230934ac37904e26a40d033e3d
+  Mute: 20135a96076f140cc82bfc8b810e2d6150d8ec7e
+  printing: 54ff03f28fe9ba3aa93358afb80a8595a071dd07
+  secure_application: 1b94e9be54ff82c3a2598e75e4ba559d5e14e2d3
+  sensors_plus: 3c3bac724a2128c895623e03efd82cf0e94fd8e8
+  sound_mode: 53bd43e2fb1f640571ea74931ca5efdea5ddfc97
+  sqflite_sqlcipher: 8e5bdaae6b2c254f8a277a564f07bc4e2a8642a3
+  SQLCipher: eb79c64049cb002b4e9fcb30edb7979bf4706dfc
+  torch_light: d093d579a221a59ef8a6b8c0eca20d52f7178087
 
 PODFILE CHECKSUM: f63293277a70b3f72fa36ed27ab721394d8ebc0a
 

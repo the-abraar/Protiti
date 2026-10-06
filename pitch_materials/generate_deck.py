@@ -13,20 +13,21 @@ def create_deck():
     prs.slide_height = Inches(7.5)
     blank_layout = prs.slide_layouts[6]
 
-    # Brand Colors
-    AMETHYST = RGBColor(74, 21, 75)     # #4A154B (Primary Brand)
-    TEAL = RGBColor(0, 128, 128)        # #008080 (Secondary Accent)
-    GOLD = RGBColor(255, 193, 7)        # #FFC107 (Highlight / Hope)
-    CRIMSON = RGBColor(211, 47, 47)     # #D32F2F (Alert)
-    CHARCOAL = RGBColor(18, 18, 18)     # #121212 (Dark Base)
-    CARD_BG = RGBColor(28, 28, 30)      # #1C1C1E (Card surface)
-    CARD_BORDER = RGBColor(50, 50, 56)  # Subtle border
-    WHITE = RGBColor(255, 255, 255)
-    OFF_WHITE = RGBColor(240, 240, 245)
-    MUTED = RGBColor(160, 160, 170)
-    DARK_AMETHYST = RGBColor(40, 12, 42)
+    # Brand Colors — White Theme
+    AMETHYST = RGBColor(74, 21, 75)        # #4A154B (Primary Brand, border/accent)
+    TEAL = RGBColor(0, 105, 92)            # #00695C (Secondary Accent, readable on white)
+    GOLD = RGBColor(255, 193, 7)           # #FFC107 (Border/fill accent only — not text)
+    GOLD_TEXT = RGBColor(146, 64, 14)      # #92400E (Gold family, readable text on white)
+    CRIMSON = RGBColor(198, 40, 40)        # #C62828 (Alert)
+    PAGE_BG = RGBColor(255, 255, 255)      # White page/slide background
+    LIGHT_AMETHYST = RGBColor(247, 242, 248)  # Faint amethyst tint for hero slides
+    CARD_BG = RGBColor(255, 255, 255)      # Card surface
+    CARD_BORDER = RGBColor(226, 226, 235)  # Subtle light border
+    INK = RGBColor(24, 24, 27)             # Primary dark text
+    BODY_TEXT = RGBColor(63, 63, 70)       # Secondary dark gray body text
+    MUTED = RGBColor(107, 114, 128)        # Muted gray, readable on white
 
-    def set_slide_background(slide, color=CHARCOAL):
+    def set_slide_background(slide, color=PAGE_BG):
         bg = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, 0, 0, Inches(13.333), Inches(7.5))
         bg.fill.solid()
         bg.fill.fore_color.rgb = color
@@ -48,7 +49,7 @@ def create_deck():
         p0.font.name = "Arial"
         p0.font.size = Pt(10)
         p0.font.bold = True
-        p0.font.color.rgb = GOLD
+        p0.font.color.rgb = GOLD_TEXT
 
         # Title
         p1 = tf.add_paragraph()
@@ -56,7 +57,7 @@ def create_deck():
         p1.font.name = "Arial"
         p1.font.size = Pt(24)
         p1.font.bold = True
-        p1.font.color.rgb = WHITE
+        p1.font.color.rgb = INK
 
         # Subtitle
         if subtitle:
@@ -72,7 +73,8 @@ def create_deck():
         card.fill.fore_color.rgb = bg_color
         card.line.color.rgb = border_color
         card.line.width = Pt(1.5)
-        
+        card.shadow.inherit = False
+
         if title:
             tb = slide.shapes.add_textbox(left + Inches(0.2), top + Inches(0.15), width - Inches(0.4), Inches(0.5))
             tf = tb.text_frame
@@ -82,14 +84,14 @@ def create_deck():
             p.font.name = "Arial"
             p.font.size = Pt(14)
             p.font.bold = True
-            p.font.color.rgb = GOLD
+            p.font.color.rgb = GOLD_TEXT
         return card
 
     # ==========================================
     # SLIDE 1: Title & Hook
     # ==========================================
     s1 = prs.slides.add_slide(blank_layout)
-    set_slide_background(s1, DARK_AMETHYST)
+    set_slide_background(s1, LIGHT_AMETHYST)
 
     # Accent decorative bar
     bar = s1.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(1.0), Inches(0.15), Inches(5.5))
@@ -107,14 +109,14 @@ def create_deck():
     p.font.name = "Arial"
     p.font.size = Pt(11)
     p.font.bold = True
-    p.font.color.rgb = GOLD
+    p.font.color.rgb = GOLD_TEXT
 
     p = tf1.add_paragraph()
     p.text = "Project Protiti (প্রতীতি)"
     p.font.name = "Arial"
     p.font.size = Pt(40)
     p.font.bold = True
-    p.font.color.rgb = WHITE
+    p.font.color.rgb = INK
 
     p = tf1.add_paragraph()
     p.text = "“সন্দেহহীন সত্য, অকাট্য প্রমাণের অধিকার”\nFrom Doubt to Certitude: Structure for Digital Justice"
@@ -126,7 +128,7 @@ def create_deck():
     p.text = "\nA Trauma-Informed Digital Evidence Vault, Legal Automator (Cyber Protection Act 2026), and Offline Emergency SOS Framework for Women in Bangladesh."
     p.font.name = "Arial"
     p.font.size = Pt(13)
-    p.font.color.rgb = OFF_WHITE
+    p.font.color.rgb = BODY_TEXT
 
     p = tf1.add_paragraph()
     p.text = "\nPartners: UNDP Bangladesh  •  European Union  •  SURGE\nTheme: Gender-based Online Violence  •  Lens: Gender Equity"
@@ -141,9 +143,9 @@ def create_deck():
     tf_team.word_wrap = True
 
     team_content = [
-        ("FARZANA REZA", "Team Leader, Operations, Marketing & Research (Acting UI/UX)", GOLD),
+        ("FARZANA REZA", "Team Leader, Operations, Marketing & Research (Acting UI/UX)", GOLD_TEXT),
         ("ABRAR MASUD", "AI & Systems Engineer (Acting Full-Stack / Mobile)", TEAL),
-        ("MITHILA KHAN", "Legal Advisor & Statutory Compliance (CPA 2026)", WHITE),
+        ("MITHILA KHAN", "Legal Advisor & Statutory Compliance (CPA 2026)", INK),
         ("RESERVE SLOT 4", "Dedicated UI/UX Designer (Interim: Farzana)", MUTED),
         ("RESERVE SLOT 5", "Dedicated Flutter Developer (Interim: Abrar)", MUTED),
     ]
@@ -152,7 +154,7 @@ def create_deck():
     p_t0.text = "CORE FELLOWS (Bootcamps & Leadership):"
     p_t0.font.size = Pt(10)
     p_t0.font.bold = True
-    p_t0.font.color.rgb = WHITE
+    p_t0.font.color.rgb = INK
 
     for name, role, color in team_content:
         p_name = tf_team.add_paragraph()
@@ -160,11 +162,11 @@ def create_deck():
         p_name.font.size = Pt(11)
         p_name.font.bold = True
         p_name.font.color.rgb = color
-        
+
         p_role = tf_team.add_paragraph()
         p_role.text = f"   {role}"
         p_role.font.size = Pt(9)
-        p_role.font.color.rgb = OFF_WHITE
+        p_role.font.color.rgb = BODY_TEXT
 
     p_stat = tf_team.add_paragraph()
     p_stat.text = "\nTHE CRITICAL REALITY:\n64% of Bangladeshi women face online harassment; 80%+ cases go unreported due to evidence destruction and legal intimidation."
@@ -177,7 +179,7 @@ def create_deck():
     # ==========================================
     s2 = prs.slides.add_slide(blank_layout)
     set_slide_background(s2)
-    add_header(s2, 2, "The Reality: Online Violence Destroys Evidence & Silences Victims", 
+    add_header(s2, 2, "The Reality: Online Violence Destroys Evidence & Silences Victims",
                "Trauma, legal complexity, and social stigma prevent survivors from seeking justice.")
 
     col_width = Inches(2.75)
@@ -185,19 +187,19 @@ def create_deck():
     h_pos = Inches(5.0)
 
     cards_data = [
-        ("1. Evidence Panic Deletion", 
+        ("1. Evidence Panic Deletion",
          "CRIMSON",
          "Out of immediate panic or fear of family discovery, 80%+ of victims delete chat logs and block abusers, irreversibly erasing digital proof required by police and prosecutors.",
          "Impact: Without bitwise evidence, law enforcement cannot file an FIR under CrPC Sec 154."),
-        ("2. Legal Intimidation", 
+        ("2. Legal Intimidation",
          "GOLD",
          "The Cyber Security Act has been repealed by the Cyber Protection Act 2026. General Diary (GD) drafting demands specific statutory mapping that ordinary survivors cannot navigate alone.",
          "Impact: Duty officers reject handwritten, unstructured victim complaints at local Thanas."),
-        ("3. The Forensic Gap", 
+        ("3. The Forensic Gap",
          "TEAL",
          "Simple screenshots are easily dismissed in court. Defense lawyers routinely challenge them for lack of metadata, timestamps, URL origins, or Evidence Act Section 65B certificates.",
          "Impact: Forensic admissibility fails before the Divisional Cyber Tribunals."),
-        ("4. Coercion & Stigma", 
+        ("4. Coercion & Stigma",
          "AMETHYST",
          "Violent partners or household members regularly seize phones to check contents. Without decoy isolation, having an anti-harassment app invites immediate physical retribution.",
          "Impact: Victims remain trapped in silence under fear of physical assault.")
@@ -207,28 +209,28 @@ def create_deck():
         c_left = Inches(0.8) + i * Inches(2.95)
         border = CRIMSON if color_name == "CRIMSON" else GOLD if color_name == "GOLD" else TEAL if color_name == "TEAL" else AMETHYST
         create_card(s2, c_left, top_pos, col_width, h_pos, title=title, border_color=border)
-        
+
         tb = s2.shapes.add_textbox(c_left + Inches(0.15), top_pos + Inches(0.7), col_width - Inches(0.3), h_pos - Inches(0.9))
         tf = tb.text_frame
         tf.word_wrap = True
-        
+
         p = tf.paragraphs[0]
         p.text = desc
         p.font.size = Pt(11)
-        p.font.color.rgb = OFF_WHITE
-        
+        p.font.color.rgb = BODY_TEXT
+
         p2 = tf.add_paragraph()
         p2.text = f"\n{imp}"
         p2.font.size = Pt(10)
         p2.font.bold = True
-        p2.font.color.rgb = GOLD if color_name != "GOLD" else TEAL
+        p2.font.color.rgb = GOLD_TEXT if color_name != "GOLD" else TEAL
 
     # ==========================================
     # SLIDE 3: The Solution
     # ==========================================
     s3 = prs.slides.add_slide(blank_layout)
     set_slide_background(s3)
-    add_header(s3, 3, "The Solution: Protiti (প্রতীতি) — Structural Safety & Justice", 
+    add_header(s3, 3, "The Solution: Protiti (প্রতীতি) — Structural Safety & Justice",
                "An encrypted, trauma-informed digital legal assistant engineered for Bangladesh.")
 
     sol_cards = [
@@ -251,7 +253,7 @@ def create_deck():
         row = i // 2
         c_left = Inches(0.8) + col * Inches(5.95)
         c_top = Inches(1.8) + row * Inches(2.55)
-        
+
         create_card(s3, c_left, c_top, Inches(5.75), Inches(2.35), title=title, border_color=color)
         tb = s3.shapes.add_textbox(c_left + Inches(0.2), c_top + Inches(0.65), Inches(5.35), Inches(1.5))
         tf = tb.text_frame
@@ -259,14 +261,14 @@ def create_deck():
         p = tf.paragraphs[0]
         p.text = content
         p.font.size = Pt(11)
-        p.font.color.rgb = OFF_WHITE
+        p.font.color.rgb = BODY_TEXT
 
     # ==========================================
     # SLIDE 4: How It Works (Survivor Journey)
     # ==========================================
     s4 = prs.slides.add_slide(blank_layout)
     set_slide_background(s4)
-    add_header(s4, 4, "How It Works: 5-Stage Journey From Chaos to Certitude", 
+    add_header(s4, 4, "How It Works: 5-Stage Journey From Chaos to Certitude",
                "Guided step-by-step pipeline transforming chaotic abuse into courtroom-admissible evidence.")
 
     steps = [
@@ -281,14 +283,14 @@ def create_deck():
     for i, (stitle, sdesc, scolor) in enumerate(steps):
         c_left = Inches(0.8) + i * Inches(2.4)
         create_card(s4, c_left, Inches(1.8), card_w, Inches(3.6), title=stitle, border_color=scolor)
-        
+
         tb = s4.shapes.add_textbox(c_left + Inches(0.12), Inches(2.5), card_w - Inches(0.24), Inches(2.7))
         tf = tb.text_frame
         tf.word_wrap = True
         p = tf.paragraphs[0]
         p.text = sdesc
         p.font.size = Pt(11)
-        p.font.color.rgb = OFF_WHITE
+        p.font.color.rgb = BODY_TEXT
 
     # Bottom comparison callout
     bot_card = create_card(s4, Inches(0.8), Inches(5.6), Inches(11.733), Inches(1.3), title="BEFORE vs AFTER PROTITI", border_color=GOLD)
@@ -299,28 +301,28 @@ def create_deck():
     p.text = "BEFORE: Panic deletion → 0 legal proof → Dismissed by police → Perpetrator escalates abuse.\nAFTER: Untouched encrypted vault → Bitwise SHA-256 verification → Evidence Act Sec 65B certified GD → Rapid police action."
     p.font.size = Pt(10.5)
     p.font.bold = True
-    p.font.color.rgb = WHITE
+    p.font.color.rgb = INK
 
     # ==========================================
     # SLIDE 5: Technology & Innovation
     # ==========================================
     s5 = prs.slides.add_slide(blank_layout)
     set_slide_background(s5)
-    add_header(s5, 5, "Technology & Security: Built for Real-World Survival", 
+    add_header(s5, 5, "Technology & Security: Built for Real-World Survival",
                "Engineered to withstand physical coercion, rural network blackouts, and courtroom scrutiny.")
 
     tech_pillars = [
-        ("🔐 Dual-Vault & Duress PIN", 
-         "Hardware-backed Keystore/Keychain encryption (SQLCipher AES-256). Entering Master PIN ('1234') unlocks forensic records; entering Duress PIN ('9999') loads an innocent personal diary.", 
+        ("🔐 Dual-Vault & Duress PIN",
+         "Hardware-backed Keystore/Keychain encryption (SQLCipher AES-256). Entering Master PIN ('1234') unlocks forensic records; entering Duress PIN ('9999') loads an innocent personal diary.",
          TEAL),
-        ("📲 Launcher Stealth Disguise", 
-         "Fully functioning 'Smart Calc' persona. Android PackageManager activity-alias toggling hides forensic markers from device inspectors. Face-down quick-exit gesture wipes active RAM.", 
+        ("📲 Launcher Stealth Disguise",
+         "Fully functioning 'Smart Calc' persona. Android PackageManager activity-alias toggling hides forensic markers from device inspectors. Face-down quick-exit gesture wipes active RAM.",
          AMETHYST),
-        ("📡 Zero-Data Offline SOS", 
-         "Lightweight GPS extraction (<160 chars) transmitted over native cellular SMS without dependency on mobile data/Wi-Fi. Direct USSD & hotline fallbacks for rural divisional settings.", 
+        ("📡 Zero-Data Offline SOS",
+         "Lightweight GPS extraction (<160 chars) transmitted over native cellular SMS without dependency on mobile data/Wi-Fi. Direct USSD & hotline fallbacks for rural divisional settings.",
          CRIMSON),
-        ("⚖️ Evidence Act Sec 65B Engine", 
-         "SHA-256 cryptographic hashing (NIST FIPS 180-4) with automated Certificate of Electronic Authenticity adhering to the Evidence (Amendment) Act 2022 and CID forensic lab protocols.", 
+        ("⚖️ Evidence Act Sec 65B Engine",
+         "SHA-256 cryptographic hashing (NIST FIPS 180-4) with automated Certificate of Electronic Authenticity adhering to the Evidence (Amendment) Act 2022 and CID forensic lab protocols.",
          GOLD)
     ]
 
@@ -329,7 +331,7 @@ def create_deck():
         row = i // 2
         c_left = Inches(0.8) + col * Inches(5.95)
         c_top = Inches(1.8) + row * Inches(2.55)
-        
+
         create_card(s5, c_left, c_top, Inches(5.75), Inches(2.35), title=title, border_color=color)
         tb = s5.shapes.add_textbox(c_left + Inches(0.2), c_top + Inches(0.65), Inches(5.35), Inches(1.5))
         tf = tb.text_frame
@@ -337,14 +339,14 @@ def create_deck():
         p = tf.paragraphs[0]
         p.text = text
         p.font.size = Pt(11)
-        p.font.color.rgb = OFF_WHITE
+        p.font.color.rgb = BODY_TEXT
 
     # ==========================================
     # SLIDE 6: Target Community & Ecosystem Impact
     # ==========================================
     s6 = prs.slides.add_slide(blank_layout)
     set_slide_background(s6)
-    add_header(s6, 6, "Target Community & Measurable Ecosystem Impact", 
+    add_header(s6, 6, "Target Community & Measurable Ecosystem Impact",
                "Bridging female university students, rural youth, police cyber cells, and pro-bono litigators.")
 
     # Left: Stakeholder cards
@@ -363,12 +365,12 @@ def create_deck():
         p.text = f"• {head} "
         p.font.bold = True
         p.font.size = Pt(11)
-        p.font.color.rgb = GOLD
-        
+        p.font.color.rgb = GOLD_TEXT
+
         p2 = tf_st.add_paragraph()
         p2.text = f"   {body}\n"
         p2.font.size = Pt(10)
-        p2.font.color.rgb = OFF_WHITE
+        p2.font.color.rgb = BODY_TEXT
 
     # Right: Quantitative Impact Targets
     create_card(s6, Inches(6.75), Inches(1.8), Inches(5.78), Inches(5.1), title="8-MONTH QUANTITATIVE IMPACT TARGETS", border_color=GOLD)
@@ -389,18 +391,18 @@ def create_deck():
         p.font.bold = True
         p.font.size = Pt(11)
         p.font.color.rgb = TEAL
-        
+
         p2 = tf_imp.add_paragraph()
         p2.text = f"   {subtext}"
         p2.font.size = Pt(9.5)
-        p2.font.color.rgb = OFF_WHITE
+        p2.font.color.rgb = BODY_TEXT
 
     # ==========================================
     # SLIDE 7: Implementation Roadmap & Budget
     # ==========================================
     s7 = prs.slides.add_slide(blank_layout)
     set_slide_background(s7)
-    add_header(s7, 7, "8-Month Implementation Roadmap & BDT 50,000 Seed Grant", 
+    add_header(s7, 7, "8-Month Implementation Roadmap & BDT 50,000 Seed Grant",
                "Strictly 0% spent on personal stipends; 100% dedicated to toolkits, workshops, and survivor safety.")
 
     # Left: Roadmap
@@ -422,12 +424,12 @@ def create_deck():
         p.text = f"• {p_title} [{p_time}]"
         p.font.bold = True
         p.font.size = Pt(11)
-        p.font.color.rgb = GOLD
-        
+        p.font.color.rgb = GOLD_TEXT
+
         p2 = tf_rd.add_paragraph()
         p2.text = f"   {p_desc}\n"
         p2.font.size = Pt(9.5)
-        p2.font.color.rgb = OFF_WHITE
+        p2.font.color.rgb = BODY_TEXT
 
     # Right: BDT 50,000 Budget Breakdown (Dhaka Division Pilot — see budget_50k.md)
     create_card(s7, Inches(6.75), Inches(1.8), Inches(5.78), Inches(5.1), title="BDT 50,000 SEED GRANT — DHAKA DIVISION PILOT", border_color=GOLD)
@@ -448,23 +450,23 @@ def create_deck():
         p.font.bold = True
         p.font.size = Pt(10.5)
         p.font.color.rgb = TEAL
-        
+
         p2 = tf_bg.add_paragraph()
         p2.text = f"   {b_desc}"
         p2.font.size = Pt(9)
-        p2.font.color.rgb = OFF_WHITE
+        p2.font.color.rgb = BODY_TEXT
 
     p_rule = tf_bg.add_paragraph()
     p_rule.text = "\n*UNDP / DKC COMPLIANCE: Disbursed in 2 tranches (BDT 25k x 2). Strictly BDT 0 spent on personal stipends or honoraria."
     p_rule.font.size = Pt(8.5)
     p_rule.font.bold = True
-    p_rule.font.color.rgb = GOLD
+    p_rule.font.color.rgb = GOLD_TEXT
 
     # ==========================================
     # SLIDE 8: Sustainability & Call to Action
     # ==========================================
     s8 = prs.slides.add_slide(blank_layout)
-    set_slide_background(s8, DARK_AMETHYST)
+    set_slide_background(s8, LIGHT_AMETHYST)
 
     # Accent decorative bar
     bar8 = s8.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0.8), Inches(1.0), Inches(0.15), Inches(5.5))
@@ -481,14 +483,14 @@ def create_deck():
     p.font.name = "Arial"
     p.font.size = Pt(11)
     p.font.bold = True
-    p.font.color.rgb = GOLD
+    p.font.color.rgb = GOLD_TEXT
 
     p = tf8.add_paragraph()
     p.text = "A Lasting Frame for Digital Justice"
     p.font.name = "Arial"
     p.font.size = Pt(32)
     p.font.bold = True
-    p.font.color.rgb = WHITE
+    p.font.color.rgb = INK
 
     sustain_points = [
         ("Institutional Handover", "Engineered for long-term stewardship by Police Cyber Support for Women (PCSW) and the ICT Division's Cyber Help initiatives."),
@@ -501,11 +503,11 @@ def create_deck():
         p.font.size = Pt(13)
         p.font.bold = True
         p.font.color.rgb = TEAL
-        
+
         p = tf8.add_paragraph()
         p.text = desc
         p.font.size = Pt(11)
-        p.font.color.rgb = OFF_WHITE
+        p.font.color.rgb = BODY_TEXT
 
     # Right Card: The Call to Action
     create_card(s8, Inches(8.0), Inches(1.2), Inches(4.5), Inches(5.0), title="THE CALL TO ACTION", border_color=GOLD, bg_color=CARD_BG)
@@ -518,12 +520,12 @@ def create_deck():
     p_quote.font.size = Pt(16)
     p_quote.font.bold = True
     p_quote.font.italic = True
-    p_quote.font.color.rgb = GOLD
+    p_quote.font.color.rgb = GOLD_TEXT
 
     p_close = tf_cta.add_paragraph()
     p_close.text = "\n\nProject Protiti (প্রতীতি)\nDigital Khichuri Challenge 2026\nUNDP Bangladesh • European Union • SURGE"
     p_close.font.size = Pt(12)
-    p_close.font.color.rgb = WHITE
+    p_close.font.color.rgb = INK
 
     p_contact = tf_cta.add_paragraph()
     p_contact.text = "\nTeam Lead: Farzana Reza\nReady for Stage 1 Evaluation & Innovation Bootcamp."
@@ -532,7 +534,7 @@ def create_deck():
     p_contact.font.color.rgb = TEAL
 
     # Save output
-    output_path = "/Users/blackbird/Everything/dev/DKC/pitch_materials/Protiti_Pitch_Deck.pptx"
+    output_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "Protiti_Pitch_Deck.pptx")
     prs.save(output_path)
     print(f"Presentation successfully saved to: {output_path}")
 
