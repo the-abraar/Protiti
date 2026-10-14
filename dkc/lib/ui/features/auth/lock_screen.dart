@@ -8,6 +8,7 @@ import '../../../data/services/database_service.dart';
 import 'package:provider/provider.dart';
 import '../../../data/services/wipe_service.dart';
 import '../../../data/services/background_sos_service.dart';
+import '../../../data/services/silent_alert_service.dart';
 import 'pin_setup_screen.dart';
 
 /// The app's only face: a working calculator. Typing a code and then "="
@@ -78,6 +79,8 @@ class _LockScreenState extends State<LockScreen> {
         _navigateToVault(isDecoy: false);
       case AuthStatus.authenticatedDuress:
         _navigateToVault(isDecoy: true);
+        // pro-sos (B22): opt-in silent SMS; shows nothing, never throws.
+        DuressAlert.sendIfOn();
       case AuthStatus.wiped:
         await _wipe();
       case AuthStatus.lockedOut:

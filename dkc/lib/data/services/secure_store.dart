@@ -15,7 +15,11 @@ abstract final class StoreKeys {
   static const failedAttempts = 'u4';
   static const biometricOptIn = 'u5';
   static const evidenceKey = 'k3';
-  static const sosTriggersOn = 'p2';
+  // SOS (pro-sos). p2 used to switch both triggers; it now means the power button only.
+  static const powerSosOn = 'p2';
+  static const shakeSosOn = 's1';
+  static const duressAlertOn = 's2';
+  static const lastAlert = 's3';
   static const draftTitle = 'd1';
   static const draftDescription = 'd2';
   static const draftStation = 'd3';

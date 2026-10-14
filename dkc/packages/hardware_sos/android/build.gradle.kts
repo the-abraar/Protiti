@@ -52,8 +52,6 @@ android {
         unitTests {
             isIncludeAndroidResources = true
             all {
-                it.useJUnitPlatform()
-
                 it.outputs.upToDateWhen { false }
 
                 it.testLogging {
@@ -72,6 +70,5 @@ kotlin {
 }
 
 dependencies {
-    testImplementation("org.jetbrains.kotlin:kotlin-test")
-    testImplementation("org.mockito:mockito-core:5.0.0")
+    testImplementation("junit:junit:4.13.2")
 }
