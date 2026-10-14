@@ -23,7 +23,12 @@ Future<List<pw.Widget>> pdfText(
   double scale = 3,
 }) async {
   if (text.codeUnits.every((c) => c < 0x100)) {
-    return [pw.Text(text, style: pw.TextStyle(fontSize: fontSize, fontWeight: bold ? pw.FontWeight.bold : null))];
+    // span: a long description flows onto the next page instead of failing.
+    return [
+      pw.Text(text,
+          overflow: pw.TextOverflow.span,
+          style: pw.TextStyle(fontSize: fontSize, fontWeight: bold ? pw.FontWeight.bold : null)),
+    ];
   }
   final painter = TextPainter(
     text: TextSpan(

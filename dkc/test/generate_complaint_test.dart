@@ -80,6 +80,14 @@ void main() {
     expect(latin1.decode(result.pdfBytes), contains('/Subtype/Image'));
   });
 
+  test('a description or item longer than a page flows onto more pages, in English and Bangla', () async {
+    final long = Evidence(id: 'l', type: 'text', description: 'word ' * 3000, createdAt: DateTime(2026, 10, 1));
+    final en = await GenerateComplaintUseCase().execute([long], {'description': 'He wrote again. ' * 400});
+    final bn = await GenerateComplaintUseCase().execute([], {'description': 'সে আবার হুমকি দিয়েছে। ' * 400});
+    expect(RegExp('/Type ?/Page[^s]').allMatches(latin1.decode(en.pdfBytes)).length, greaterThan(1));
+    expect(RegExp('/Type ?/Page[^s]').allMatches(latin1.decode(bn.pdfBytes)).length, greaterThan(1));
+  });
+
   test('pdfText keeps Latin-1 as text and splits other text into line images', () async {
     expect(await pdfText('SHA-256: $_hash'), [isA<pw.Text>()]);
     final lines = await pdfText('ক্ষমা ' * 60, width: 200);
