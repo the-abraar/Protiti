@@ -59,7 +59,7 @@ The 64 Campus Ambassadors (8 per administrative division) undergo an accredited,
   * Session conducted in collaboration with accredited mental health trainers from **Kaan Pete Roi**.
 * **10:45 AM – 12:45 PM: Crisis Triage & Referral Escalation Matrix**
   * Standardized four-tier traffic-light protocol:
-    * *Tier 1 (Green - Info):* Walkthrough of safety features, app installation, survivor wallet card.
+    * *Tier 1 (Green - Info):* Walkthrough of safety features, survivor wallet card. (App installation removed: the app is a research prototype and not for real use.)
     * *Tier 2 (Yellow - Harassment):* Vault evidence lock, draft GD generation, e-GD guidance.
     * *Tier 3 (Orange - Blackmail/Deepfakes):* Immediate hotline escalation to **PCSW (01320000888)** and **BNWLA** pro-bono attorneys.
     * *Tier 4 (Red - Danger/Self-Harm):* Immediate call to **999**, Kaan Pete Roi helpline, and Hall Provost.
@@ -174,13 +174,14 @@ flowchart LR
 
 1. **Discreet Physical Survivor Toolkits (10,000 Units Printed):**
    * Pocket-sized 4-panel folding card (credit-card dimensions) disguised as a cosmetics/loyalty card.
-   * Contains offline emergency numbers (999, PCSW, BNWLA, Kaan Pete Roi), 5 evidence preservation rules, Cyber Protection Act 2026 rights summary, and offline Protiti QR code.
+   * Contains offline emergency numbers (999, PCSW, BNWLA, Kaan Pete Roi), 5 evidence preservation rules and a rights summary (law name and sections UNVERIFIED, needs counsel). No app QR code until the app is safe to distribute.
 2. **Ambassador Master Training Handbook (80 Copies Spiral-Bound):**
    * 24-page B5 compendium of legal clauses, evidence hashing technical scripts, de-escalation roleplays, and safeguarding directives.
 3. **Dedicated Divisional Support Hotlines:**
    * 8 project-owned SIM cards providing verified, confidential triage and referral routing.
 4. **Campus Kiosk Activation Kits:**
-   * Foldable banners, privacy clipboards, anonymous incident loggers, and offline APK installation flash drives.
+   * Foldable banners, privacy clipboards and anonymous incident loggers.
+   * ~~Offline APK installation flash drives.~~ **CANCELLED (2026-10-14).** Sideloading needs "install unknown apps" turned on, which leaves a trace on the phone; Play Protect warnings are likely; and there is no update channel, so a security fix could never reach installed phones. The app is not yet safe for survivors. Do not hand out APKs (see `CrtiQue_Oct14.md` section 10).
 
 ---
 

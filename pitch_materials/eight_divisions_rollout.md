@@ -320,7 +320,7 @@ flowchart TD
      * Emergency numbers (999, 109, 01320000888, Kaan Pete Roi).
      * 5-step evidence preservation rules (What to screenshot, what NOT to delete).
      * Legal rights summary in conversational Bangla under the Cyber Protection Act 2026.
-     * QR code + discreet short-link to download the Protiti offline APK.
+     * ~~QR code + discreet short-link to download the Protiti offline APK.~~ CANCELLED (2026-10-14): no APK distribution until the app passes a security review and has an update channel (see `CrtiQue_Oct14.md` section 10).
 4. **Union Digital Centre (UDC) Kiosk Integration:**
    * Partnering with female UDC entrepreneurs across peri-urban Thanas to act as discreet physical download and printing points for GD templates for women who do not own personal smartphones.
 
