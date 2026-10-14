@@ -219,6 +219,13 @@ class BackgroundSosService {
     await _sync();
   }
 
+  /// After a wipe has deleted the switches: a running service stops itself,
+  /// and its status notice goes, so the plain calculator carries none (N9).
+  static Future<void> afterWipe() async {
+    await _sync();
+    await const SosAlerts().clear();
+  }
+
   /// Called on every lock screen load. Starts the service only if a trigger
   /// is on and the permissions still hold; never prompts, never throws.
   static Future<bool> startIfEnabled() async {
