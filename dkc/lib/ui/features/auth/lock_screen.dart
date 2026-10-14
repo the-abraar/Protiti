@@ -11,6 +11,7 @@ import 'package:provider/provider.dart';
 import '../../../data/services/wipe_service.dart';
 import '../../../data/services/disguise_settings_service.dart';
 import '../../../data/services/background_sos_service.dart';
+import '../../../data/services/silent_alert_service.dart';
 import 'pin_setup_screen.dart';
 
 class LockScreen extends StatefulWidget {
@@ -123,6 +124,8 @@ class _LockScreenState extends State<LockScreen> {
       case AuthStatus.authenticatedDuress:
         // Duress PIN entered: Quietly load harmless decoy vault
         _navigateToVault(isDecoy: true);
+        // pro-sos (B22): opt-in silent SMS; shows nothing, never throws.
+        DuressAlert.sendIfOn();
       case AuthStatus.wiped:
         await _wipe();
       case AuthStatus.lockedOut:

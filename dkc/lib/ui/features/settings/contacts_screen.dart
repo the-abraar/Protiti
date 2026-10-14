@@ -74,7 +74,8 @@ class _ContactsScreenState extends State<ContactsScreen> {
         title: 'Allow sending texts',
         body: 'To text your trusted contacts without opening the Messages app, the phone '
             'will ask to let this app send SMS. It costs a normal text each time. '
-            'If you say no, the Messages app opens and you press Send yourself.',
+            'If you say no, the Messages app opens and you press Send yourself. Android may '
+            'keep a copy of each text in your Messages app, where anyone who opens it can read it.',
         request: NativeSmsService.requestPermission,
       );
     }

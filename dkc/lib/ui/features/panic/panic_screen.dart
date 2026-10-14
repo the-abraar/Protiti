@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -11,13 +12,19 @@ import '../../../domain/use_cases/trigger_panic.dart';
 import '../../../data/services/secure_audio_service.dart';
 import '../../../data/services/flashlight_sos_service.dart';
 import '../../../data/services/acoustic_deterrent_service.dart';
+import '../../../data/services/background_sos_service.dart';
+import '../../../data/services/native_sms_service.dart';
+import '../../../data/services/silent_alert_service.dart';
 import 'strobe_screen.dart';
 
 class PanicScreen extends StatefulWidget {
   final bool isDecoy;
   final TriggerPanicUseCase? useCase;
 
-  const PanicScreen({super.key, this.isDecoy = false, this.useCase});
+  /// Delivery reports, (recipient, delivered); defaults to the SMS plugin's.
+  final Stream<(String, bool)>? deliveries;
+
+  const PanicScreen({super.key, this.isDecoy = false, this.useCase, this.deliveries});
 
   @override
   State<PanicScreen> createState() => _PanicScreenState();
@@ -33,6 +40,12 @@ class _PanicScreenState extends State<PanicScreen>
   bool _isTriggered = false;
   bool _isDispatching = false;
   PanicResult? _lastResult;
+  // Cancel window after the hold (B24), then delivery reports for the result.
+  Timer? _countdown;
+  int _secondsLeft = 0;
+  final Map<String, bool> _delivered = {};
+  StreamSubscription<(String, bool)>? _deliverySub;
+  String? _lastAlert;
   final FlashlightSosService _flashlightService = FlashlightSosService();
   bool _isVisualSosActive = false;
   final AcousticDeterrentService _sirenService = AcousticDeterrentService();
@@ -67,10 +80,23 @@ class _PanicScreenState extends State<PanicScreen>
         _onHoldCompleted();
       }
     });
+
+    if (!widget.isDecoy) {
+      _deliverySub = (widget.deliveries ?? NativeSmsService.deliveries).listen((d) {
+        if (mounted && _lastResult?.dispatch.statuses[d.$1] == SmsStatus.sent) {
+          setState(() => _delivered[d.$1] = d.$2);
+        }
+      });
+      AlertLog.summary().then((text) {
+        if (mounted) setState(() => _lastAlert = text);
+      });
+    }
   }
 
   @override
   void dispose() {
+    _countdown?.cancel();
+    _deliverySub?.cancel();
     _flashlightService.stopVisualSos();
     _sirenService.stopSiren();
     _pulseController.dispose();
@@ -97,12 +123,29 @@ class _PanicScreenState extends State<PanicScreen>
     }
   }
 
-  Future<void> _onHoldCompleted() async {
-    HapticFeedback.heavyImpact();
+  /// The hold starts the same cancel window as the background triggers.
+  void _onHoldCompleted() {
+    const SosAlerts().vibrate(Buzz.armed);
     setState(() {
       _isHolding = false;
       _isTriggered = true;
+      _secondsLeft = sosCancelWindow.inSeconds;
+    });
+    _countdown = Timer.periodic(const Duration(seconds: 1), (_) {
+      if (_secondsLeft <= 1) {
+        _sendNow();
+      } else {
+        setState(() => _secondsLeft--);
+      }
+    });
+  }
+
+  Future<void> _sendNow() async {
+    _countdown?.cancel();
+    setState(() {
+      _secondsLeft = 0;
       _isDispatching = true;
+      _delivered.clear();
     });
 
     // Execute offline SMS & location dispatch
@@ -118,9 +161,12 @@ class _PanicScreenState extends State<PanicScreen>
 
   void _resetEmergency() {
     HapticFeedback.selectionClick();
+    _countdown?.cancel();
     setState(() {
       _isTriggered = false;
+      _secondsLeft = 0;
       _lastResult = null;
+      _delivered.clear();
       _holdController.reset();
     });
   }
@@ -143,6 +189,7 @@ class _PanicScreenState extends State<PanicScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          if (_lastAlert != null) _buildLastAlert(_lastAlert!),
           // Header Indicator
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -276,7 +323,11 @@ class _PanicScreenState extends State<PanicScreen>
           // Instructions / Status Text
           Text(
             _isTriggered
-                ? (_isDispatching ? 'Sending SOS...' : 'SOS finished. See the result below.')
+                ? (_secondsLeft > 0
+                ? 'Sending in $_secondsLeft s. Cancel if this was a mistake.'
+                : _isDispatching
+                    ? 'Sending SOS...'
+                    : 'SOS finished. See the result below.')
                 : (_isHolding
                       ? 'Keep holding... ${(3.0 - (_holdController.value * 3.0)).toStringAsFixed(1)}s'
                       : AppLocalizations.of(context)!.panicHoldInstruction),
@@ -297,7 +348,31 @@ class _PanicScreenState extends State<PanicScreen>
           const SizedBox(height: 28),
 
           // Dispatch Status & Results
-          if (_isDispatching)
+          if (_secondsLeft > 0)
+            Row(
+              children: [
+                Expanded(
+                  child: OutlinedButton(
+                    onPressed: _resetEmergency,
+                    style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(56)),
+                    child: const Text('Cancel', style: TextStyle(fontSize: 18)),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ElevatedButton(
+                    onPressed: _sendNow,
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(56),
+                      backgroundColor: AppTheme.panicRed,
+                      foregroundColor: Colors.white,
+                    ),
+                    child: const Text('Send now', style: TextStyle(fontSize: 18)),
+                  ),
+                ),
+              ],
+            )
+          else if (_isDispatching)
             const Padding(
               padding: EdgeInsets.all(16),
               child: CircularProgressIndicator(color: AppTheme.panicRed),
@@ -418,6 +493,23 @@ class _PanicScreenState extends State<PanicScreen>
   );
 }
 
+  /// An alert sent while the app was not on screen (shortcut or second PIN).
+  Widget _buildLastAlert(String text) => Card(
+        margin: const EdgeInsets.only(bottom: 16),
+        child: ListTile(
+          leading: const Icon(Icons.history, color: AppTheme.brandSecondary),
+          title: Text(text, style: const TextStyle(fontSize: 13)),
+          trailing: IconButton(
+            icon: const Icon(Icons.close),
+            tooltip: 'Dismiss',
+            onPressed: () {
+              AlertLog.clear();
+              setState(() => _lastAlert = null);
+            },
+          ),
+        ),
+      );
+
   static const _statusText = {
     SmsStatus.sent: 'Sent',
     SmsStatus.failed: 'Failed',
@@ -489,10 +581,16 @@ class _PanicScreenState extends State<PanicScreen>
             Padding(
               padding: const EdgeInsets.only(bottom: 4),
               child: Text(
-                '${entry.key}: ${_statusText[entry.value]}',
+                '${entry.key}: ${_statusText[entry.value]}${switch (_delivered[entry.key]) {
+                  true => ', delivered',
+                  false => ', not delivered',
+                  null => '',
+                }}',
                 style: TextStyle(
                   fontSize: 13,
-                  color: entry.value == SmsStatus.sent ? AppTheme.textPrimary : AppTheme.panicRed,
+                  color: entry.value == SmsStatus.sent && _delivered[entry.key] != false
+                      ? AppTheme.textPrimary
+                      : AppTheme.panicRed,
                 ),
               ),
             ),
