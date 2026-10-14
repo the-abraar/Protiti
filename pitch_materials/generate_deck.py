@@ -125,7 +125,7 @@ def create_deck():
     p.font.color.rgb = TEAL
 
     p = tf1.add_paragraph()
-    p.text = "\nA Trauma-Informed Digital Evidence Vault, Legal Automator (Cyber Protection Act 2026), and Offline Emergency SOS Framework for Women in Bangladesh."
+    p.text = "\nA research prototype: an encrypted evidence vault, a General Diary (GD) draft for manual filing, and an SMS SOS, for women in Bangladesh. Not for real use until reviewed by a security expert and a field partner."
     p.font.name = "Arial"
     p.font.size = Pt(13)
     p.font.color.rgb = BODY_TEXT
@@ -145,7 +145,7 @@ def create_deck():
     team_content = [
         ("FARZANA REZA", "Team Leader, Operations, Marketing & Research (Acting UI/UX)", GOLD_TEXT),
         ("ABRAR MASUD", "AI & Systems Engineer (Acting Full-Stack / Mobile)", TEAL),
-        ("MITHILA KHAN", "Legal Advisor & Statutory Compliance (CPA 2026)", INK),
+        ("MITHILA KHAN", "Legal Advisor & Statutory Compliance (cyber law / Evidence Act)", INK),
         ("RESERVE SLOT 4", "Dedicated UI/UX Designer (Interim: Farzana)", MUTED),
         ("RESERVE SLOT 5", "Dedicated Flutter Developer (Interim: Abrar)", MUTED),
     ]
@@ -169,7 +169,7 @@ def create_deck():
         p_role.font.color.rgb = BODY_TEXT
 
     p_stat = tf_team.add_paragraph()
-    p_stat.text = "\nTHE CRITICAL REALITY:\n64% of Bangladeshi women face online harassment; 80%+ cases go unreported due to evidence destruction and legal intimidation."
+    p_stat.text = "\nTHE REALITY:\nAbout 64% of the 359 women who completed a 2022 ActionAid Bangladesh online survey said they had faced online violence (Prothom Alo, 28 Nov 2022; not a national sample)."
     p_stat.font.size = Pt(9.5)
     p_stat.font.bold = True
     p_stat.font.color.rgb = CRIMSON
@@ -189,16 +189,16 @@ def create_deck():
     cards_data = [
         ("1. Evidence Panic Deletion",
          "CRIMSON",
-         "Out of immediate panic or fear of family discovery, 80%+ of victims delete chat logs and block abusers, irreversibly erasing digital proof required by police and prosecutors.",
-         "Impact: Without bitwise evidence, law enforcement cannot file an FIR under CrPC Sec 154."),
+         "Out of fear, or worry that family will find out, many victims delete chats and block abusers, destroying proof before police can act.",
+         "Impact: With no evidence left, police have little to act on."),
         ("2. Legal Intimidation",
          "GOLD",
-         "The Cyber Security Act has been repealed by the Cyber Protection Act 2026. General Diary (GD) drafting demands specific statutory mapping that ordinary survivors cannot navigate alone.",
-         "Impact: Duty officers reject handwritten, unstructured victim complaints at local Thanas."),
+         "Cyber law in Bangladesh has changed more than once since 2023. Drafting a General Diary (GD) is bewildering for traumatised victims.",
+         "Impact: Unstructured complaints are hard for duty officers to act on."),
         ("3. The Forensic Gap",
          "TEAL",
-         "Simple screenshots are easily dismissed in court. Defense lawyers routinely challenge them for lack of metadata, timestamps, URL origins, or Evidence Act Section 65B certificates.",
-         "Impact: Forensic admissibility fails before the Divisional Cyber Tribunals."),
+         "Screenshots without links, dates and account names are easy to doubt. The Evidence (Amendment) Act 2022 allows digital records, with forensic examination if authenticity is disputed.",
+         "Impact: Poorly kept evidence can weaken a genuine complaint."),
         ("4. Coercion & Stigma",
          "AMETHYST",
          "Violent partners or household members regularly seize phones to check contents. Without decoy isolation, having an anti-harassment app invites immediate physical retribution.",
@@ -235,16 +235,16 @@ def create_deck():
 
     sol_cards = [
         ("🔒 On-Device Secure Vault",
-         "• AES-256 / SQLCipher local encryption with zero cloud exposure of sensitive media.\n• Duress PIN (Decoy Vault): Entering 9999 loads benign notes/recipes to safely bypass physical coercion.\n• Stealth Calculator Disguise: Masked as functional arithmetic utility.",
+         "• On-device only: evidence is encrypted on the phone (SQLCipher, AES-256). Nothing is uploaded.\n• Duress PIN (Decoy Vault): a second PIN, chosen by the user, opens a separate decoy vault.\n• Calculator Disguise: the app opens as a working calculator.",
          TEAL),
-        ("📝 Automated e-GD Generator",
-         "• Translates traumatic experiences into standard Bangladesh Police e-GD schema (gd.police.gov.bd).\n• Direct Section mapping to Cyber Protection Act 2026 & Pornography Control Act 2012.\n• Generates bilingual (Bengali/English) printable PDF with QR verification.",
+        ("📝 GD Draft",
+         "• Guided form: short questions turn the survivor's account and evidence list into a GD draft.\n• Manual filing: no e-GD integration and no automatic law mapping. A lawyer or PCSW officer should check the draft.\n• Printable PDF. Bangla text in the PDF is a known bug.",
          GOLD),
         ("🚨 Offline Panic SOS Frame",
-         "• 3-Second Hold circular progress trigger with haptic feedback to prevent accidental triggers.\n• Zero-Data SMS Fallback: Broadcasts GPS coordinates to trusted contacts without cellular data.\n• One-touch speed dialing for National Emergency 999 and Police Cyber Support for Women (PCSW).",
+         "• 3-Second Hold circular progress trigger with haptic feedback to prevent accidental triggers.\n• Zero-Data SMS Fallback: Broadcasts GPS coordinates to trusted contacts without cellular data.\n• One-tap dialing for 999, 109 and Police Cyber Support for Women (PCSW).",
          CRIMSON),
-        ("🤝 Support Bridge Network",
-         "• Direct institutional escalation to BLAST (2,500 panel lawyers) & BNWLA for pro-bono representation.\n• Integrated crisis counseling directory (Kaan Pete Roi, Moner Janala).\n• Confidential triage by vetted female cyber crime officers.",
+        ("🤝 Support Directory",
+         "• Legal aid (proposed): referral routes to BLAST and BNWLA are proposed. Neither has agreed.\n• Crisis counselling directory (Kaan Pete Roi, Moner Janala).\n• PCSW contact details (to verify with PCSW).",
          AMETHYST)
     ]
 
@@ -269,14 +269,14 @@ def create_deck():
     s4 = prs.slides.add_slide(blank_layout)
     set_slide_background(s4)
     add_header(s4, 4, "How It Works: 5-Stage Journey From Chaos to Certitude",
-               "Guided step-by-step pipeline transforming chaotic abuse into courtroom-admissible evidence.")
+               "A trauma-informed path from harassment to an organised GD draft.")
 
     steps = [
-        ("Step 1: Capture", "Survivor captures screenshot, audio voice note, URL, or harassing chat before blocking abuser.", TEAL),
-        ("Step 2: Authenticate", "Protiti extracts RFC 3161 timestamps, EXIF metadata, and generates bitwise SHA-256 forensic hash.", GOLD),
+        ("Step 1: Capture", "Survivor saves a screenshot, photo, voice note or written note before blocking the abuser.", TEAL),
+        ("Step 2: Authenticate", "Protiti records the phone's date and time and a SHA-256 file hash. This is not a forensic timestamp.", GOLD),
         ("Step 3: Triage", "Trauma-informed 4-step wizard guides survivor through emotional and factual details in plain Bangla.", AMETHYST),
-        ("Step 4: Formulate", "Engine auto-maps facts to CPA 2026 sections, generating DMP-standard General Diary (e-GD payload).", TEAL),
-        ("Step 5: Action", "Survivor submits directly to Thana / PCSW online, or dispatches securely to BLAST/BNWLA legal counsel.", CRIMSON),
+        ("Step 4: Formulate", "The app lays the facts out as a General Diary draft PDF. It does not pick legal sections.", TEAL),
+        ("Step 5: Action", "Survivor files the draft at the thana or shares it with a lawyer or PCSW.", CRIMSON),
     ]
 
     card_w = Inches(2.25)
@@ -298,7 +298,7 @@ def create_deck():
     tf_b = tb_b.text_frame
     tf_b.word_wrap = True
     p = tf_b.paragraphs[0]
-    p.text = "BEFORE: Panic deletion → 0 legal proof → Dismissed by police → Perpetrator escalates abuse.\nAFTER: Untouched encrypted vault → Bitwise SHA-256 verification → Evidence Act Sec 65B certified GD → Rapid police action."
+    p.text = "BEFORE: Panic deletion → 0 legal proof → Dismissed by police → Perpetrator escalates abuse.\nAFTER: Encrypted vault on the phone → Organised evidence list → GD draft ready to file → A clearer case for police."
     p.font.size = Pt(10.5)
     p.font.bold = True
     p.font.color.rgb = INK
@@ -308,21 +308,21 @@ def create_deck():
     # ==========================================
     s5 = prs.slides.add_slide(blank_layout)
     set_slide_background(s5)
-    add_header(s5, 5, "Technology & Security: Built for Real-World Survival",
-               "Engineered to withstand physical coercion, rural network blackouts, and courtroom scrutiny.")
+    add_header(s5, 5, "Technology & Security: What the Prototype Does",
+               "Not yet reviewed by a security expert or tested on a real phone.")
 
     tech_pillars = [
-        ("🔐 Dual-Vault & Duress PIN",
-         "Hardware-backed Keystore/Keychain encryption (SQLCipher AES-256). Entering Master PIN ('1234') unlocks forensic records; entering Duress PIN ('9999') loads an innocent personal diary.",
+        ("🔐 Encrypted Vault & Duress PIN",
+         "SQLCipher AES-256 with keys in Android Keystore / iOS Keychain. The real PIN (6 or more digits, set at first launch) opens the vault; a separate duress PIN opens a decoy vault with its own file and key. No default PINs.",
          TEAL),
-        ("📲 Launcher Stealth Disguise",
-         "Fully functioning 'Smart Calc' persona. Android PackageManager activity-alias toggling hides forensic markers from device inspectors. Face-down quick-exit gesture wipes active RAM.",
+        ("📲 Calculator Disguise",
+         "The app opens as a working calculator; typing your PIN then = opens the vault. The home-screen icon is not disguised yet. A wipe code that the user chooses triggers the vault wipe.",
          AMETHYST),
         ("📡 Zero-Data Offline SOS",
-         "Lightweight GPS extraction (<160 chars) transmitted over native cellular SMS without dependency on mobile data/Wi-Fi. Direct USSD & hotline fallbacks for rural divisional settings.",
+         "Short GPS message (<160 chars) sent over cellular SMS, without mobile data or Wi-Fi. It still needs signal and SMS credit. One tap dials 999, 109 or the PCSW hotline.",
          CRIMSON),
-        ("⚖️ Evidence Act Sec 65B Engine",
-         "SHA-256 cryptographic hashing (NIST FIPS 180-4) with automated Certificate of Electronic Authenticity adhering to the Evidence (Amendment) Act 2022 and CID forensic lab protocols.",
+        ("⚖️ Evidence Notes",
+         "A SHA-256 hash is recorded for each stored file (today of the encrypted file, not the original). Times come from the phone clock. No certificate of authenticity; admissibility needs review by counsel.",
          GOLD)
     ]
 
@@ -346,7 +346,7 @@ def create_deck():
     # ==========================================
     s6 = prs.slides.add_slide(blank_layout)
     set_slide_background(s6)
-    add_header(s6, 6, "Target Community & Measurable Ecosystem Impact",
+    add_header(s6, 6, "Target Community & Goals",
                "Bridging female university students, rural youth, police cyber cells, and pro-bono litigators.")
 
     # Left: Stakeholder cards
@@ -357,8 +357,8 @@ def create_deck():
 
     stakeholders = [
         ("Primary Beneficiaries:", "Female university and college students (18–30) residing in student halls and dormitories facing digital harassment, non-consensual image distribution, and deepfakes."),
-        ("Secondary Beneficiaries:", "Rural and peri-urban youth accessing digital safety toolkits through BRAC community networks and Union Digital Centres (UDCs)."),
-        ("Institutional Stakeholders:", "Police Cyber Support for Women (PCSW), Thana cyber desks, and pro-bono panels at BLAST and BNWLA.")
+        ("Secondary Beneficiaries:", "Rural and peri-urban youth, through community networks and Union Digital Centres (UDCs) (proposed; no partner agreed)."),
+        ("Proposed Partners:", "Police Cyber Support for Women (PCSW), Thana cyber desks, and legal aid groups such as BLAST and BNWLA. None has agreed yet.")
     ]
     for idx, (head, body) in enumerate(stakeholders):
         p = tf_st.paragraphs[0] if idx == 0 else tf_st.add_paragraph()
@@ -373,17 +373,17 @@ def create_deck():
         p2.font.color.rgb = BODY_TEXT
 
     # Right: Quantitative Impact Targets
-    create_card(s6, Inches(6.75), Inches(1.8), Inches(5.78), Inches(5.1), title="8-MONTH QUANTITATIVE IMPACT TARGETS", border_color=GOLD)
+    create_card(s6, Inches(6.75), Inches(1.8), Inches(5.78), Inches(5.1), title="8-MONTH GOALS (NOT YET MEASURED)", border_color=GOLD)
     tb_imp = s6.shapes.add_textbox(Inches(6.95), Inches(2.4), Inches(5.35), Inches(4.3))
     tf_imp = tb_imp.text_frame
     tf_imp.word_wrap = True
 
     impact_points = [
-        ("80%+ Reduction in Evidence Destruction", "Survivors preserve bitwise intact records instead of deleting traumatic chats."),
+        ("Less Evidence Destroyed", "Survivors keep records instead of deleting them in panic. No baseline yet."),
         ("5,000 Discrete Toolkits Distributed", "Pocket-sized safety cards distributed across Dhaka Division campus dormitories and halls."),
-        ("3x Increase in Admissible e-GDs Filed", "Eliminating bureaucratic rejection at local police stations via standardized schema."),
-        ("100% Pro-Bono Legal Escalation", "Immediate referral to BLAST's 2,500 panel lawyers for indigent victims."),
-        ("24/7 Offline Emergency Redundancy", "SMS-based coordinates ensure rural safety even in zero-data mobile blackouts.")
+        ("Better GD Drafts", "More complete drafts that a duty officer can act on. No baseline yet."),
+        ("Legal Aid Referral (proposed)", "Referral routes to legal aid groups such as BLAST, once one agrees."),
+        ("Offline SMS SOS", "SMS-based location works without mobile data, if there is signal and SMS credit.")
     ]
     for idx, (metric, subtext) in enumerate(impact_points):
         p = tf_imp.paragraphs[0] if idx == 0 else tf_imp.add_paragraph()
@@ -413,11 +413,11 @@ def create_deck():
 
     phases = [
         ("Phase 1: Foundation & Audit (M1–M3)", "Oct – Dec 2026",
-         "Finalize on-device SQLCipher vault, Duress PIN, e-GD schema. Conduct BLAST forensic hash validation. Attend Innovation Bootcamp."),
+         "Finalize on-device SQLCipher vault, Duress PIN, GD draft template. Ask a legal aid group (for example BLAST; nothing agreed) to review the evidence format. Attend Innovation Bootcamp."),
         ("Phase 2: Dhaka Division Pilot (M4–M6)", "Jan – Mar 2027",
          "Roll out 'Train the Trainer' workshops across Dhaka Division campus dorms (DU, JU, Eden Mohila College, BRACU, NSU). Distribute 5,000 survivor toolkits. Attend Progress Bootcamp."),
         ("Phase 3: Impact Showcase & National Roadmap (M7–M8)", "Apr – May 2027",
-         "National showcase with Cyber Police Centre & UNDP presenting audited Dhaka Pilot results plus the National 8-Division Expansion Roadmap. Open-source the e-GD legal framework. Transition to alumni network.")
+         "National showcase with Cyber Police Centre & UNDP presenting audited Dhaka Pilot results plus the National 8-Division Expansion Roadmap. Open-source the GD draft template. Transition to alumni network.")
     ]
     for idx, (p_title, p_time, p_desc) in enumerate(phases):
         p = tf_rd.paragraphs[0] if idx == 0 else tf_rd.add_paragraph()
@@ -493,8 +493,8 @@ def create_deck():
     p.font.color.rgb = INK
 
     sustain_points = [
-        ("Institutional Handover", "Engineered for long-term stewardship by Police Cyber Support for Women (PCSW) and the ICT Division's Cyber Help initiatives."),
-        ("Open-Source Legal Schema", "The e-GD mapping engine is released as open-source civic tech, allowing civic organizations to update legal sections as laws evolve."),
+        ("Proposed Handover", "Seek a long-term owner such as PCSW, a legal aid NGO or the ICT Division's Cyber Help initiatives. None has agreed yet."),
+        ("Open-Source Template", "Publish the GD draft template, after counsel review, so legal aid clinics can keep it up to date."),
         ("Alumni Ambassador Continuity", "Trained student ambassadors join the permanent DKC Alumni Network to train incoming university cohorts.")
     ]
     for title, desc in sustain_points:

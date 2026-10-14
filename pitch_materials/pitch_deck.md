@@ -92,13 +92,13 @@
 *Structuring the rollout.*
 
 - **Phase 1 (Months 1-3): Foundation & Legal Vetting**
-  - Finalize on-device SQLCipher vault, Duress PIN, and e-GD schema.
+  - Finalize on-device SQLCipher vault, Duress PIN, and GD draft template.
   - Proposed: ask a legal aid group (for example BLAST or BNWLA; nothing agreed) to review the evidence format, and run trauma-informed usability testing.
 - **Phase 2 (Months 4-6): Dhaka Division Pilot & Campus Outreach**
   - "Train the Trainer" workshops across 5 Dhaka Division university dorms and student unions (DU, JU, Eden Mohila College, BRACU, NSU).
   - Distribute 5,000 discrete survivor toolkits and pocket safety guides.
 - **Phase 3 (Months 7-8): National Roadmap & Showcase**
-  - Pilot evaluation, policy showcase with Cyber Police Centre, and open-sourcing the e-GD framework.
+  - Pilot evaluation, policy showcase with Cyber Police Centre, and open-sourcing the GD draft template.
   - Present the audited Dhaka Pilot results alongside the (unfunded) National 8-Division Expansion Roadmap.
 - **BDT 50,000 Seed Grant Allocation (Dhaka Division Pilot Only):**
   - Survivor Toolkits & Handbooks (16% | BDT 8,000)
