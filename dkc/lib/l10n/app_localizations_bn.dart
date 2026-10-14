@@ -25,25 +25,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get supportBridgeTitle => 'আইনি সহায়তা ও সমর্থন';
 
   @override
-  String get myNotesSubtitle => 'আমার নোট';
-
-  @override
-  String get lockoutMessage => 'অনেকবার ভুল হয়েছে। পরে আবার চেষ্টা করুন।';
-
-  @override
-  String get incorrectPinMessage => 'ভুল পিন। আবার প্রবেশ করান।';
-
-  @override
-  String get biometricUnlockTooltip => 'বায়োমেট্রিক আনলক';
-
-  @override
   String get deleteTooltip => 'মুছুন';
-
-  @override
-  String get switchToStandardLockTooltip => 'স্ট্যান্ডার্ড লক-এ পরিবর্তন করুন';
-
-  @override
-  String get enableCalculatorDisguiseTooltip => 'ক্যালকুলেটর ছদ্মবেশ চালু করুন';
 
   @override
   String get calculatorLabel => 'ক্যালকুলেটর';
@@ -125,9 +107,6 @@ class AppLocalizationsBn extends AppLocalizations {
   String callContactTooltip(String name) {
     return '$name কে কল করুন';
   }
-
-  @override
-  String get enterTooltip => 'প্রবেশ করুন';
 
   @override
   String get deleteItemTitle => 'এটি মুছে ফেলবেন?';
