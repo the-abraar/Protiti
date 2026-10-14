@@ -88,13 +88,25 @@ class DatabaseService {
 
     return await openDatabase(
       path,
-      version: 1,
+      version: 2,
       onConfigure: (db) async {
         // Configure SQLCipher encryption key via PRAGMA
         await db.rawQuery("PRAGMA key = '$dbKey'");
       },
       onCreate: onCreate,
+      onUpgrade: onUpgrade,
     );
+  }
+
+  /// Version 2 removes the sample rows older builds seeded into the real
+  /// vault: invented evidence, and SOS "contacts" 999, 109 and a placeholder
+  /// number that may belong to a stranger. Her own rows have other ids.
+  @visibleForTesting
+  Future<void> onUpgrade(Database db, int oldVersion, int newVersion) async {
+    if (isDecoy || oldVersion >= 2) return;
+    await db.delete('sys_analytics_cache',
+        where: 'req_id IN (?, ?, ?)', whereArgs: ['real_ev_1', 'real_ev_2', 'real_ev_3']);
+    await db.delete('net_telemetry_peers', where: 'node_id IN (?, ?, ?)', whereArgs: ['c_1', 'c_2', 'c_3']);
   }
 
   /// A fresh real vault starts empty: no sample evidence, no placeholder contacts.

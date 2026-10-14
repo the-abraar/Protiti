@@ -9,6 +9,7 @@ import 'helpers/fakes.dart';
 class RecordingDatabase implements Database {
   final List<String> statements = [];
   final List<String> insertsInto = [];
+  final List<(String, List<Object?>?)> deletes = [];
   bool closed = false;
 
   @override
@@ -18,6 +19,12 @@ class RecordingDatabase implements Database {
   Future<int> insert(String table, Map<String, Object?> values,
       {String? nullColumnHack, ConflictAlgorithm? conflictAlgorithm}) async {
     insertsInto.add(table);
+    return 1;
+  }
+
+  @override
+  Future<int> delete(String table, {String? where, List<Object?>? whereArgs}) async {
+    deletes.add((table, whereArgs));
     return 1;
   }
 
@@ -50,6 +57,19 @@ void main() {
     expect(db.statements.where((s) => s.contains('sys_analytics_cache')), hasLength(1));
     expect(db.statements.where((s) => s.contains('net_telemetry_peers')), hasLength(1));
     expect(db.insertsInto, isEmpty);
+  });
+
+  test('upgrading an old real vault removes the seeded sample rows only', () async {
+    final db = RecordingDatabase();
+    await DatabaseService().onUpgrade(db, 1, 2);
+    expect(db.deletes.map((d) => '${d.$1}: ${d.$2}'), [
+      'sys_analytics_cache: [real_ev_1, real_ev_2, real_ev_3]',
+      'net_telemetry_peers: [c_1, c_2, c_3]',
+    ]);
+
+    final decoy = RecordingDatabase();
+    await DatabaseService(isDecoy: true).onUpgrade(decoy, 1, 2);
+    expect(decoy.deletes, isEmpty);
   });
 
   test('a storage error fails closed instead of using a throwaway key', () async {
