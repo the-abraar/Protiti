@@ -110,8 +110,14 @@ class TriggerPanicUseCase {
   /// message leaves. Then, if asked, screen dimming and the audio recording.
   /// [dim] is for the app on screen; the second-PIN alert turns off both,
   /// since a dark screen or the microphone indicator would give it away.
-  /// [sms] replaces [sendSms] for this one send.
-  Future<PanicResult> execute({bool dim = true, bool record = true, SmsDispatcher? sms}) async {
+  /// [sms] replaces [sendSms] for this one send. A [practice] run sends the
+  /// practice text instead of the SOS, and never records.
+  Future<PanicResult> execute({
+    bool dim = true,
+    bool record = true,
+    SmsDispatcher? sms,
+    bool practice = false,
+  }) async {
     final timestamp = DateTime.now();
 
     double? lat;
@@ -139,6 +145,7 @@ class TriggerPanicUseCase {
       lng: lng,
       fixedAt: pos?.timestamp.toLocal(),
       mocked: pos?.isMocked ?? false,
+      practice: practice,
     );
 
     final dispatch = await (sms ?? sendSms)(recipientNumbers, message);
@@ -150,7 +157,7 @@ class TriggerPanicUseCase {
         await ScreenBrightness().setApplicationScreenBrightness(0.0);
       } catch (_) {}
     }
-    if (record) _recordAmbientAudio();
+    if (record && !practice) _recordAmbientAudio();
 
     return PanicResult(
       formattedMessage: message,
@@ -174,13 +181,22 @@ class TriggerPanicUseCase {
   /// Bangla and English, no app name (it may stay in her Sent messages), the
   /// time of the location fix and the map link. Every case, the longest
   /// coordinates included, fits in [maxSmsParts] parts (tested).
-  static String sosMessage({double? lat, double? lng, DateTime? fixedAt, bool mocked = false}) {
-    const head = 'জরুরি! সাহায্য দরকার। Urgent, help me!';
+  static String sosMessage({
+    double? lat,
+    double? lng,
+    DateTime? fixedAt,
+    bool mocked = false,
+    bool practice = false,
+  }) {
+    final head = practice ? practiceHead : 'জরুরি! সাহায্য দরকার। Urgent, help me!';
     if (lat == null || lng == null) return '$head অবস্থান জানা নেই/Location unknown.';
     final at = fixedAt == null ? '' : ' ${_hhmm(fixedAt)}';
     final doubt = mocked ? ', হয়তো ভুল/may be wrong' : '';
     return '$head অবস্থান/Location$at$doubt: ${mapsLink(lat, lng)}';
   }
+
+  /// Opens a practice text, so a contact knows to ignore it (N16).
+  static const practiceHead = 'পরীক্ষা মাত্র। Just a test, ignore.';
 
   /// Two minutes of ambient audio, saved as an evidence row. If the app dies
   /// first, the next launch recovers the file.

@@ -234,6 +234,25 @@ void main() {
       expect(storage.store, isNot(contains(StoreKeys.powerSosOn)));
     });
 
+    test('a practice run is used once, then the real SOS is back (N16)', () async {
+      expect(await SosPractice.take(), isFalse, reason: 'off unless she arms it');
+      await SosPractice.arm();
+      expect(await SosPractice.take(), isTrue);
+      expect(await SosPractice.take(), isFalse, reason: 'one trigger only');
+
+      storage.store[StoreKeys.practiceUntil] =
+          DateTime.now().subtract(const Duration(seconds: 1)).toIso8601String();
+      expect(await SosPractice.take(), isFalse, reason: 'expired');
+      expect(storage.store, isNot(contains(StoreKeys.practiceUntil)));
+
+      final sms = FakeSms();
+      await panicUseCase(sms: sms, contacts: [contact('A', a)], at: position(23.81, 90.41))
+          .execute(dim: false, practice: true);
+      expect(sms.sent.single.$2, startsWith(TriggerPanicUseCase.practiceHead));
+      expect(sms.sent.single.$2, isNot(contains('Urgent')));
+      expect(sms.sent.single.$2, contains('maps.google.com'), reason: 'she can check the link works');
+    });
+
     test('the second PIN sends nothing unless she turned the alert on', () async {
       final sms = FakeSms();
       await DuressAlert.sendIfOn(useCase: panicUseCase(sms: sms, contacts: [contact('A', a)]));

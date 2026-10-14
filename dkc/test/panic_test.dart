@@ -96,6 +96,10 @@ void main() {
         expect(m, contains('help'));
         expect(m.toLowerCase(), isNot(contains('protiti')));
       }
+      final practice = TriggerPanicUseCase.sosMessage(
+        lat: -89.123456, lng: -179.123456, fixedAt: DateTime(2026, 1, 1, 23, 59), mocked: true, practice: true);
+      expect(_smsParts(practice), lessThanOrEqualTo(TriggerPanicUseCase.maxSmsParts), reason: practice);
+      expect(practice.toLowerCase(), allOf(contains('test'), isNot(contains('protiti'))));
       expect(worst, contains('https://maps.google.com/?q=-89.12346,-179.12346'));
       expect(worst, contains('may be wrong'));
       expect(cases.last, contains('Location unknown'));

@@ -29,6 +29,29 @@ enum SosTrigger {
   final String storeKey;
 }
 
+/// A practice run (N16): for [window] after she arms it in Settings, the next
+/// shortcut texts [TriggerPanicUseCase.practiceHead] instead of the SOS.
+abstract final class SosPractice {
+  static const window = Duration(minutes: 10);
+
+  static Future<void> arm() => secureStore.write(
+        key: StoreKeys.practiceUntil,
+        value: DateTime.now().add(window).toIso8601String(),
+      );
+
+  /// True once while armed; disarms either way. Never throws.
+  static Future<bool> take() async {
+    try {
+      final until = DateTime.tryParse(await secureStore.read(key: StoreKeys.practiceUntil) ?? '');
+      if (until == null) return false;
+      await secureStore.delete(key: StoreKeys.practiceUntil);
+      return DateTime.now().isBefore(until);
+    } catch (_) {
+      return false;
+    }
+  }
+}
+
 /// Vibration patterns (ms: wait, buzz, wait, buzz...) she can tell apart by
 /// feel, with the phone in a pocket.
 abstract final class Buzz {
@@ -282,14 +305,15 @@ class BackgroundSosService {
     // on this engine until asked; without them every SOS found no contacts.
     DartPluginRegistrant.ensureInitialized();
     final handler = SosTriggerHandler(send: () async {
+      final practice = await SosPractice.take();
       final result = await TriggerPanicUseCase(
         LocationService(),
         contactRepository: ContactRepository(DatabaseService()),
         audioService: SecureAudioService(),
         evidenceRepository: EvidenceRepository(DatabaseService()),
         sendSms: dispatchSilentSms,
-      ).execute(dim: false);
-      await AlertLog.record(result);
+      ).execute(dim: false, practice: practice);
+      if (!practice) await AlertLog.record(result);
       return result;
     });
 

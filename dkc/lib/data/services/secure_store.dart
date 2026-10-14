@@ -20,6 +20,7 @@ abstract final class StoreKeys {
   static const shakeSosOn = 's1';
   static const duressAlertOn = 's2';
   static const lastAlert = 's3';
+  static const practiceUntil = 's4';
   static const draftTitle = 'd1';
   static const draftDescription = 'd2';
   static const draftStation = 'd3';
