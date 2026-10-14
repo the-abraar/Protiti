@@ -97,6 +97,19 @@ void main() {
     expect(await auth.verifyPin('246813'), AuthStatus.failed);
   });
 
+  test('Bangla digits ০-৯ are the same code as 0-9, everywhere a code is typed', () async {
+    expect(AuthService.asciiDigits('০১২৩৪৫৬৭৮৯'), '0123456789');
+    expect(AuthService.validatePins('২৪৬৮১৩', '246813', '975310'), 'All three codes must be different.');
+    await auth.setPins(realPin: '২৪৬৮১৩', duressPin: '135792', wipeCode: '৯৭৫৩১০');
+    expect(await auth.verifyPin('246813'), AuthStatus.authenticatedReal);
+    expect(await auth.verifyPin('১৩৫৭৯২'), AuthStatus.authenticatedDuress);
+    expect(await auth.verifyPin('975310'), AuthStatus.wiped);
+    expect(
+      await auth.changePins(currentPin: '২৪৬৮১৩', realPin: '111222', duressPin: '333444', wipeCode: '555666'),
+      isTrue,
+    );
+  });
+
   test('a broken keystore fails closed: nothing is kept in memory', () async {
     storage.failing = true;
     await expectLater(setUpCodes(), throwsA(anything));

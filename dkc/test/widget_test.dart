@@ -35,6 +35,13 @@ void main() {
     expect(find.text('Wipe code again'), findsOneWidget);
   });
 
+  testWidgets('a PIN field turns Bangla digits into 0-9 instead of dropping them', (tester) async {
+    await launch(tester);
+    await tester.enterText(find.widgetWithText(TextField, 'Real PIN'), '২৪৬৮১৩');
+    final field = tester.widget<TextField>(find.widgetWithText(TextField, 'Real PIN'));
+    expect(field.controller!.text, '246813');
+  });
+
   testWidgets('after setup the app opens as the calculator, never a branded screen', (tester) async {
     await AuthService().setPins(realPin: '246813', duressPin: '135792', wipeCode: '975310');
     await launch(tester);
