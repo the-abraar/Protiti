@@ -40,4 +40,22 @@ void main() {
     expect(tester.widget<CheckboxListTile>(find.widgetWithText(CheckboxListTile, 'Voice note')).value, isFalse);
     expect(tester.widget<CheckboxListTile>(find.widgetWithText(CheckboxListTile, 'Threat message')).value, isTrue);
   });
+
+  for (final decoy in [false, true]) {
+    testWidgets('every field takes a Bangla keyboard and learns nothing (decoy: $decoy)', (tester) async {
+      await tester.pumpWidget(harness(Scaffold(
+        body: ChangeNotifierProvider(
+          create: (_) => VaultProvider(FakeEvidenceRepository(), isDecoy: decoy),
+          child: ComplaintWizardScreen(isDecoy: decoy),
+        ),
+      )));
+      await tester.pumpAndSettle();
+      final fields = tester.widgetList<TextField>(find.byType(TextField));
+      expect(fields, isNotEmpty);
+      for (final f in fields) {
+        expect(f.keyboardType, isNot(TextInputType.visiblePassword));
+        expect((f.enableSuggestions, f.autocorrect, f.enableIMEPersonalizedLearning), (false, false, false));
+      }
+    });
+  }
 }

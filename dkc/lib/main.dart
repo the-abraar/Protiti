@@ -7,6 +7,7 @@ import 'data/repositories/evidence_repository.dart';
 import 'data/services/database_service.dart';
 import 'data/services/secure_audio_service.dart';
 import 'data/services/secure_store.dart';
+import 'data/services/temp_files.dart';
 import 'ui/core/theme/app_theme.dart';
 import 'ui/features/auth/lock_screen.dart';
 
@@ -16,6 +17,9 @@ void main() async {
     await migrateStoreKeys();
   } catch (_) {}
   runApp(const ProtitiApp());
+  // Decrypted audio or a shared GD PDF left by a killed app or a share sheet.
+  TempFiles.sweep();
+  WidgetsBinding.instance.addObserver(SweepOnReturn(TempFiles.sweep));
   // Panic recordings cut off by a killed app become evidence rows now.
   SecureAudioService()
       .recoverPending(EvidenceRepository(DatabaseService()))

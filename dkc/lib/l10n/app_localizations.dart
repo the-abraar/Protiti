@@ -266,6 +266,78 @@ abstract class AppLocalizations {
   /// **'Details'**
   String get evidenceDetailsTitle;
 
+  /// No description provided for @secureScreenshotImport.
+  ///
+  /// In en, this message translates to:
+  /// **'Import Screenshot'**
+  String get secureScreenshotImport;
+
+  /// No description provided for @addDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add details (optional)'**
+  String get addDetailsTitle;
+
+  /// No description provided for @skip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get skip;
+
+  /// No description provided for @evidencePlatformLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'App or platform, e.g. Facebook (optional)'**
+  String get evidencePlatformLabel;
+
+  /// No description provided for @evidenceUrlLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Link to the post or profile (optional)'**
+  String get evidenceUrlLabel;
+
+  /// No description provided for @captureSourceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Source'**
+  String get captureSourceLabel;
+
+  /// No description provided for @captureSourceName.
+  ///
+  /// In en, this message translates to:
+  /// **'{source, select, camera{Camera} gallery{Gallery} screenshot{Screenshot} note{Typed note} audio{Microphone} other{Not recorded}}'**
+  String captureSourceName(String source);
+
+  /// No description provided for @capturedAtLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved at (this phone\'s clock, UTC)'**
+  String get capturedAtLabel;
+
+  /// No description provided for @platformLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'App or platform'**
+  String get platformLabel;
+
+  /// No description provided for @linkLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Link'**
+  String get linkLabel;
+
+  /// No description provided for @sha256Label.
+  ///
+  /// In en, this message translates to:
+  /// **'SHA-256 of the original'**
+  String get sha256Label;
+
+  /// No description provided for @notRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Not recorded (saved by an older version)'**
+  String get notRecorded;
+
   /// No description provided for @close.
   ///
   /// In en, this message translates to:

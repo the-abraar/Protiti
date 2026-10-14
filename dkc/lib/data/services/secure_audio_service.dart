@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:convert';
 import 'package:path/path.dart' as p;
 import 'package:record/record.dart';
 import 'package:path_provider/path_provider.dart';
@@ -8,13 +7,14 @@ import '../../domain/models/evidence.dart';
 import '../repositories/evidence_repository.dart';
 import 'encryption_service.dart';
 import 'evidence_files.dart';
-import 'hash_evidence_service.dart';
+import 'temp_files.dart';
 
 class SecureAudioService {
   // Lazy, so building the service never touches the microphone plugin.
   late final AudioRecorder _audioRecorder = AudioRecorder();
   final EncryptionService _encryptionService = EncryptionService();
   String? _recordingPath;
+  DateTime? _startedAt;
 
   /// Records into the app's private documents directory, never the shared
   /// cache. With [askPermission] false it never shows the OS prompt, which
@@ -23,6 +23,7 @@ class SecureAudioService {
     if (!await _audioRecorder.hasPermission(request: askPermission)) return false;
     final directory = await getApplicationDocumentsDirectory();
     _recordingPath = p.join(directory.path, '${const Uuid().v4()}$recordingExt');
+    _startedAt = DateTime.now();
     await _audioRecorder.start(
       const RecordConfig(encoder: AudioEncoder.aacLc, bitRate: 128000),
       path: _recordingPath!,
@@ -30,47 +31,50 @@ class SecureAudioService {
     return true;
   }
 
-  Future<String?> stopAndEncryptRecording() async {
-    final path = await _audioRecorder.stop() ?? _recordingPath;
-    _recordingPath = null;
-    if (path == null) return null;
-    return encryptFile(File(path));
-  }
-
-  /// Encrypts a plaintext recording into an evidence file beside it, then
-  /// deletes the plaintext. shortcut: whole-file base64 in memory; stream it
-  /// in chunks before allowing recordings much longer than a few minutes.
-  Future<String?> encryptFile(File plain) async {
+  /// Encrypts a finished recording into an evidence file beside it and
+  /// deletes the plaintext. The hash is of the recording as the recorder
+  /// wrote it, taken while encrypting.
+  Future<Evidence?> fileRecording(File plain, {required String description, required DateTime capturedAt}) async {
     if (!await plain.exists()) return null;
-    final encryptedData = await _encryptionService.encrypt(base64Encode(await plain.readAsBytes()));
     final secureFile = File(p.join(plain.parent.path, '${const Uuid().v4()}$evidenceExt'));
-    await secureFile.writeAsString(encryptedData);
+    final hash = await _encryptionService.encryptFile(plain, secureFile);
     await plain.delete();
-    return secureFile.path;
-  }
-
-  Future<Evidence> evidenceFor(String encryptedPath, {required String description, DateTime? createdAt}) async {
-    final when = createdAt ?? DateTime.now();
     return Evidence(
-      id: p.basenameWithoutExtension(encryptedPath),
+      id: p.basenameWithoutExtension(secureFile.path),
       type: 'audio',
       description: description,
-      filePath: encryptedPath,
-      metadata: {
-        'sha256_checksum': await HashEvidenceService.generateFileHash(encryptedPath),
-        'capture_device_timestamp': when.toUtc().toIso8601String(),
-      },
-      createdAt: when,
+      filePath: secureFile.path,
+      metadata: Evidence.captureMetadata(source: 'audio', sha256: hash, capturedAt: capturedAt),
+      createdAt: capturedAt,
     );
   }
 
   /// Stops the current recording and files it as evidence in [repository].
   Future<Evidence?> stopAndSave(EvidenceRepository repository, {required String description}) async {
-    final path = await stopAndEncryptRecording();
+    final path = await _audioRecorder.stop() ?? _recordingPath;
+    final startedAt = _startedAt ?? DateTime.now();
+    _recordingPath = null;
+    _startedAt = null;
     if (path == null) return null;
-    final evidence = await evidenceFor(path, description: description);
-    await repository.addEvidence(evidence);
+    final evidence = await fileRecording(File(path), description: description, capturedAt: startedAt);
+    if (evidence != null) await repository.addEvidence(evidence);
     return evidence;
+  }
+
+  /// Decrypts a recording for the player into its own temp folder. The
+  /// player deletes it on pause, stop and close; [TempFiles.sweep] removes
+  /// anything left by a crash.
+  Future<File> decryptForPlayback(String encryptedPath) async {
+    final dir = await TempFiles.playbackDir();
+    await dir.create(recursive: true);
+    final out = File(p.join(dir.path, '${const Uuid().v4()}$recordingExt'));
+    try {
+      await _encryptionService.decryptToFile(File(encryptedPath), out);
+    } catch (_) {
+      if (await out.exists()) await out.delete();
+      rethrow;
+    }
+    return out;
   }
 
   /// Encrypts and files plaintext recordings left behind when the app was
@@ -87,11 +91,11 @@ class SecureAudioService {
       if (entity is! File || !entity.path.endsWith(recordingExt)) continue;
       final modified = await entity.lastModified();
       if (DateTime.now().difference(modified) < minAge) continue;
-      final path = await encryptFile(entity);
-      if (path == null) continue;
-      await repository.addEvidence(
-        await evidenceFor(path, description: 'Recovered recording', createdAt: modified),
-      );
+      // The app was killed mid-recording, so only the file's last write time is known.
+      final evidence = await fileRecording(entity,
+          description: 'Recovered recording (time is when the file was last written)', capturedAt: modified);
+      if (evidence == null) continue;
+      await repository.addEvidence(evidence);
       recovered++;
     }
     return recovered;

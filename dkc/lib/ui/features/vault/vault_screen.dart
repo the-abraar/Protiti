@@ -3,6 +3,8 @@ import 'package:flutter/services.dart';
 import 'package:protiti/l10n/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
 import '../../../domain/models/evidence.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'vault_provider.dart';
 import 'secure_image_viewer.dart';
@@ -50,7 +52,9 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     // Only lock on 'paused' (app sent to background). 
     // 'inactive' fires mid-transition and would instantly bounce the user back.
-    if (state == AppLifecycleState.paused) {
+    // The camera or photo picker she opened from here backgrounds the app;
+    // locking then would drop her photo (B18).
+    if (state == AppLifecycleState.paused && !context.read<VaultProvider>().pickerOpen) {
       Clipboard.setData(const ClipboardData(text: ''));
       if (mounted) {
         Navigator.of(context).pushAndRemoveUntil(
@@ -137,67 +141,26 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                         children: [
                           ListTile(
                             leading: const Icon(Icons.note_add, color: AppTheme.brandSecondary),
-                            title: Text(AppLocalizations.of(context)!.addTextNote, style: const TextStyle(color: AppTheme.textPrimary)),
+                            title: Text(l10n.addTextNote, style: const TextStyle(color: AppTheme.textPrimary)),
                             onTap: () {
                               Navigator.pop(ctx);
                               _showAddDialog(context);
                             },
                           ),
-                          ListTile(
-                            leading: const Icon(Icons.camera_alt, color: AppTheme.brandSecondary),
-                            title: Text(AppLocalizations.of(context)!.secureCameraCapture, style: const TextStyle(color: AppTheme.textPrimary)),
-                            onTap: () async {
-                              final vault = Provider.of<VaultProvider>(context, listen: false);
-                              Navigator.pop(ctx);
-                              await vault.captureAndSaveSecureImage();
-                            },
-                          ),
-                          ListTile(
-                            leading: const Icon(Icons.mic, color: AppTheme.brandSecondary),
-                            title: Text(AppLocalizations.of(context)!.secureAudioRecord, style: const TextStyle(color: AppTheme.textPrimary)),
-                            onTap: () async {
-                              final vault = Provider.of<VaultProvider>(context, listen: false);
-                              Navigator.pop(ctx);
-                              await vault.captureAndSaveSecureAudio(context);
-                            },
-                          ),
-                          ListTile(
-                            leading: const Icon(Icons.photo_library, color: AppTheme.brandSecondary),
-                            title: Text(AppLocalizations.of(context)!.secureGalleryImport, style: const TextStyle(color: AppTheme.textPrimary)),
-                            onTap: () async {
-                              final vault = Provider.of<VaultProvider>(context, listen: false);
-                              Navigator.pop(ctx);
-                              final success = await vault.importAndScrubGalleryImage();
-
-                              if (success && context.mounted) {
-                                 // CRITICAL: We cannot silently delete from the public gallery due to OS rules.
-                                 // We MUST show a highly visible alert forcing the user to do it manually.
-                                 showDialog(
-                                   context: context,
-                                   builder: (ctx) => AlertDialog(
-                                     backgroundColor: AppTheme.primaryWhite,
-                                     title: Row(
-                                       children: [
-                                         const Icon(Icons.warning_amber, color: AppTheme.panicRed),
-                                         const SizedBox(width: 10),
-                                         Text(AppLocalizations.of(context)!.actionRequiredTitle, style: const TextStyle(color: AppTheme.textPrimary)),
-                                       ],
-                                     ),
-                                     content: Text(
-                                       AppLocalizations.of(context)!.galleryDeleteWarning,
-                                       style: const TextStyle(color: AppTheme.textSecondary),
-                                     ),
-                                     actions: [
-                                       TextButton(
-                                         onPressed: () => Navigator.pop(ctx),
-                                         child: Text(AppLocalizations.of(context)!.iUnderstand, style: const TextStyle(color: AppTheme.brandSecondary)),
-                                       ),
-                                     ],
-                                   ),
-                                 );
-                              }
-                            },
-                          ),
+                          for (final (icon, label, save, fromGallery) in <(IconData, String, Future<Evidence?> Function(VaultProvider), bool)>[
+                            (Icons.camera_alt, l10n.secureCameraCapture, (v) => v.addImage(ImageSource.camera, captureSource: 'camera'), false),
+                            (Icons.mic, l10n.secureAudioRecord, (v) => v.captureAndSaveSecureAudio(context), false),
+                            (Icons.photo_library, l10n.secureGalleryImport, (v) => v.addImage(ImageSource.gallery, captureSource: 'gallery'), true),
+                            (Icons.screenshot_outlined, l10n.secureScreenshotImport, (v) => v.addImage(ImageSource.gallery, captureSource: 'screenshot'), true),
+                          ])
+                            ListTile(
+                              leading: Icon(icon, color: AppTheme.brandSecondary),
+                              title: Text(label, style: const TextStyle(color: AppTheme.textPrimary)),
+                              onTap: () {
+                                Navigator.pop(ctx);
+                                _capture(context, save, fromGallery: fromGallery);
+                              },
+                            ),
                         ],
                       ),
                     ),
@@ -211,71 +174,157 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
     );
   }
 
-  void _showAddDialog(BuildContext context) {
-    final titleController = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (ctx) {
-        return AlertDialog(
+  /// Saves the photo or recording first, so nothing is lost if she stops
+  /// here, then asks for the optional description, platform and link.
+  Future<void> _capture(
+    BuildContext context,
+    Future<Evidence?> Function(VaultProvider) save, {
+    required bool fromGallery,
+  }) async {
+    final vault = Provider.of<VaultProvider>(context, listen: false);
+    final l10n = AppLocalizations.of(context)!;
+    final saved = await save(vault);
+    if (saved == null || !context.mounted) return;
+    if (fromGallery) {
+      // We cannot delete from the public gallery (OS rules), so she must be told.
+      await showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
           backgroundColor: AppTheme.primaryWhite,
-          title: Text(
-            widget.isDecoy
-                ? AppLocalizations.of(context)!.addPersonalDocument
-                : AppLocalizations.of(context)!.secureNewEvidence,
-            style: const TextStyle(color: AppTheme.textPrimary),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
+          title: Row(
             children: [
-              TextField(
-                controller: titleController,
-                autocorrect: false,
-                enableSuggestions: false,
-                keyboardType: TextInputType.visiblePassword,
-                style: const TextStyle(color: AppTheme.textPrimary),
-                decoration: InputDecoration(
-                  labelText: widget.isDecoy
-                      ? AppLocalizations.of(context)!.documentTitleLabel
-                      : AppLocalizations.of(context)!.evidenceDescriptionLabel,
-                ),
-              ),
+              const Icon(Icons.warning_amber, color: AppTheme.panicRed),
+              const SizedBox(width: 10),
+              Text(l10n.actionRequiredTitle, style: const TextStyle(color: AppTheme.textPrimary)),
             ],
           ),
+          content: Text(l10n.galleryDeleteWarning, style: const TextStyle(color: AppTheme.textSecondary)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: Text(AppLocalizations.of(context)!.cancel, style: const TextStyle(color: AppTheme.textSecondary)),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                final text = titleController.text.trim();
-                if (text.isNotEmpty) {
-                  final newEvidence = Evidence(
-                    id: DateTime.now().millisecondsSinceEpoch.toString(),
-                    type: widget.isDecoy ? 'text' : 'screenshot',
-                    description: text,
-                    createdAt: DateTime.now(),
-                    isDecoy: widget.isDecoy,
-                  );
-
-                  final vault = Provider.of<VaultProvider>(context, listen: false);
-                  await vault.addEvidence(newEvidence);
-
-                  if (ctx.mounted) {
-                    Navigator.pop(ctx);
-                  }
-                }
-              },
-              child: Text(AppLocalizations.of(context)!.save),
+              child: Text(l10n.iUnderstand, style: const TextStyle(color: AppTheme.brandSecondary)),
             ),
           ],
-        );
-      },
-    ).then((_) {
-      // FORENSIC SANITIZATION: Instantly scrub the text controller from RAM
-      // when the dialog closes to prevent stalkerware memory scraping.
-      titleController.dispose();
-    });
+        ),
+      );
+      if (!context.mounted) return;
+    }
+    final details = await showDialog<EvidenceDetails>(
+      context: context,
+      builder: (_) => EvidenceDetailsDialog(title: l10n.addDetailsTitle, description: saved.description, withSource: true),
+    );
+    if (details == null) return;
+    await vault.updateDetails(
+      saved,
+      description: details.description.isEmpty ? saved.description : details.description,
+      platform: details.platform,
+      url: details.url,
+    );
+  }
+
+  Future<void> _showAddDialog(BuildContext context) async {
+    final vault = Provider.of<VaultProvider>(context, listen: false);
+    final l10n = AppLocalizations.of(context)!;
+    final details = await showDialog<EvidenceDetails>(
+      context: context,
+      builder: (_) => EvidenceDetailsDialog(
+        title: widget.isDecoy ? l10n.addPersonalDocument : l10n.secureNewEvidence,
+        descriptionLabel: widget.isDecoy ? l10n.documentTitleLabel : l10n.evidenceDescriptionLabel,
+        withSource: !widget.isDecoy,
+        requireDescription: true,
+      ),
+    );
+    if (details == null) return;
+    await vault.addNote(details.description, platform: details.platform, url: details.url);
+  }
+}
+
+typedef EvidenceDetails = ({String description, String platform, String url});
+
+/// Description, and for real evidence the app or platform and the link.
+/// Plain text fields so Bangla keyboards work; nothing is suggested or learned.
+class EvidenceDetailsDialog extends StatefulWidget {
+  final String title;
+  final String? descriptionLabel;
+  final String description;
+  final bool withSource;
+  final bool requireDescription;
+
+  const EvidenceDetailsDialog({
+    super.key,
+    required this.title,
+    this.descriptionLabel,
+    this.description = '',
+    required this.withSource,
+    this.requireDescription = false,
+  });
+
+  @override
+  State<EvidenceDetailsDialog> createState() => _EvidenceDetailsDialogState();
+}
+
+class _EvidenceDetailsDialogState extends State<EvidenceDetailsDialog> {
+  late final _description = TextEditingController(text: widget.description);
+  final _platform = TextEditingController();
+  final _url = TextEditingController();
+
+  @override
+  void dispose() {
+    // Drop her text from memory as soon as the dialog closes.
+    _description.dispose();
+    _platform.dispose();
+    _url.dispose();
+    super.dispose();
+  }
+
+  Widget _field(TextEditingController controller, String label, {TextInputType? type, int maxLines = 1}) => TextField(
+        controller: controller,
+        keyboardType: type,
+        maxLines: maxLines,
+        minLines: 1,
+        autocorrect: false,
+        enableSuggestions: false,
+        enableIMEPersonalizedLearning: false,
+        style: const TextStyle(color: AppTheme.textPrimary),
+        decoration: InputDecoration(labelText: label),
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    return AlertDialog(
+      backgroundColor: AppTheme.primaryWhite,
+      title: Text(widget.title, style: const TextStyle(color: AppTheme.textPrimary)),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _field(_description, widget.descriptionLabel ?? l10n.evidenceDescriptionLabel,
+                type: TextInputType.multiline, maxLines: 4),
+            if (widget.withSource) ...[
+              _field(_platform, l10n.evidencePlatformLabel),
+              _field(_url, l10n.evidenceUrlLabel, type: TextInputType.url),
+            ],
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: Text(widget.requireDescription ? l10n.cancel : l10n.skip,
+              style: const TextStyle(color: AppTheme.textSecondary)),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            final text = _description.text.trim();
+            if (widget.requireDescription && text.isEmpty) return;
+            Navigator.pop<EvidenceDetails>(
+                context, (description: text, platform: _platform.text.trim(), url: _url.text.trim()));
+          },
+          child: Text(l10n.save),
+        ),
+      ],
+    );
   }
 }
 
@@ -312,6 +361,47 @@ class VaultGridScreen extends StatelessWidget {
       default:
         return AppTheme.textSecondary;
     }
+  }
+
+  /// What was recorded about an item. Notes-app rows show only their text.
+  void _showDetails(BuildContext context, Evidence item) {
+    final l10n = AppLocalizations.of(context)!;
+    Widget row(String label, String value) => Padding(
+          padding: const EdgeInsets.only(top: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label, style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary)),
+              SelectableText(value, style: const TextStyle(color: AppTheme.textPrimary)),
+            ],
+          ),
+        );
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: AppTheme.primaryWhite,
+        title: Text(l10n.evidenceDetailsTitle, style: const TextStyle(color: AppTheme.textPrimary)),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(item.description, style: const TextStyle(color: AppTheme.textPrimary)),
+              if (!item.isDecoy) ...[
+                row(l10n.captureSourceLabel, l10n.captureSourceName(item.captureSource ?? 'other')),
+                row(l10n.capturedAtLabel, DateFormat('yyyy-MM-dd HH:mm:ss').format(item.capturedAt)),
+                if (item.platform != null) row(l10n.platformLabel, item.platform!),
+                if (item.url != null) row(l10n.linkLabel, item.url!),
+                row(l10n.sha256Label, item.sha256 ?? l10n.notRecorded),
+              ],
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(l10n.close)),
+        ],
+      ),
+    );
   }
 
   Future<void> _confirmDelete(BuildContext context, Evidence item) async {
@@ -396,22 +486,7 @@ class VaultGridScreen extends StatelessWidget {
                       ),
                     );
                   } else {
-                    showDialog(
-                      context: context,
-                      builder: (ctx) => AlertDialog(
-                        backgroundColor: AppTheme.primaryWhite,
-                        title: Text(AppLocalizations.of(context)!.evidenceDetailsTitle, style: const TextStyle(color: AppTheme.textPrimary)),
-                        content: SingleChildScrollView(
-                          child: Text(item.description, style: const TextStyle(color: AppTheme.textPrimary)),
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(ctx),
-                            child: Text(AppLocalizations.of(context)!.close),
-                          )
-                        ]
-                      )
-                    );
+                    _showDetails(context, item);
                   }
                 },
                 child: Card(
@@ -475,6 +550,13 @@ class VaultGridScreen extends StatelessWidget {
                             Text(
                               dateStr,
                               style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+                            ),
+                            const Spacer(),
+                            IconButton(
+                              icon: const Icon(Icons.info_outline, size: 18, color: AppTheme.textSecondary),
+                              tooltip: AppLocalizations.of(context)!.evidenceDetailsTitle,
+                              visualDensity: VisualDensity.compact,
+                              onPressed: () => _showDetails(context, item),
                             ),
                             IconButton(
                               icon: const Icon(Icons.delete_outline, size: 18, color: AppTheme.textSecondary),

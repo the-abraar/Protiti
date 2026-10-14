@@ -1,7 +1,13 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:protiti/domain/models/evidence.dart';
+import 'package:protiti/ui/features/auth/lock_screen.dart';
 import 'package:protiti/ui/features/vault/vault_provider.dart';
 import 'package:protiti/ui/features/vault/vault_screen.dart';
 
@@ -22,9 +28,11 @@ Iterable<String> _strings(WidgetTester tester) sync* {
 Evidence _item(String id, String text, {bool decoy = false}) =>
     Evidence(id: id, type: 'text', description: text, createdAt: DateTime(2026, 10, 1), isDecoy: decoy);
 
-Widget _vault(FakeEvidenceRepository repo, {required bool decoy, Locale locale = const Locale('en')}) => harness(
+Widget _vault(FakeEvidenceRepository repo,
+        {required bool decoy, Locale locale = const Locale('en'), PickImage? pickImage}) =>
+    harness(
       ChangeNotifierProvider(
-        create: (_) => VaultProvider(repo, isDecoy: decoy),
+        create: (_) => VaultProvider(repo, isDecoy: decoy, pickImage: pickImage),
         child: VaultScreen(isDecoy: decoy),
       ),
       locale: locale,
@@ -107,5 +115,119 @@ void main() {
     expect(repo.deleted, ['e1']);
     expect(find.text('Threat message'), findsNothing);
     expect(find.text('Fake profile'), findsOneWidget);
+  });
+
+  testWidgets('the camera she opened does not lock the vault; leaving the app otherwise does (B18)', (tester) async {
+    final root = installTempPaths();
+    addTearDown(() => root.deleteSync(recursive: true));
+    addTearDown(() => tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed));
+    final camera = Completer<XFile?>();
+    await tester.pumpWidget(_vault(FakeEvidenceRepository(), decoy: false, pickImage: (_) => camera.future));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Add File'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Secure Camera Capture'));
+    await tester.pumpAndSettle();
+
+    // Frames stop while paused, so check what she sees when she comes back.
+    Future<void> leaveAndReturn() async {
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pumpAndSettle();
+    }
+
+    await leaveAndReturn();
+    expect(find.byType(LockScreen), findsNothing);
+    camera.complete(null);
+    await tester.pumpAndSettle();
+    expect(find.byType(VaultScreen), findsOneWidget);
+
+    await leaveAndReturn();
+    expect(find.byType(LockScreen), findsOneWidget);
+    expect(find.byType(VaultScreen), findsNothing);
+  });
+
+  testWidgets('the note field takes any keyboard, learns nothing, and saves a text item with its source', (tester) async {
+    final repo = FakeEvidenceRepository();
+    await tester.pumpWidget(_vault(repo, decoy: false));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Add File'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Add Text Note'));
+    await tester.pumpAndSettle();
+
+    final fields = tester.widgetList<TextField>(find.byType(TextField)).toList();
+    expect(fields, hasLength(3));
+    for (final f in fields) {
+      expect(f.keyboardType, isNot(TextInputType.visiblePassword), reason: 'hides the language switch on many IMEs');
+      expect(f.enableIMEPersonalizedLearning, isFalse);
+      expect(f.enableSuggestions, isFalse);
+    }
+    await tester.enterText(find.widgetWithText(TextField, 'Evidence Description'), 'হুমকির বার্তা');
+    await tester.enterText(find.widgetWithText(TextField, 'App or platform, e.g. Facebook (optional)'), 'Facebook');
+    await tester.enterText(find.widgetWithText(TextField, 'Link to the post or profile (optional)'), 'https://fb.com/x');
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+
+    final note = repo.items.single;
+    expect((note.type, note.captureSource, note.platform, note.url), ('text', 'note', 'Facebook', 'https://fb.com/x'));
+    expect(note.sha256, sha256.convert(utf8.encode('হুমকির বার্তা')).toString());
+  });
+
+  testWidgets('a photo is saved first, then she can add the platform and link', (tester) async {
+    final root = installTempPaths();
+    addTearDown(() => root.deleteSync(recursive: true));
+    final repo = FakeEvidenceRepository();
+    final photo = File('${root.path}/tmp/image_picker_7.jpg')..writeAsBytesSync([0xFF, 0xD8, 1, 2]);
+    await tester.pumpWidget(_vault(repo, decoy: false, pickImage: (_) async => XFile(photo.path)));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Add File'));
+    await tester.pumpAndSettle();
+    await tester.runAsync(() async {
+      await tester.tap(find.text('Secure Camera Capture'));
+      for (var i = 0; i < 50 && repo.items.isEmpty; i++) {
+        await Future<void>.delayed(const Duration(milliseconds: 20));
+      }
+    });
+    await tester.pumpAndSettle();
+    expect(repo.items.single.description, 'Camera photo', reason: 'saved before the details dialog');
+
+    await tester.enterText(find.widgetWithText(TextField, 'App or platform, e.g. Facebook (optional)'), 'Imo');
+    await tester.tap(find.text('Save'));
+    await tester.pumpAndSettle();
+    // The capture flow started inside runAsync, so its next step runs on the real event loop.
+    await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 50)));
+    await tester.pumpAndSettle();
+    final row = repo.items.single;
+    expect((row.description, row.platform, row.captureSource), ('Camera photo', 'Imo', 'camera'));
+    expect(row.sha256, sha256.convert([0xFF, 0xD8, 1, 2]).toString());
+  });
+
+  testWidgets('details show the source, the phone-clock time and the SHA-256, or say it was not recorded', (tester) async {
+    final hash = 'ab' * 32;
+    final repo = FakeEvidenceRepository([
+      Evidence(
+        id: 'n',
+        type: 'text',
+        description: 'Threat message',
+        createdAt: DateTime(2026, 10, 1),
+        metadata: Evidence.captureMetadata(source: 'note', sha256: hash, capturedAt: DateTime.utc(2026, 10, 1, 4, 5, 6)),
+      ),
+      _item('old', 'Older note'),
+    ]);
+    await tester.pumpWidget(_vault(repo, decoy: false));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Threat message'));
+    await tester.pumpAndSettle();
+    for (final shown in ['Typed note', '2026-10-01 04:05:06', hash, "Saved at (this phone's clock, UTC)"]) {
+      expect(find.text(shown), findsOneWidget, reason: shown);
+    }
+    await tester.tap(find.text('Close'));
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.byTooltip('Details').last);
+    await tester.pumpAndSettle();
+    expect(find.text('Not recorded (saved by an older version)'), findsOneWidget);
   });
 }
