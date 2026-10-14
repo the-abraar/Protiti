@@ -83,8 +83,9 @@ void main() {
     });
 
     test('the SOS text is Bangla and English, names no app, and fits in 2 SMS parts', () {
+      // A fix from another day carries its date: the longest is 31/12.
       final worst = TriggerPanicUseCase.sosMessage(
-        lat: -89.123456, lng: -179.123456, fixedAt: DateTime(2026, 1, 1, 23, 59), mocked: true);
+        lat: -89.123456, lng: -179.123456, fixedAt: DateTime(2025, 12, 31, 23, 59), mocked: true);
       final cases = [
         worst,
         TriggerPanicUseCase.sosMessage(lat: 23.81, lng: 90.41, fixedAt: DateTime(2026, 1, 1, 9, 5)),
@@ -97,10 +98,14 @@ void main() {
         expect(m.toLowerCase(), isNot(contains('protiti')));
       }
       final practice = TriggerPanicUseCase.sosMessage(
-        lat: -89.123456, lng: -179.123456, fixedAt: DateTime(2026, 1, 1, 23, 59), mocked: true, practice: true);
+        lat: -89.123456, lng: -179.123456, fixedAt: DateTime(2025, 12, 31, 23, 59), mocked: true, practice: true);
       expect(_smsParts(practice), lessThanOrEqualTo(TriggerPanicUseCase.maxSmsParts), reason: practice);
       expect(practice.toLowerCase(), allOf(contains('test'), isNot(contains('protiti'))));
       expect(worst, contains('https://maps.google.com/?q=-89.12346,-179.12346'));
+      expect(worst, contains('Location 31/12,'), reason: 'an old fix must not look current (N11)');
+      final now = DateTime.now();
+      expect(TriggerPanicUseCase.sosMessage(lat: 1, lng: 2, fixedAt: DateTime(now.year, now.month, now.day, 9, 5)),
+          contains('Location 09:05:'), reason: "today's fix needs no date");
       expect(worst, contains('may be wrong'));
       expect(cases.last, contains('Location unknown'));
       // The helper itself: one Bangla letter makes it UCS-2.

@@ -127,7 +127,7 @@ class TriggerPanicUseCase {
     if (pos != null) {
       lat = pos.latitude;
       lng = pos.longitude;
-      locationStr = '${mapsLink(lat, lng)} (at ${_hhmm(pos.timestamp.toLocal())})';
+      locationStr = '${mapsLink(lat, lng)} (at ${_when(pos.timestamp.toLocal())})';
     }
 
     List<String> recipientNumbers = [];
@@ -172,6 +172,14 @@ class TriggerPanicUseCase {
   static String _hhmm(DateTime t) =>
       '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
 
+  /// The fix time, with day/month unless it is from today, so an old fix
+  /// never reads as current (N11). [dateOnly] keeps the SMS within 2 parts.
+  static String _when(DateTime t, {bool dateOnly = false}) {
+    final now = DateTime.now();
+    if (t.year == now.year && t.month == now.month && t.day == now.day) return _hhmm(t);
+    return dateOnly ? '${t.day}/${t.month}' : '${t.day}/${t.month} ${_hhmm(t)}';
+  }
+
   static String mapsLink(double lat, double lng) =>
       'https://maps.google.com/?q=${lat.toStringAsFixed(5)},${lng.toStringAsFixed(5)}';
 
@@ -179,7 +187,7 @@ class TriggerPanicUseCase {
   static const maxSmsParts = 2;
 
   /// Bangla and English, no app name (it may stay in her Sent messages), the
-  /// time of the location fix and the map link. Every case, the longest
+  /// time (and, if not today, the date) of the location fix and the map link. Every case, the longest
   /// coordinates included, fits in [maxSmsParts] parts (tested).
   static String sosMessage({
     double? lat,
@@ -190,7 +198,7 @@ class TriggerPanicUseCase {
   }) {
     final head = practice ? practiceHead : 'জরুরি! সাহায্য দরকার। Urgent, help me!';
     if (lat == null || lng == null) return '$head অবস্থান জানা নেই/Location unknown.';
-    final at = fixedAt == null ? '' : ' ${_hhmm(fixedAt)}';
+    final at = fixedAt == null ? '' : ' ${_when(fixedAt, dateOnly: true)}';
     final doubt = mocked ? ', হয়তো ভুল/may be wrong' : '';
     return '$head অবস্থান/Location$at$doubt: ${mapsLink(lat, lng)}';
   }
