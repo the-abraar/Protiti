@@ -150,10 +150,15 @@ class FakeLocationService extends LocationService {
   }
 }
 
+DateTime _todayAt930() {
+  final now = DateTime.now();
+  return DateTime(now.year, now.month, now.day, 9, 30);
+}
+
 Position position(double lat, double lng) => Position(
       latitude: lat,
       longitude: lng,
-      timestamp: DateTime(2026, 10, 14, 9, 30),
+      timestamp: _todayAt930(),
       accuracy: 10,
       altitude: 0,
       altitudeAccuracy: 0,

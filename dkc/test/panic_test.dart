@@ -1,10 +1,14 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:protiti/data/services/acoustic_deterrent_service.dart';
+import 'package:protiti/data/services/secure_store.dart';
 import 'package:protiti/domain/use_cases/trigger_panic.dart';
 import 'package:protiti/ui/core/theme/app_theme.dart';
 import 'package:protiti/ui/features/panic/panic_screen.dart';
+import 'package:protiti/ui/features/support/support_screen.dart';
 
 import 'helpers/app_harness.dart';
 import 'helpers/fakes.dart';
@@ -82,8 +86,9 @@ void main() {
     });
 
     test('the SOS text is Bangla and English, names no app, and fits in 2 SMS parts', () {
+      // A fix from another day carries its date: the longest is 31/12.
       final worst = TriggerPanicUseCase.sosMessage(
-        lat: -89.123456, lng: -179.123456, fixedAt: DateTime(2026, 1, 1, 23, 59), mocked: true);
+        lat: -89.123456, lng: -179.123456, fixedAt: DateTime(2025, 12, 31, 23, 59), mocked: true);
       final cases = [
         worst,
         TriggerPanicUseCase.sosMessage(lat: 23.81, lng: 90.41, fixedAt: DateTime(2026, 1, 1, 9, 5)),
@@ -95,7 +100,15 @@ void main() {
         expect(m, contains('help'));
         expect(m.toLowerCase(), isNot(contains('protiti')));
       }
+      final practice = TriggerPanicUseCase.sosMessage(
+        lat: -89.123456, lng: -179.123456, fixedAt: DateTime(2025, 12, 31, 23, 59), mocked: true, practice: true);
+      expect(_smsParts(practice), lessThanOrEqualTo(TriggerPanicUseCase.maxSmsParts), reason: practice);
+      expect(practice.toLowerCase(), allOf(contains('test'), isNot(contains('protiti'))));
       expect(worst, contains('https://maps.google.com/?q=-89.12346,-179.12346'));
+      expect(worst, contains('Location 31/12,'), reason: 'an old fix must not look current (N11)');
+      final now = DateTime.now();
+      expect(TriggerPanicUseCase.sosMessage(lat: 1, lng: 2, fixedAt: DateTime(now.year, now.month, now.day, 9, 5)),
+          contains('Location 09:05:'), reason: "today's fix needs no date");
       expect(worst, contains('may be wrong'));
       expect(cases.last, contains('Location unknown'));
       // The helper itself: one Bangla letter makes it UCS-2.
@@ -128,6 +141,23 @@ void main() {
       expect(d.statuses, {ayesha.phone: SmsStatus.failed});
       expect(d.allSent, isFalse);
     });
+  });
+
+  test('the siren button has a sound to play (N8)', () {
+    final siren = File('assets/${AcousticDeterrentService.sirenAsset}');
+    expect(siren.existsSync(), isTrue);
+    final head = siren.openSync().readSync(12);
+    expect(String.fromCharCodes(head.sublist(0, 4)), 'RIFF');
+    expect(String.fromCharCodes(head.sublist(8, 12)), 'WAVE');
+    expect(siren.lengthSync(), greaterThan(44 + 22050), reason: 'more than a header');
+  });
+
+  testWidgets('the support directory offers no number its organisation has not confirmed (N17)', (tester) async {
+    await tester.pumpWidget(harness(const Scaffold(body: SupportScreen())));
+    expect(find.text('Ain o Salish Kendra (ASK)'), findsOneWidget);
+    expect(find.byIcon(Icons.call), findsNothing);
+    expect(find.text('01726222222'), findsNothing);
+    expect(find.textContaining('109'), findsOneWidget, reason: 'points her to a checked line instead');
   });
 
   group('PanicScreen', () {
@@ -189,6 +219,34 @@ void main() {
       await tester.pump(const Duration(seconds: 6));
       expect(sms.sent, hasLength(1), reason: 'the timer must not send again');
     });
+
+    // She turns the screen off, switches app, changes tab, or the vault locks (N2).
+    for (final (how, leave) in [
+      ('the screen goes away', (WidgetTester t) => t.pumpWidget(const SizedBox())),
+      ('the app is paused', (WidgetTester t) async {
+        t.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+        addTearDown(() => t.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed));
+      }),
+    ]) {
+      testWidgets('leaving mid-countdown sends at once, silently, and logs it: $how', (tester) async {
+        final storage = FakeSecureStorage()..install();
+        addTearDown(storage.uninstall);
+        final visible = FakeSms(), silent = FakeSms();
+        PanicScreen.unattendedSms = silent.call;
+        addTearDown(() => PanicScreen.unattendedSms = dispatchSilentSms);
+        await pumpPanic(tester, visible, [ayesha]);
+        await _holdSos(tester, waitOut: false);
+        await tester.pump(const Duration(seconds: 2));
+
+        await leave(tester);
+        await tester.pump();
+        expect(silent.sent, hasLength(1));
+        expect(visible.sent, isEmpty, reason: 'nothing may pop up later for anyone to see');
+        expect(storage.store[StoreKeys.lastAlert], endsWith('|1|1'), reason: 'the SOS tab tells her later');
+        await tester.pump(const Duration(seconds: 10));
+        expect(silent.sent, hasLength(1), reason: 'once only');
+      });
+    }
 
     testWidgets('delivery reports update each recipient', (tester) async {
       final reports = StreamController<(String, bool)>.broadcast();

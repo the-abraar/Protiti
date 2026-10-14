@@ -192,29 +192,33 @@ class HardwareSosPlugin : FlutterPlugin, EventChannel.StreamHandler, MethodChann
 
     /**
      * The one status notice: titled with this app's own label (whatever the
-     * disguise sets it to), never another app's or the system's name. Silent;
-     * the buzz comes from [vibrate]. Shown on the lock screen so Cancel and
-     * Call 999 are reachable without unlocking.
+     * disguise sets it to), never another app's or the system's name. Quiet
+     * (N4): no sound, no heads-up pop-up, and nothing of it on a secure lock
+     * screen, so someone holding the phone does not see a countdown or a
+     * result. The buzz from [vibrate] is how she knows; Cancel and Call are
+     * in the notification shade once the phone is unlocked.
      */
     private fun notice(ctx: Context, text: String, cancel: Boolean, call999: Boolean) {
         val nm = ctx.getSystemService(NotificationManager::class.java)
         val builder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val channel = NotificationChannel(NOTICE_CHANNEL, "Status", NotificationManager.IMPORTANCE_HIGH).apply {
+            // A channel's importance cannot change once created, so the old loud one goes.
+            nm.deleteNotificationChannel(OLD_NOTICE_CHANNEL)
+            val channel = NotificationChannel(NOTICE_CHANNEL, "Status", NotificationManager.IMPORTANCE_LOW).apply {
                 setSound(null, null)
                 enableVibration(false)
-                lockscreenVisibility = Notification.VISIBILITY_PUBLIC
+                lockscreenVisibility = Notification.VISIBILITY_SECRET
             }
             nm.createNotificationChannel(channel)
             Notification.Builder(ctx, NOTICE_CHANNEL)
         } else {
             @Suppress("DEPRECATION")
-            Notification.Builder(ctx).setPriority(Notification.PRIORITY_HIGH)
+            Notification.Builder(ctx).setPriority(Notification.PRIORITY_LOW)
         }
         builder.setSmallIcon(ctx.applicationInfo.icon)
             .setContentTitle(appLabel(ctx))
             .setContentText(text)
             .setStyle(Notification.BigTextStyle().bigText(text))
-            .setVisibility(Notification.VISIBILITY_PUBLIC)
+            .setVisibility(Notification.VISIBILITY_SECRET)
             .setOnlyAlertOnce(false)
         if (cancel) {
             val pi = PendingIntent.getBroadcast(
@@ -226,12 +230,13 @@ class HardwareSosPlugin : FlutterPlugin, EventChannel.StreamHandler, MethodChann
         }
         if (call999) {
             // ACTION_DIAL opens the dialer with 999 typed in; she presses call.
+            // The button just says "Call", so the shade does not name 999.
             val pi = PendingIntent.getActivity(
                 ctx, 1, Intent(Intent.ACTION_DIAL, Uri.parse("tel:999")),
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
             )
             @Suppress("DEPRECATION")
-            builder.addAction(Notification.Action.Builder(0, "Call 999", pi).build())
+            builder.addAction(Notification.Action.Builder(0, "Call", pi).build())
         }
         runCatching { nm.notify(NOTICE_ID, builder.build()) }
     }
@@ -272,7 +277,8 @@ class HardwareSosPlugin : FlutterPlugin, EventChannel.StreamHandler, MethodChann
          */
         const val REQUIRED_PRESSES = 4
         const val PRESS_WINDOW_MS = 3_000L
-        private const val NOTICE_CHANNEL = "status"
+        private const val OLD_NOTICE_CHANNEL = "status"
+        private const val NOTICE_CHANNEL = "status_quiet"
         private const val NOTICE_ID = 889
     }
 }

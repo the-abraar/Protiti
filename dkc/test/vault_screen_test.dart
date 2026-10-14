@@ -15,7 +15,11 @@ import 'helpers/app_harness.dart';
 import 'helpers/fakes.dart';
 
 /// Words that would tell an abuser what the second PIN is, in English and Bangla.
-final _revealing = RegExp(r'decoy|vault|duress|ভল্ট|ডিকয়|ডুরেস|ছদ্ম|জবরদস্তি', caseSensitive: false);
+/// The brand counts: searching it finds the public docs that explain the decoy (N3).
+final _revealing = RegExp(
+  r'decoy|vault|duress|protiti|ভল্ট|ডিকয়|ডুরেস|ছদ্ম|জবরদস্তি|প্রতীতি',
+  caseSensitive: false,
+);
 
 Iterable<String> _strings(WidgetTester tester) sync* {
   for (final w in tester.allWidgets) {

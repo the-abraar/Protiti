@@ -6,8 +6,9 @@ import 'location_service.dart';
 import 'secure_audio_service.dart';
 import 'secure_store.dart';
 
-/// The last alert sent while the app was not on screen (a shortcut or the
-/// second PIN), so the real SOS tab can tell her whether it went.
+/// The last alert sent while the app was not on screen (a shortcut, the
+/// second PIN, or an in-app SOS she left mid-countdown), so the real SOS tab
+/// can tell her whether it went.
 class AlertLog {
   static Future<void> record(PanicResult r) async {
     final sent = r.dispatch.statuses.values.where((s) => s == SmsStatus.sent).length;

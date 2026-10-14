@@ -1,8 +1,32 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:protiti/data/services/native_sms_service.dart';
+import 'package:protiti/data/services/secure_store.dart';
 import 'package:protiti/data/services/wipe_service.dart';
 
+import 'helpers/fakes.dart';
+
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  test('the wipe also clears the SOS status notice (N9)', () async {
+    final storage = FakeSecureStorage()..install();
+    final root = installTempPaths();
+    final calls = <String>[];
+    final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    messenger.setMockMethodCallHandler(NativeSmsService.channel, (call) async => calls.add(call.method));
+    addTearDown(() {
+      messenger.setMockMethodCallHandler(NativeSmsService.channel, null);
+      storage.uninstall();
+      root.deleteSync(recursive: true);
+    });
+    storage.store[StoreKeys.powerSosOn] = 'true';
+
+    await WipeService.executeNuclearWipe();
+    expect(storage.store, isEmpty);
+    expect(calls, contains('clearNotice'));
+  });
+
   test('wipe deletes both databases with their -wal/-journal/-shm files and every evidence file', () async {
     final root = Directory.systemTemp.createTempSync('protiti_wipe_');
     final dbDir = Directory('${root.path}/dbs')..createSync();

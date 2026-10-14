@@ -8,6 +8,7 @@ import '../../../data/services/auth_service.dart';
 import '../../../data/services/background_sos_service.dart';
 import '../../../data/services/native_sms_service.dart';
 import '../../../data/services/silent_alert_service.dart';
+import '../../../domain/use_cases/trigger_panic.dart';
 import '../auth/pin_setup_screen.dart';
 import 'battery_guide_screen.dart';
 import 'contacts_screen.dart';
@@ -99,7 +100,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context,
       title: 'SOS text and location',
       body: 'When you hold the SOS button, this app texts your trusted contacts with where '
-          'you are. For that, the phone will now ask to let it send SMS and see your location. '
+          'you are. If the screen goes off or you leave it during the ${sosCancelWindow.inSeconds} '
+          'seconds after, it sends at once. For that, the phone will now ask to let it send SMS '
+          'and see your location. '
           'Nothing is sent until you trigger an SOS. Android may keep a copy of each text in '
           'your Messages app, where anyone who opens it can read it.',
       request: _requestSosPermissions,
@@ -132,12 +135,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
       title: text.title,
       body: '${text.gesture} and, after ${sosCancelWindow.inSeconds} seconds, your trusted '
           'contacts get your SOS text with your location. ${text.risk} Two short buzzes mean it '
-          'is about to send: tap Cancel on the notice if it was a mistake. One long buzz means '
-          'it was sent. Three long buzzes mean it was not sent to everyone, so call 999.\n\n'
-          'A small service keeps running, with a notice saying so. The phone will ask to send '
-          'SMS, show notices, see your location and use the microphone (it records two minutes '
-          'of sound as evidence). Android may keep a copy of each text in your Messages app. '
-          'Try it once now, then tap Cancel.',
+          'is about to send. To stop a mistake, unlock the phone and tap Cancel on the notice in '
+          'the notification shade within those ${sosCancelWindow.inSeconds} seconds. One long '
+          'buzz means it was sent. Three long buzzes mean it was not sent to everyone, so call 999.\n\n'
+          'The notices stay plain so someone holding your phone learns little: '
+          '"$sosCountdownNotice", then "Done: 2 of 2." or "$sosNotSentNotice", with a Call button '
+          'that opens the dialer with 999. Nothing shows on the lock screen and nothing pops up.\n\n'
+          'A small service keeps running, with a notice that says "$sosServiceNotice" The phone '
+          'will ask to send SMS, show notices, see your location and use the microphone. It '
+          'records two minutes of sound as evidence; while it does, Android shows a green '
+          'microphone dot and lists this app as using the microphone. That cannot be hidden. '
+          'Android may keep a copy of each text in your Messages app.\n\n'
+          'To try it, tap Practice run below first: your contacts then get a test text instead.',
       request: () => BackgroundSosService.enable(t),
     );
     if (!mounted) return;
@@ -148,6 +157,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (on) {
       await Navigator.push(context, MaterialPageRoute(builder: (_) => const BatteryGuideScreen()));
     }
+  }
+
+  Future<void> _armPractice() async {
+    try {
+      await SosPractice.arm();
+    } catch (_) {
+      return;
+    }
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Practice is on for ${SosPractice.window.inMinutes} minutes. Try your shortcut now.'),
+    ));
   }
 
   Future<void> _onDuressAlert(bool value) async {
@@ -251,6 +272,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         value: _triggers[t]!,
                         onChanged: (v) => _onTrigger(t, v),
+                      ),
+                    if (_triggers.values.any((on) => on))
+                      ListTile(
+                        leading: const Icon(Icons.play_circle_outline, color: AppTheme.brandSecondary),
+                        title: const Text('Practice run'),
+                        subtitle: Text(
+                          'For the next ${SosPractice.window.inMinutes} minutes, a shortcut texts your '
+                          'contacts "${TriggerPanicUseCase.practiceHead}" instead of the SOS.',
+                        ),
+                        onTap: _armPractice,
                       ),
                     ListTile(
                       leading: const Icon(Icons.battery_alert_outlined, color: AppTheme.brandSecondary),

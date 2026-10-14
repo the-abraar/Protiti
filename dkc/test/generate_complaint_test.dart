@@ -71,6 +71,9 @@ void main() {
       expect(pdf, isNot(contains(claim)), reason: claim);
     }
     expect(pdf, isNot(contains('/Subtype/Image')), reason: 'Latin text stays text');
+    expect(pdf, isNot(contains('Triage')), reason: 'no internal jargon (N13)');
+    // The ID is also the shared file's name, so it names no app (N13).
+    expect(result.dossierId, matches(RegExp(r'^GD-[A-Z0-9]{8}-[0-9]{4}$')));
   });
 
   test('Bangla goes in as shaped line images, one per line', () async {

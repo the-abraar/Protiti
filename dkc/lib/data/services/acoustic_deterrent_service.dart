@@ -2,6 +2,9 @@ import 'package:volume_controller/volume_controller.dart';
 import 'package:audioplayers/audioplayers.dart';
 
 class AcousticDeterrentService {
+  /// A generated tone (a 700-1500 Hz wail, 3 s, loops), so no licence is needed (N8).
+  static const sirenAsset = 'audio/siren.wav';
+
   // Created on first use, so opening the SOS screen never touches the audio plugin.
   AudioPlayer? _player;
 
@@ -15,7 +18,7 @@ class AcousticDeterrentService {
       // 2. Loop a high-decibel siren asset indefinitely
       final player = _player ??= AudioPlayer();
       player.setReleaseMode(ReleaseMode.loop);
-      await player.play(AssetSource('audio/siren.mp3'));
+      await player.play(AssetSource(sirenAsset));
     } catch (e) {
       // Fallback
     }

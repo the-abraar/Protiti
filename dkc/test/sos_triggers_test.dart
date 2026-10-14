@@ -93,7 +93,7 @@ void main() {
       expect(sends, 0, reason: 'nothing goes out inside the window');
       await run;
       expect(sends, 1);
-      expect(alerts.log.skip(2), ['buzz:sent', 'notice:Message sent to 2 of 2.']);
+      expect(alerts.log.skip(2), ['buzz:sent', 'notice:Done: 2 of 2.']);
     });
 
     test('Cancel inside the window sends nothing', () async {
@@ -173,8 +173,8 @@ void main() {
         ..add((b, false));
       await Future<void>.delayed(Duration.zero);
       expect(alerts.log.skip(4), [
-        'notice:Message sent to 2 of 2. Delivered to 1.',
-        'notice:Message sent to 2 of 2. Delivered to 1. Not delivered to 1. Call 999 if you can. [Call 999]',
+        'notice:Done: 2 of 2. 1 confirmed.',
+        'notice:Done: 2 of 2. 1 confirmed. 1 not confirmed. [Call 999]',
       ]);
       h.dispose();
       await reports.close();
@@ -183,11 +183,26 @@ void main() {
 
   test('result notices never claim more than happened', () {
     String n(Map<String, SmsStatus> s) => sosResultNotice(SmsDispatch('sms', s));
-    expect(sosResultNotice(const SmsDispatch('no_contacts', {})), contains('no trusted contacts'));
+    expect(sosResultNotice(const SmsDispatch('no_contacts', {})), contains('nothing set up'));
     expect(n({a: SmsStatus.failed, b: SmsStatus.failed}), sosNotSentNotice);
-    expect(n({a: SmsStatus.sent, b: SmsStatus.failed}), 'Message sent to 1 of 2. Call 999 if you can.');
-    expect(n({a: SmsStatus.sent}), 'Message sent to 1 of 1.');
+    expect(n({a: SmsStatus.sent, b: SmsStatus.failed}), 'Done: 1 of 2.');
+    expect(n({a: SmsStatus.sent}), 'Done: 1 of 1.');
     expect(sosServiceNotice.toLowerCase(), isNot(anyOf(contains('system'), contains('google'))));
+  });
+
+  test('no notice tells someone holding the phone what happened (N4)', () {
+    final giveaway = RegExp(r'sos|alert|message|sms|text|999|help|emergency|contact|deliver|shortcut',
+        caseSensitive: false);
+    final notices = [
+      sosServiceNotice,
+      sosCountdownNotice,
+      sosNotSentNotice,
+      sosResultNotice(const SmsDispatch('no_contacts', {})),
+      sosResultNotice(SmsDispatch('sms', {a: SmsStatus.sent, b: SmsStatus.failed}), delivered: 1, undelivered: 1),
+    ];
+    for (final n in notices) {
+      expect(n, isNot(matches(giveaway)));
+    }
   });
 
   group('gating and the second-PIN alert', () {
@@ -217,6 +232,25 @@ void main() {
       expect(await BackgroundSosService.isOn(SosTrigger.shake), isFalse);
       await BackgroundSosService.disable(SosTrigger.power);
       expect(storage.store, isNot(contains(StoreKeys.powerSosOn)));
+    });
+
+    test('a practice run is used once, then the real SOS is back (N16)', () async {
+      expect(await SosPractice.take(), isFalse, reason: 'off unless she arms it');
+      await SosPractice.arm();
+      expect(await SosPractice.take(), isTrue);
+      expect(await SosPractice.take(), isFalse, reason: 'one trigger only');
+
+      storage.store[StoreKeys.practiceUntil] =
+          DateTime.now().subtract(const Duration(seconds: 1)).toIso8601String();
+      expect(await SosPractice.take(), isFalse, reason: 'expired');
+      expect(storage.store, isNot(contains(StoreKeys.practiceUntil)));
+
+      final sms = FakeSms();
+      await panicUseCase(sms: sms, contacts: [contact('A', a)], at: position(23.81, 90.41))
+          .execute(dim: false, practice: true);
+      expect(sms.sent.single.$2, startsWith(TriggerPanicUseCase.practiceHead));
+      expect(sms.sent.single.$2, isNot(contains('Urgent')));
+      expect(sms.sent.single.$2, contains('maps.google.com'), reason: 'she can check the link works');
     });
 
     test('the second PIN sends nothing unless she turned the alert on', () async {

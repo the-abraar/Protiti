@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite_sqlcipher/sqflite.dart';
+import 'background_sos_service.dart';
 import 'database_service.dart';
 import 'evidence_files.dart';
 import 'secure_store.dart';
@@ -19,6 +20,7 @@ class WipeService {
     try {
       await secureStore.deleteAll();
     } catch (_) {}
+    await BackgroundSosService.afterWipe();
     await wipeFiles(
       dbDir: Directory(await getDatabasesPath()),
       docsDir: await getApplicationDocumentsDirectory(),

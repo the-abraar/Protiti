@@ -335,7 +335,7 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                     : StepState.indexed,
               ),
               Step(
-                title: const Text('Legal Review & Police Format'),
+                title: const Text('Review the draft'),
                 subtitle: const Text('Standard General Diary (GD) layout'),
                 content: Container(
                   padding: const EdgeInsets.all(14),

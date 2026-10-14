@@ -14,7 +14,7 @@ A Digital Evidence Vault app designed for women facing online harassment in Bang
 - **📦 Secure Evidence Vault** — PIN-locked, encrypted storage with a **Duress PIN (Decoy Vault)** for physical coercion scenarios. Fingerprint unlock is opt-in.
 - **📝 GD-Automator** — Builds an offline GD draft PDF from the evidence she chooses. No AI, no network call.
 - **🚨 Panic Frame** — SMS SOS to the trusted contacts she adds, with the real per-recipient sent and delivered result and a Call 999 button when sending fails. See [SOS](#sos) below.
-- **🤝 Support Bridge** — Curated directory of pro-bono lawyers and mental health counselors
+- **🤝 Support Bridge** — Directory of legal aid and support organisations; their numbers are hidden until each one confirms them
 
 ### Tech Stack
 
@@ -53,7 +53,7 @@ dkc/
 - On real Android phones (one each of Xiaomi, Oppo, Vivo, Realme if possible), with the app swiped away: power-button and shake SOS, the 5 s Cancel, the buzz patterns, the result and delivery notice, the second-PIN alert; shake thresholds on a rickshaw/CNG ride and in a bag; a call with the phone at the ear must not trigger. Then check each battery-guide deep link opens.
 - Verify any hotline other than 999 and 109 (PCSW, NGOs, campus numbers) with the service itself before listing it. The GD PDF uses `cybersupport.women@police.gov.bd`, the address on the police portal.
 - Decide whether to add an "export original file" option. Today the original stays only in the encrypted vault (and, for gallery imports, in her gallery), so nobody else can recompute a SHA-256 the PDF lists.
-- Add a siren sound at `assets/audio/siren.mp3`; the siren button plays nothing until then.
+- Check the siren on a real phone at full volume. It plays a generated tone (`assets/audio/siren.wav`, a 700-1500 Hz wail); swap in a louder licensed recording if it is not loud enough.
 - Pick a neutral `applicationId` / bundle ID before the first store upload; `com.protiti.protiti` shows in Android App info and cannot change once published.
 - On a real phone: check the launcher icon and label, Recents, App info and the permission prompts in English and Bangla.
 
@@ -67,8 +67,8 @@ dkc/
 
 ### SOS
 
-- In the app: hold the SOS button 3 s, then 5 s to Cancel (or Send now). The SMS goes out silently on Android; on iOS the Messages sheet opens and she presses Send.
-- Android only, each off by default and turned on in Settings after an explanation: power button pressed 4 times within 3 s (ignored during a call), and hard shaking (4 peaks over 3 g within 3 s). Each waits 5 s first: two short buzzes and a notice with Cancel. One long buzz means every text was accepted, three long buzzes mean not; the notice gives the count, delivery reports and a Call 999 button. The service runs only while a trigger is on and does not restart after a reboot until she opens the app.
+- In the app: hold the SOS button 3 s, then 5 s to Cancel (or Send now). The SMS goes out silently on Android; on iOS the Messages sheet opens and she presses Send. If the screen goes away during the 5 s (screen off, another app, another tab), it sends at once by silent SMS, buzzes the result, and the SOS tab shows it later; on iOS that silent send cannot happen, so the SOS tab says it was not sent.
+- Android only, each off by default and turned on in Settings after an explanation: power button pressed 4 times within 3 s (ignored during a call), and hard shaking (4 peaks over 3 g within 3 s). Each waits 5 s first: two short buzzes and a notice with Cancel. One long buzz means every text was accepted, three long buzzes mean not; the notice gives the count, delivery reports and a Call button (999). The notices are plain ("Starting in 5 seconds.", "Done: 2 of 2.", "Not done."), never pop up and show nothing on a secure lock screen, so Cancel needs the phone unlocked. While the 2-minute recording runs, Android shows its microphone dot; Settings says so. To try a shortcut safely, Settings > Practice run makes the next trigger within 10 minutes text "পরীক্ষা মাত্র। Just a test, ignore." (with the location link) instead of the SOS, with no recording. The service runs only while a trigger is on and does not restart after a reboot until she opens the app.
 - Second PIN (opt-in, off by default): opening with it sends the SOS silently, with no notice, buzz, recording or cancel window. The real SOS tab later shows whether it went.
 - iOS cannot run background triggers or send SMS silently, so Settings hides those switches there and says why.
 - The text is Bangla and English, names no app and fits in 2 SMS parts: `জরুরি! সাহায্য দরকার। Urgent, help me! অবস্থান/Location 09:30: https://maps.google.com/?q=…`. Android may keep a copy in the Messages app's Sent folder; Settings says so.

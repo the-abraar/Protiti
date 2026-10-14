@@ -29,6 +29,29 @@ enum SosTrigger {
   final String storeKey;
 }
 
+/// A practice run (N16): for [window] after she arms it in Settings, the next
+/// shortcut texts [TriggerPanicUseCase.practiceHead] instead of the SOS.
+abstract final class SosPractice {
+  static const window = Duration(minutes: 10);
+
+  static Future<void> arm() => secureStore.write(
+        key: StoreKeys.practiceUntil,
+        value: DateTime.now().add(window).toIso8601String(),
+      );
+
+  /// True once while armed; disarms either way. Never throws.
+  static Future<bool> take() async {
+    try {
+      final until = DateTime.tryParse(await secureStore.read(key: StoreKeys.practiceUntil) ?? '');
+      if (until == null) return false;
+      await secureStore.delete(key: StoreKeys.practiceUntil);
+      return DateTime.now().isBefore(until);
+    } catch (_) {
+      return false;
+    }
+  }
+}
+
 /// Vibration patterns (ms: wait, buzz, wait, buzz...) she can tell apart by
 /// feel, with the phone in a pocket.
 abstract final class Buzz {
@@ -60,22 +83,24 @@ class SosAlerts {
   }
 }
 
-/// The foreground-service notice: honest about what runs, nothing more.
-const sosServiceNotice = 'Alert shortcuts are on.';
-final sosCountdownNotice = 'Sending your message in ${sosCancelWindow.inSeconds} seconds.';
-const sosNotSentNotice = 'Message not sent. Call 999 if you can.';
+/// Every notice is plain, never a heads-up, and hidden on a secure lock screen
+/// (N4): someone holding the phone learns little from it. Settings tells her
+/// what each one means, and the buzz patterns say the same by feel.
+/// The foreground-service notice: honest that something runs, nothing more.
+const sosServiceNotice = 'Running.';
+final sosCountdownNotice = 'Starting in ${sosCancelWindow.inSeconds} seconds.';
+const sosNotSentNotice = 'Not done.';
 
 /// The real outcome, never better than it was.
 String sosResultNotice(SmsDispatch d, {int delivered = 0, int undelivered = 0}) {
   final total = d.statuses.length;
   final sent = d.statuses.values.where((s) => s == SmsStatus.sent).length;
-  if (total == 0) return 'Not sent: no trusted contacts set. Call 999 if you can.';
+  if (total == 0) return 'Not done: nothing set up.';
   if (sent == 0) return sosNotSentNotice;
   return [
-    'Message sent to $sent of $total.',
-    if (delivered > 0) 'Delivered to $delivered.',
-    if (undelivered > 0) 'Not delivered to $undelivered.',
-    if (sent < total || undelivered > 0) 'Call 999 if you can.',
+    'Done: $sent of $total.',
+    if (delivered > 0) '$delivered confirmed.',
+    if (undelivered > 0) '$undelivered not confirmed.',
   ].join(' ');
 }
 
@@ -217,6 +242,13 @@ class BackgroundSosService {
     await _sync();
   }
 
+  /// After a wipe has deleted the switches: a running service stops itself,
+  /// and its status notice goes, so the plain calculator carries none (N9).
+  static Future<void> afterWipe() async {
+    await _sync();
+    await const SosAlerts().clear();
+  }
+
   /// Called on every lock screen load. Starts the service only if a trigger
   /// is on and the permissions still hold; never prompts, never throws.
   static Future<bool> startIfEnabled() async {
@@ -273,14 +305,15 @@ class BackgroundSosService {
     // on this engine until asked; without them every SOS found no contacts.
     DartPluginRegistrant.ensureInitialized();
     final handler = SosTriggerHandler(send: () async {
+      final practice = await SosPractice.take();
       final result = await TriggerPanicUseCase(
         LocationService(),
         contactRepository: ContactRepository(DatabaseService()),
         audioService: SecureAudioService(),
         evidenceRepository: EvidenceRepository(DatabaseService()),
         sendSms: dispatchSilentSms,
-      ).execute(dim: false);
-      await AlertLog.record(result);
+      ).execute(dim: false, practice: practice);
+      if (!practice) await AlertLog.record(result);
       return result;
     });
 

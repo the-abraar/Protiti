@@ -164,31 +164,39 @@ class DatabaseService {
       )''');
   }
 
+  /// Ordinary notes for a fresh second-PIN space. Each install gets a random
+  /// few with random ages, so no two look alike and a second look weeks later
+  /// is not the same three notes at the same ages (N14).
+  /// shortcut: the pool is in a public repo; upgrade to notes she writes at setup.
+  @visibleForTesting
+  static const decoyNotePool = [
+    'Grocery list: rice, dal, onions, eggs, cooking oil',
+    'বাজারের লিস্ট: চাল, ডাল, পেঁয়াজ, ডিম, তেল',
+    'Electricity bill paid, keep the receipt',
+    'Class routine: Sun and Tue 10 am, Thu 2 pm',
+    'Tailor: pick up the kameez on Thursday',
+    'মায়ের ওষুধ: সকালে একটা, রাতে একটা',
+    'Chicken curry: ginger garlic paste first, then onions',
+    'Gas cylinder: call the shop when it runs low',
+    'Gift ideas for Nanu\'s birthday',
+    'Rickshaw and bus fare this week',
+    'মিটিং শনিবার বিকেল ৪টায়',
+    'Wi-Fi bill due on the 10th',
+  ];
+
   Future<void> _seedDecoyData(Database db) async {
-    final now = DateTime.now();
-    await db.insert('local_notes_cache', {
-      'note_id': 'decoy_1',
-      'category': 'text',
-      'attachment_path': null,
-      'body_text': 'Fall 2026 University Semester Syllabus & Exam Routine',
-      'extra_json': jsonEncode({'pages': 2}),
-      'saved_at': now.subtract(const Duration(days: 2)).toIso8601String(),
-    });
-    await db.insert('local_notes_cache', {
-      'note_id': 'decoy_2',
-      'category': 'text',
-      'attachment_path': null,
-      'body_text': 'Weekly Grocery Budget & Household Expenses (Dhanmondi)',
-      'extra_json': jsonEncode({'status': 'Archived'}),
-      'saved_at': now.subtract(const Duration(days: 4)).toIso8601String(),
-    });
-    await db.insert('local_notes_cache', {
-      'note_id': 'decoy_3',
-      'category': 'text',
-      'attachment_path': null,
-      'body_text': 'Family Recipe: Traditional Kacchi Biryani & Shahi Tukra',
-      'extra_json': '{}',
-      'saved_at': now.subtract(const Duration(days: 6)).toIso8601String(),
-    });
+    final rand = Random.secure();
+    final picks = List.of(decoyNotePool)..shuffle(rand);
+    final now = DateTime.now(), count = 2 + rand.nextInt(3);
+    for (var i = 0; i < count; i++) {
+      await db.insert('local_notes_cache', {
+        'note_id': 'decoy_${i + 1}',
+        'category': 'text',
+        'attachment_path': null,
+        'body_text': picks[i],
+        'extra_json': '{}',
+        'saved_at': now.subtract(Duration(hours: 6 + rand.nextInt(24 * 21))).toIso8601String(),
+      });
+    }
   }
 }
