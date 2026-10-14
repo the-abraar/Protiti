@@ -1,4 +1,6 @@
 # Project Protiti (প্রতীতি) — Community & Outreach Handoff: Complete GTM Readiness
+
+> Note (2026-10-14): every mention of the "Cyber Protection Act 2026" here is UNVERIFIED, needs counsel (see `legal/cyber_protection_act_2026_guide.md`). Partners named here are proposed, not agreed. The app is a research prototype and not for real use.
 **DKC Digital Respect & Cohesion Fellowship 2026 | UNDP Bangladesh, EU & SURGE**
 *Author: Community & Outreach Lead Agent | Date: September 25, 2026*
 
