@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- A plain calculator inside the 66dp adaptive-icon safe zone. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:fillColor="#F1F3F4" android:pathData="M40,26H68A6,6 0,0 1,74 32V76A6,6 0,0 1,68 82H40A6,6 0,0 1,34 76V32A6,6 0,0 1,40 26Z" />
+    <path android:fillColor="#5F6368" android:pathData="M39,31H69V43H39Z" />
+    <path android:fillColor="#9AA0A6" android:pathData="M39,48h8v8h-8z M50,48h8v8h-8z M61,48h8v8h-8z M39,59h8v8h-8z M50,59h8v8h-8z M61,59h8v8h-8z M39,70h8v8h-8z M50,70h8v8h-8z" />
+    <path android:fillColor="#F57C00" android:pathData="M61,70h8v8h-8z" />
+</vector>

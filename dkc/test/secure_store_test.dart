@@ -21,6 +21,8 @@ void main() {
       'protiti_aes_key': 'aes',
       'decoy_draft_title': 'notes',
       'pin_lockout_expiry': '2026-01-01',
+      'always_launch_as_calculator': 'true',
+      'p1': 'true',
     });
     await migrateStoreKeys();
     await migrateStoreKeys();

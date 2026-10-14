@@ -14,9 +14,13 @@
          watching over the survivor's shoulder. Not available on Play Store
          distribution; this app is distributed via direct/ADB install. -->
     <uses-permission android:name="android.permission.SEND_SMS" />
+    <!-- SOS (pro-sos): the countdown notice with its Cancel button, and the
+         buzz that tells her an alert is about to go, went, or failed. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
-        android:label="Protiti"
+        android:label="@string/app_name"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
         android:allowBackup="false"
@@ -50,7 +54,10 @@
             android:name="flutterEmbedding"
             android:value="2" />
 
-        <!-- Required by flutter_background_service for the persistent foreground SOS service -->
+        <!-- SOS (pro-sos): flutter_background_service's foreground service for the
+             power-button and shake triggers. It runs only while one is on in
+             Settings, and does not start at boot (Android 14+ refuses a
+             location/microphone service started from boot). -->
         <service
             android:name="id.flutter.flutter_background_service.BackgroundService"
             android:foregroundServiceType="location|microphone"

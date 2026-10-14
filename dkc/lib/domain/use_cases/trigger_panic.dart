@@ -32,18 +32,27 @@ class SmsDispatch {
 
 typedef SmsDispatcher = Future<SmsDispatch> Function(List<String> recipients, String message);
 
+/// Silent SmsManager only, for when nobody may see anything: the background
+/// triggers and the second PIN. Where silent sending is impossible (iOS, no
+/// permission) every recipient is failed; it never opens Messages.
+Future<SmsDispatch> dispatchSilentSms(List<String> recipients, String message) async {
+  if (recipients.isEmpty) return const SmsDispatch('no_contacts', {});
+  final results = Platform.isAndroid
+      ? await NativeSmsService.sendSilently(recipients: recipients, message: message)
+      : const <String, bool>{};
+  return SmsDispatch(results.isEmpty ? 'failed' : 'sms', {
+    for (final r in recipients) r: results[r] == true ? SmsStatus.sent : SmsStatus.failed,
+  });
+}
+
 /// The foreground SMS path, shared by the SOS and the contact test message:
 /// silent SmsManager with per-recipient results on Android, else the visible
 /// Messages app, else the share sheet.
 Future<SmsDispatch> dispatchSms(List<String> recipients, String message) async {
   if (recipients.isEmpty) return const SmsDispatch('no_contacts', {});
   if (Platform.isAndroid) {
-    final results = await NativeSmsService.sendSilently(recipients: recipients, message: message);
-    if (results.isNotEmpty) {
-      return SmsDispatch('sms', {
-        for (final r in recipients) r: results[r] == true ? SmsStatus.sent : SmsStatus.failed,
-      });
-    }
+    final silent = await dispatchSilentSms(recipients, message);
+    if (silent.method == 'sms') return silent;
   }
   final unconfirmed = {for (final r in recipients) r: SmsStatus.unconfirmed};
   try {
@@ -98,24 +107,20 @@ class TriggerPanicUseCase {
   });
 
   /// SMS first: the cached location only, nothing to wait for before the
-  /// message leaves. Screen dimming and the audio recording come after.
-  Future<PanicResult> execute() async {
+  /// message leaves. Then, if asked, screen dimming and the audio recording.
+  /// [dim] is for the app on screen; the second-PIN alert turns off both,
+  /// since a dark screen or the microphone indicator would give it away.
+  Future<PanicResult> execute({bool dim = true, bool record = true}) async {
     final timestamp = DateTime.now();
 
     double? lat;
     double? lng;
-    String locationStr = 'GPS location unavailable';
+    String locationStr = 'Location unknown';
     final pos = await locationService.getLastKnownLocation();
     if (pos != null) {
       lat = pos.latitude;
       lng = pos.longitude;
-      final at = pos.timestamp.toLocal();
-      locationStr =
-          'https://maps.google.com/?q=${lat.toStringAsFixed(6)},${lng.toStringAsFixed(6)} '
-          '(last known at ${_hhmm(at)})';
-      if (pos.isMocked) {
-        locationStr += "\n[WARNING: GPS Coordinates are actively spoofed/mocked by a third-party app!]";
-      }
+      locationStr = '${mapsLink(lat, lng)} (at ${_hhmm(pos.timestamp.toLocal())})';
     }
 
     List<String> recipientNumbers = [];
@@ -128,19 +133,23 @@ class TriggerPanicUseCase {
     // No hotline fallback: 999 and 109 take calls, not texts. With no contact
     // set, the screen says so and offers the call button instead.
 
-    final message =
-        'EMERGENCY SOS [Protiti]: I need urgent help! My location: $locationStr at ${_hhmm(timestamp)} (BD Time). Please send assistance immediately.';
+    final message = sosMessage(
+      lat: lat,
+      lng: lng,
+      fixedAt: pos?.timestamp.toLocal(),
+      mocked: pos?.isMocked ?? false,
+    );
 
     final dispatch = await sendSms(recipientNumbers, message);
 
-    if (dispatch.allSent) {
+    if (dim && dispatch.allSent) {
       try {
         // Blackout so the screen glow does not give her away. Skipped when
         // anything failed: she must be able to read the error and call 999.
         await ScreenBrightness().setApplicationScreenBrightness(0.0);
       } catch (_) {}
     }
-    _recordAmbientAudio();
+    if (record) _recordAmbientAudio();
 
     return PanicResult(
       formattedMessage: message,
@@ -154,6 +163,23 @@ class TriggerPanicUseCase {
 
   static String _hhmm(DateTime t) =>
       '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
+
+  static String mapsLink(double lat, double lng) =>
+      'https://maps.google.com/?q=${lat.toStringAsFixed(5)},${lng.toStringAsFixed(5)}';
+
+  /// Bangla forces UCS-2: 70 characters in one SMS, 67 per part beyond that.
+  static const maxSmsParts = 2;
+
+  /// Bangla and English, no app name (it may stay in her Sent messages), the
+  /// time of the location fix and the map link. Every case, the longest
+  /// coordinates included, fits in [maxSmsParts] parts (tested).
+  static String sosMessage({double? lat, double? lng, DateTime? fixedAt, bool mocked = false}) {
+    const head = 'জরুরি! সাহায্য দরকার। Urgent, help me!';
+    if (lat == null || lng == null) return '$head অবস্থান জানা নেই/Location unknown.';
+    final at = fixedAt == null ? '' : ' ${_hhmm(fixedAt)}';
+    final doubt = mocked ? ', হয়তো ভুল/may be wrong' : '';
+    return '$head অবস্থান/Location$at$doubt: ${mapsLink(lat, lng)}';
+  }
 
   /// Two minutes of ambient audio, saved as an evidence row. If the app dies
   /// first, the next launch recovers the file.

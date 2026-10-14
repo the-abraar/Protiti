@@ -25,26 +25,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get supportBridgeTitle => 'Legal Aid & Support Bridge';
 
   @override
-  String get myNotesSubtitle => 'My Notes';
-
-  @override
-  String get lockoutMessage => 'Too many attempts. Try again later.';
-
-  @override
-  String get incorrectPinMessage => 'Incorrect PIN. Please re-enter.';
-
-  @override
-  String get biometricUnlockTooltip => 'Biometric Unlock';
-
-  @override
   String get deleteTooltip => 'Delete';
-
-  @override
-  String get switchToStandardLockTooltip => 'Switch to Standard Lock';
-
-  @override
-  String get enableCalculatorDisguiseTooltip =>
-      'Enable Calculator Stealth Disguise';
 
   @override
   String get calculatorLabel => 'Calculator';
@@ -173,9 +154,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String callContactTooltip(String name) {
     return 'Call $name';
   }
-
-  @override
-  String get enterTooltip => 'Enter';
 
   @override
   String get deleteItemTitle => 'Delete this item?';
