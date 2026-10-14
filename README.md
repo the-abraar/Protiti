@@ -1,53 +1,59 @@
-# 🛡️ Protiti (প্রতীতি)
+> **Research prototype. Not for real use: unsafe for survivors until reviewed by a security expert and a field partner.**
 
-**"সন্দেহহীন সত্য, অকাট্য প্রমাণের অধিকার"**  
+# Protiti (প্রতীতি)
+
+**"সন্দেহহীন সত্য, অকাট্য প্রমাণের অধিকার"**
 *"From Doubt to Certitude: Structure for Digital Justice"*
 
-> **Note:** "Protiti" (প্রতীতি - Deep Conviction & Undisputed Certitude) is the official brand identity. Rooted in Bengali epistemology and cultural resonance, Protiti establishes indisputable digital evidence for women facing online harassment in Bangladesh. See [`team_handoffs/design_handoff.md`](team_handoffs/design_handoff.md) for the brand identity and verified uniqueness audit.
+"Protiti" (প্রতীতি, "deep conviction") is the project name. See [`team_handoffs/design_handoff.md`](team_handoffs/design_handoff.md) for the brand identity.
 
-A Digital Evidence Vault app designed for women facing online harassment in Bangladesh. Protiti provides a secure, encrypted framework to document screenshots, links, and timestamps of abuse in a format designed to support police reporting (not legal advice; admissibility has not been reviewed by counsel).
+A prototype evidence vault for women facing online harassment in Bangladesh. It stores screenshots, photos and notes in an encrypted vault and drafts a General Diary (GD) text for manual filing. It is not legal advice, and no lawyer has reviewed whether its output is admissible.
 
-## 🎯 DKC Fellowship — Theme: Gender-based Online Violence
+## DKC Fellowship: Gender-based Online Violence
 
-### Core Features
+### Features
 
-- **📦 Secure Evidence Vault** — Biometric-locked, encrypted storage with a **Duress PIN (Decoy Vault)** for physical coercion scenarios
-- **📝 GD-Automator** — Uses TypeSafe's "Jev" AI to map data to the **Cyber Protection Act 2026** and drafts GD text for manual filing (no e-GD API integration exists)
-- **🚨 Panic Frame** — Offline-first SOS alert with SMS fallback for low-connectivity environments
-- **🤝 Support Bridge** — Curated directory of pro-bono lawyers and mental health counselors
+- **Calculator disguise.** The app opens as a working calculator. Your PIN unlocks it.
+- **Encrypted vault.** Photos, screenshots and notes in an SQLCipher database on the phone. Nothing is uploaded.
+- **PINs.** A real PIN (6 or more digits, set at first launch), a duress PIN that opens a separate decoy vault, and a wipe code that you choose.
+- **Biometrics.** Off by default. When turned on, fingerprint or face only (no device-PIN fallback).
+- **GD draft.** A guided form that makes a PDF draft for you to file in person. There is no e-GD API integration and no automatic law mapping.
+- **Panic screen.** One SMS SOS with your location to your saved contacts (contact setup is a known gap), plus one-tap dialing for 999, the 109 helpline and the PCSW hotline.
+- **Support directory.** A static list of hotlines and support organisations. No organisation has agreed to a partnership.
 
-### Tech Stack
+Cut from this prototype (unsafe, fake or unverified): the AI classifier, cloud backup, cloud SMS and certificate pinning, the geofence, root detection and self-wipe, P2P and Bluetooth transfer, sensor telemetry in the SOS, the proximity lock, fake notifications and calls, the thermal decoy, the 5-tap crash and the online decoy fetch.
+
+Known gaps are in [`judge.md`](judge.md) and [`CrtiQue_Oct14.md`](CrtiQue_Oct14.md).
+
+### Tech stack
 
 - **Framework:** Flutter + Dart
-- **Architecture:** MVVM (Model-View-ViewModel)
-- **Database:** SQLite with SQLCipher encryption
-- **AI Engine:** TypeSafe AI "Jev" (System One) for fast legal triage (AI output can be wrong; verify with a lawyer)
-- **Auth:** Biometric (fingerprint/face) + PIN
-- **Security:** AES-256 encryption, SHA-256 evidence hashing, app disguise mode
+- **Database:** SQLite with SQLCipher encryption; real and decoy vaults use separate files and keys
+- **Auth:** salted PIN hashes in secure storage; optional biometric-only unlock
+- **Security:** AES-256 encryption, SHA-256 file hashes, calculator disguise. Not reviewed by a security expert.
 
-### Project Structure
+### Project structure
 
 ```
 dkc/
 └── lib/
     ├── data/
-    │   ├── models/         # DB/API models
     │   ├── repositories/   # Data access layer
-    │   └── services/       # Encryption, biometric, location, database
+    │   └── services/       # Encryption, auth, location, database
     ├── domain/
     │   ├── models/         # Evidence, Complaint, Contact, SupportProvider, UserProfile
-    │   └── use_cases/      # GD generation, evidence packaging, panic trigger
+    │   └── use_cases/      # GD generation, panic trigger
     └── ui/
-        ├── core/theme/     # Dark mode theme (Navy #0A1128, Blue #1282A2, Amber #FFC857)
+        ├── core/theme/
         └── features/
-            ├── auth/       # Lock screen + calculator disguise
-            ├── vault/      # Evidence vault with 4-tab navigation
-            ├── complaint/  # GD-Automator wizard
-            ├── panic/      # Panic Frame emergency button
-            └── support/    # Support Bridge directory
+            ├── auth/       # Lock screen, calculator disguise, PIN setup
+            ├── vault/      # Evidence vault
+            ├── complaint/  # GD draft wizard
+            ├── panic/      # Panic screen
+            └── support/    # Support directory
 ```
 
-### Getting Started
+### Getting started
 
 ```bash
 cd dkc
@@ -55,11 +61,9 @@ flutter pub get
 flutter run
 ```
 
-### Impact
-
-> *Most cases go unreported because evidence is lost, legal processes are intimidating, and support is hard to find. Protiti changes that.*
+Run `scripts/check.sh` before you commit.
 
 ---
 
-**Team:** [Your Team Name]  
-**DKC Fellowship Application — UNDP Bangladesh**
+**Team:** Team Protiti (see `pitch_materials/pitch_deck.md`)
+**DKC Fellowship application, UNDP Bangladesh**
