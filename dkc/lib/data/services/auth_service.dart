@@ -47,14 +47,17 @@ class AuthService {
 
   static final _codeFormat = RegExp(r'^\d{6,10}$');
 
+  /// Bangla digits ০-৯ count as 0-9, so a code typed on a Bangla keyboard is the same code.
+  static String asciiDigits(String code) =>
+      code.replaceAllMapped(RegExp('[০-৯]'), (m) => '${m[0]!.codeUnitAt(0) - 0x09E6}');
+
   /// Returns an error message, or null if the three codes are acceptable.
   /// 10 digits is the most the calculator display can hold.
   static String? validatePins(String realPin, String duressPin, String wipeCode) {
-    if (![realPin, duressPin, wipeCode].every(_codeFormat.hasMatch)) {
-      return 'Each code must be 6 to 10 digits.';
-    }
-    if ({realPin, duressPin, wipeCode}.length < 3) return 'All three codes must be different.';
-    if (RegExp(r'^0+$').hasMatch(wipeCode)) return 'The wipe code cannot be all zeros.';
+    final codes = [realPin, duressPin, wipeCode].map(asciiDigits).toList();
+    if (!codes.every(_codeFormat.hasMatch)) return 'Each code must be 6 to 10 digits.';
+    if (codes.toSet().length < 3) return 'All three codes must be different.';
+    if (RegExp(r'^0+$').hasMatch(codes[2])) return 'The wipe code cannot be all zeros.';
     return null;
   }
 
@@ -65,9 +68,9 @@ class AuthService {
   }) async {
     final err = validatePins(realPin, duressPin, wipeCode);
     if (err != null) throw ArgumentError(err);
-    await _write(StoreKeys.realPin, _hash(realPin));
-    await _write(StoreKeys.duressPin, _hash(duressPin));
-    await _write(StoreKeys.wipeCode, _hash(wipeCode));
+    await _write(StoreKeys.realPin, _hash(asciiDigits(realPin)));
+    await _write(StoreKeys.duressPin, _hash(asciiDigits(duressPin)));
+    await _write(StoreKeys.wipeCode, _hash(asciiDigits(wipeCode)));
   }
 
   /// Replaces all three codes, but only for someone who knows the current real PIN.
@@ -77,7 +80,7 @@ class AuthService {
     required String duressPin,
     required String wipeCode,
   }) async {
-    if (!_matches(await _read(StoreKeys.realPin), currentPin)) return false;
+    if (!_matches(await _read(StoreKeys.realPin), asciiDigits(currentPin))) return false;
     await setPins(realPin: realPin, duressPin: duressPin, wipeCode: wipeCode);
     return true;
   }
@@ -99,6 +102,7 @@ class AuthService {
 
   /// The only way to check a code. Every miss is counted, in every mode.
   Future<AuthStatus> verifyPin(String enteredPin) async {
+    enteredPin = asciiDigits(enteredPin);
     final failures = await _failures();
     if (_sinceLastFailure.elapsed < lockoutDelay(failures)) return AuthStatus.lockedOut;
     if (!await isSetupComplete()) return AuthStatus.failed;

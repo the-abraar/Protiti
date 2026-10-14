@@ -15,7 +15,6 @@ abstract final class StoreKeys {
   static const failedAttempts = 'u4';
   static const biometricOptIn = 'u5';
   static const evidenceKey = 'k3';
-  static const launchAsCalculator = 'p1';
   // SOS (pro-sos). p2 used to switch both triggers; it now means the power button only.
   static const powerSosOn = 'p2';
   static const shakeSosOn = 's1';
@@ -34,7 +33,9 @@ const legacyStoreKeys = <String, String?>{
   'protiti_duress_pin': StoreKeys.duressPin,
   'pin_failed_attempts': StoreKeys.failedAttempts,
   'protiti_aes_key': StoreKeys.evidenceKey,
-  'always_launch_as_calculator': StoreKeys.launchAsCalculator,
+  // The calculator is now the only mode, so its old switch is just deleted.
+  'always_launch_as_calculator': null,
+  'p1': null,
   'gd_draft_title': StoreKeys.draftTitle,
   'gd_draft_desc': StoreKeys.draftDescription,
   'gd_draft_station': StoreKeys.draftStation,

@@ -6,7 +6,6 @@ import '../../core/theme/app_theme.dart';
 import '../../core/widgets/explain_permission.dart';
 import '../../../data/services/auth_service.dart';
 import '../../../data/services/background_sos_service.dart';
-import '../../../data/services/disguise_settings_service.dart';
 import '../../../data/services/native_sms_service.dart';
 import '../../../data/services/silent_alert_service.dart';
 import '../auth/pin_setup_screen.dart';
@@ -14,7 +13,7 @@ import 'battery_guide_screen.dart';
 import 'contacts_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
-  /// The second-PIN view only gets the harmless calculator option.
+  /// The second-PIN view only gets the harmless calculator note.
   final bool isDecoy;
   final AuthService? authService;
 
@@ -26,7 +25,6 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   late final AuthService _auth = widget.authService ?? AuthService();
-  bool _alwaysLaunchAsCalculator = false;
   bool _biometric = false;
   // SOS (pro-sos): each trigger and the second-PIN alert, all off by default.
   final Map<SosTrigger, bool> _triggers = {for (final t in SosTrigger.values) t: false};
@@ -44,7 +42,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _load() async {
-    final calculator = await DisguiseSettingsService.getAlwaysLaunchAsCalculator();
     var biometric = false;
     final triggers = <SosTrigger, bool>{};
     var ready = true;
@@ -61,7 +58,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
     }
     if (mounted) {
       setState(() {
-        _alwaysLaunchAsCalculator = calculator;
         _biometric = biometric;
         _triggers.addAll(triggers);
         _triggersReady = ready;
@@ -69,11 +65,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _loading = false;
       });
     }
-  }
-
-  Future<void> _onToggle(bool value) async {
-    setState(() => _alwaysLaunchAsCalculator = value);
-    await DisguiseSettingsService.setAlwaysLaunchAsCalculator(value);
   }
 
   Future<void> _onBiometric(bool value) async {
@@ -211,12 +202,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
           : ListView(
               padding: const EdgeInsets.all(16),
               children: [
-                SwitchListTile(
-                  activeThumbColor: AppTheme.brandSecondary,
-                  title: const Text('Always open as calculator'),
-                  subtitle: const Text('Type your PIN, then "=", to get in.'),
-                  value: _alwaysLaunchAsCalculator,
-                  onChanged: _onToggle,
+                const ListTile(
+                  leading: Icon(Icons.calculate_outlined, color: AppTheme.brandSecondary),
+                  title: Text('Opens as a calculator'),
+                  subtitle: Text('It always works as a normal calculator. Type your PIN, then "=", to get in.'),
                 ),
                 if (!widget.isDecoy) ...[
                   const Divider(height: 32),
@@ -302,7 +291,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     title: const Text('Unlock with fingerprint or face'),
                     subtitle: const Text(
                       'Off by default. Anyone who can force your finger onto the phone could '
-                      'open your files. The phone\'s own PIN never works here.',
+                      'open your files. The phone\'s own PIN never works here. To use it, hold "=" '
+                      'on the calculator.',
                     ),
                     value: _biometric,
                     onChanged: _onBiometric,

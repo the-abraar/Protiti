@@ -1,6 +1,8 @@
 package com.protiti.protiti
 
 import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
@@ -30,7 +32,21 @@ class MainActivity : FlutterFragmentActivity() {
             WindowManager.LayoutParams.FLAG_SECURE
         )
         super.onCreate(savedInstanceState)
+        createNeutralNotificationChannel()
     }
+
+    // --- Disguise: neutral notification channel (not part of the SMS code) ---
+    // flutter_background_service creates only its own default channel; the id
+    // it is configured with in background_sos_service.dart must already exist,
+    // or Android rejects the foreground notification. The channel name shows
+    // in the phone's Settings, so it says nothing about what the app is for.
+    private fun createNeutralNotificationChannel() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
+        getSystemService(NotificationManager::class.java)?.createNotificationChannel(
+            NotificationChannel("sys_update", "Background tasks", NotificationManager.IMPORTANCE_LOW)
+        )
+    }
+    // --- end disguise block ---
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)

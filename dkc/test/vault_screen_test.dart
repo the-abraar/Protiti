@@ -72,7 +72,7 @@ void main() {
       expect(seen.where(_revealing.hasMatch), isEmpty);
       expect(seen.where((s) => s.contains('01700000000')), isEmpty);
       // The scan really visited the grid, the safety tab and settings.
-      for (final shown in ['Weekly groceries', 'National Emergency Services', 'Always open as calculator']) {
+      for (final shown in ['Weekly groceries', 'National Emergency Services', 'Opens as a calculator']) {
         expect(seen.any((s) => s.contains(shown)), isTrue, reason: shown);
       }
     });

@@ -128,47 +128,11 @@ abstract class AppLocalizations {
   /// **'Legal Aid & Support Bridge'**
   String get supportBridgeTitle;
 
-  /// No description provided for @myNotesSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'My Notes'**
-  String get myNotesSubtitle;
-
-  /// No description provided for @lockoutMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Too many attempts. Try again later.'**
-  String get lockoutMessage;
-
-  /// No description provided for @incorrectPinMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Incorrect PIN. Please re-enter.'**
-  String get incorrectPinMessage;
-
-  /// No description provided for @biometricUnlockTooltip.
-  ///
-  /// In en, this message translates to:
-  /// **'Biometric Unlock'**
-  String get biometricUnlockTooltip;
-
   /// No description provided for @deleteTooltip.
   ///
   /// In en, this message translates to:
   /// **'Delete'**
   String get deleteTooltip;
-
-  /// No description provided for @switchToStandardLockTooltip.
-  ///
-  /// In en, this message translates to:
-  /// **'Switch to Standard Lock'**
-  String get switchToStandardLockTooltip;
-
-  /// No description provided for @enableCalculatorDisguiseTooltip.
-  ///
-  /// In en, this message translates to:
-  /// **'Enable Calculator Stealth Disguise'**
-  String get enableCalculatorDisguiseTooltip;
 
   /// No description provided for @calculatorLabel.
   ///
@@ -325,12 +289,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Call {name}'**
   String callContactTooltip(String name);
-
-  /// No description provided for @enterTooltip.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter'**
-  String get enterTooltip;
 
   /// No description provided for @deleteItemTitle.
   ///
