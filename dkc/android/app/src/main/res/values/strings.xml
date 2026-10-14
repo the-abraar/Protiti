@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Launcher, Recents and App info all show this. It must stay neutral. -->
+    <string name="app_name">Calculator</string>
+</resources>
