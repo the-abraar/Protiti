@@ -98,10 +98,10 @@ abstract class AppLocalizations {
     Locale('en'),
   ];
 
-  /// The title of the application
+  /// App bar title in both the real and second-PIN views. Neutral: never the brand name (N3).
   ///
   /// In en, this message translates to:
-  /// **'Protiti (প্রতীতি)'**
+  /// **'Notes'**
   String get appTitle;
 
   /// No description provided for @panicSequenceActive.
