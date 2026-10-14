@@ -14,7 +14,7 @@ A prototype evidence vault for women facing online harassment in Bangladesh. It 
 ### Features
 
 - **Calculator disguise.** The app opens as a working calculator. Your PIN unlocks it.
-- **Encrypted vault.** Photos, screenshots and notes in an SQLCipher database on the phone. Nothing is uploaded.
+- **Encrypted vault.** Photos, screenshots, recordings and notes on the phone, the files AES-256-GCM encrypted and the records in an SQLCipher database. Each item keeps the SHA-256 of the original file (or note text) taken before anything else touches it, its source, the phone-clock time and an optional platform and link. Nothing is uploaded.
 - **PINs.** A real PIN (6 or more digits, set at first launch), a duress PIN that opens a separate decoy vault, and a wipe code that you choose.
 - **Biometrics.** Off by default. When turned on, fingerprint or face only (no device-PIN fallback).
 - **GD draft.** A guided form that makes a PDF draft for you to file in person. There is no e-GD API integration and no automatic law mapping.
@@ -30,7 +30,7 @@ Known gaps are in [`judge.md`](judge.md) and [`CrtiQue_Oct14.md`](CrtiQue_Oct14.
 - **Framework:** Flutter + Dart
 - **Database:** SQLite with SQLCipher encryption; real and decoy vaults use separate files and keys
 - **Auth:** salted PIN hashes in secure storage; optional biometric-only unlock
-- **Security:** AES-256 encryption, SHA-256 file hashes, calculator disguise. Not reviewed by a security expert.
+- **Security:** AES-256-GCM evidence files (authenticated, streamed in chunks), SHA-256 of each original, calculator disguise. Not reviewed by a security expert.
 
 ### Project structure
 

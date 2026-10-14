@@ -78,7 +78,7 @@
             <div class="bg-card p-8 rounded-xl border border-gray-800 hover:border-teal-custom transition">
                 <h4 class="text-xl font-bold text-gold mb-3">File hashes</h4>
                 <p class="text-[#A0A0A0] text-sm">
-                    The app records a SHA-256 hash for each stored file. Today it hashes the encrypted file, not the original, so the hash does not prove authenticity.
+                    The app records the SHA-256 of each original file (or note text) before it encrypts anything, and lists it in the GD draft. Anyone with the same file can recompute it. A match shows the file is unchanged; it does not show who made it, or when. Times come from the phone's clock.
                 </p>
             </div>
         </div>

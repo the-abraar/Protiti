@@ -5,7 +5,7 @@
 
 > **Note:** "Protiti" (প্রতীতি - Deep Conviction & Undisputed Certitude) is the official brand identity. Rooted in Bengali epistemology and cultural resonance, Protiti establishes indisputable digital evidence for women facing online harassment in Bangladesh. See [`team_handoffs/design_handoff.md`](team_handoffs/design_handoff.md) for the brand identity and verified uniqueness audit.
 
-A Digital Evidence Vault app designed for women facing online harassment in Bangladesh. Protiti provides a secure, encrypted framework to document screenshots, links, and timestamps of abuse in a format that is legally admissible and ready for police reporting.
+A Digital Evidence Vault app designed for women facing online harassment in Bangladesh. Protiti stores screenshots, photos, recordings and notes encrypted on the phone and lists them, with the SHA-256 of each original, in a GD draft PDF for police reporting. No lawyer has reviewed whether the output is admissible.
 
 ## 🎯 DKC Fellowship — Theme: Gender-based Online Violence
 
@@ -22,7 +22,7 @@ A Digital Evidence Vault app designed for women facing online harassment in Bang
 - **Architecture:** MVVM (Model-View-ViewModel)
 - **Database:** SQLite with SQLCipher encryption
 - **Auth:** 6-10 digit PIN with escalating lockout; fingerprint/face opt-in (biometric only, never the phone PIN)
-- **Security:** AES-256 encryption, SHA-256 evidence hashing, app disguise mode
+- **Security:** AES-256-GCM evidence files in 64 KiB authenticated chunks (older AES-CTR files are rewritten on first open); SHA-256 of each original file or note text, taken before any processing; app disguise mode
 
 ### Project Structure
 
@@ -50,7 +50,8 @@ dkc/
 
 - Release keystore (the release build is signed with the debug key).
 - Test on a real Android phone with a SIM: SOS with credit, without credit and in airplane mode; Recents thumbnail; wipe.
-- Verify any hotline other than 999 and 109 (PCSW, NGOs, campus numbers) with the service itself before listing it.
+- Verify any hotline other than 999 and 109 (PCSW, NGOs, campus numbers) with the service itself before listing it. The GD PDF uses `cybersupport.women@police.gov.bd`, the address on the police portal.
+- Decide whether to add an "export original file" option. Today the original stays only in the encrypted vault (and, for gallery imports, in her gallery), so nobody else can recompute a SHA-256 the PDF lists.
 - Add a siren sound at `assets/audio/siren.mp3`; the siren button plays nothing until then.
 - iOS: run `pod install` to drop the removed plugins from `ios/Podfile.lock`.
 
