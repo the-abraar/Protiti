@@ -112,6 +112,12 @@ void main() {
     expect(find.byType(SnackBar), findsNothing);
   });
 
+  testWidgets('a short number and = is plain arithmetic, never a miss (N22)', (tester) async {
+    await openCalculator(tester);
+    await calc(tester, '2500=');
+    expect(storage.store.containsKey(StoreKeys.failedAttempts), isFalse);
+  });
+
   testWidgets('the calculator respects the lockout, then the real PIN works', (tester) async {
     await openCalculator(tester);
     for (var i = 0; i < 5; i++) {

@@ -15,7 +15,7 @@ A prototype evidence vault for women facing online harassment in Bangladesh. It 
 
 - **Calculator disguise.** The app opens as a working calculator. Your PIN unlocks it.
 - **Encrypted vault.** Photos, screenshots, recordings and notes on the phone, the files AES-256-GCM encrypted and the records in an SQLCipher database. Each item keeps the SHA-256 of the original file (or note text) taken before anything else touches it, its source, the phone-clock time and an optional platform and link. Nothing is uploaded.
-- **PINs.** A real PIN (6 or more digits, set at first launch), a duress PIN that opens a separate decoy vault, and a wipe code that you choose.
+- **PINs.** A real PIN (6 or more digits, set at first launch), a duress PIN that opens a separate decoy vault, and an optional wipe code that you choose. Codes must differ in at least 3 digits, so one slip cannot turn one into another.
 - **Biometrics.** Off by default. When turned on, fingerprint or face only (no device-PIN fallback).
 - **GD draft.** A guided form that makes a PDF draft for you to file in person. There is no e-GD API integration and no automatic law mapping.
 - **Panic screen.** One SMS SOS with your location to your saved contacts (contact setup is a known gap), plus one-tap dialing for 999, the 109 helpline and the PCSW hotline.

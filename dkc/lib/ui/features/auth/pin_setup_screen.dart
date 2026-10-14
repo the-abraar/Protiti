@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../../data/services/auth_service.dart';
 
-/// First run, or Settings > Change codes: a real PIN, a second PIN and a wipe
-/// code, each typed twice so one typo cannot lock her out. Changing them
-/// needs the current real PIN first.
+/// First run, or Settings > Change codes: a real PIN, a second PIN and an
+/// optional wipe code, each typed twice so one typo cannot lock her out.
+/// Changing them needs the current real PIN first.
 class PinSetupScreen extends StatefulWidget {
   final AuthService authService;
   final VoidCallback onDone;
@@ -95,10 +95,12 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
           padding: const EdgeInsets.all(24),
           children: [
             const Text(
-              'Choose three different codes of 6 to 10 digits.\n'
+              'Choose codes of 6 to 10 digits. Make them differ in at least 3 digits and not '
+              'start with the same 4, so one slip cannot turn one into another.\n'
               '• Real PIN: opens your notes.\n'
               '• Second PIN: opens an ordinary-looking notes space instead. Use it if someone makes you unlock.\n'
-              '• Wipe code: deletes everything on this phone at once.\n\n'
+              '• Wipe code (optional): deletes everything on this phone at once, with no undo. '
+              'Leave both wipe fields empty if you do not want one.\n\n'
               'This app always opens as a calculator that really works. To get in, type a code '
               'and press "=". A wrong code shows nothing; it stays a calculator.\n\n'
               'After the wipe code it stays a plain calculator for good. To start again, '
@@ -111,7 +113,7 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
             _field(_realAgain, 'Real PIN again'),
             _field(_duress, 'Second PIN'),
             _field(_duressAgain, 'Second PIN again'),
-            _field(_wipe, 'Wipe code'),
+            _field(_wipe, 'Wipe code (optional)'),
             _field(_wipeAgain, 'Wipe code again'),
             if (_error != null)
               Text(_error!, style: TextStyle(color: Theme.of(context).colorScheme.error)),

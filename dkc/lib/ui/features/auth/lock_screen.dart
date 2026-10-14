@@ -174,8 +174,8 @@ class _LockScreenState extends State<LockScreen> {
           }
           _typedDigits = '';
         case '=':
-          // A bare 4-10 digit entry may be a code: checked like any PIN entry.
-          if (_operator == null && RegExp(r'^\d{4,10}$').hasMatch(_typedDigits)) {
+          // Only a bare 6-10 digit entry may be a code, so "2500 =" is never a miss (N22).
+          if (_operator == null && RegExp(r'^\d{6,10}$').hasMatch(_typedDigits)) {
             _verifyPin(_typedDigits);
           }
           _typedDigits = '';

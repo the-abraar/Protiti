@@ -75,6 +75,63 @@ void main() {
     expect(storage.store.containsKey(StoreKeys.failedAttempts), isFalse);
   });
 
+  test('the second PIN never clears the miss counter, so guesses still lock out (N1)', () async {
+    await setUpCodes();
+    var lockouts = 0;
+    for (var i = 0; i < 40; i++) {
+      if (await auth.verifyPin('${111111 + i}') == AuthStatus.lockedOut) lockouts++;
+      if (i % 4 == 3) expect(await auth.verifyPin('135792'), AuthStatus.authenticatedDuress);
+    }
+    expect(lockouts, greaterThan(30));
+    expect(storage.store[StoreKeys.failedAttempts], '5', reason: 'misses during a lockout are not tried');
+    expect(await auth.verifyPin('246813'), AuthStatus.lockedOut);
+  });
+
+  test('during a lockout the second PIN and the wipe code still work; the real PIN waits (N5)', () async {
+    await setUpCodes();
+    for (var i = 0; i < 5; i++) {
+      await auth.verifyPin('111111');
+    }
+    expect(await auth.verifyPin('246813'), AuthStatus.lockedOut);
+    expect(await auth.verifyPin('135792'), AuthStatus.authenticatedDuress);
+    expect(await auth.verifyPin('246813'), AuthStatus.lockedOut, reason: 'the second PIN did not lift it');
+    expect(await auth.verifyPin('975310'), AuthStatus.wiped);
+  });
+
+  test('parallel guesses are each counted (N7)', () async {
+    await setUpCodes();
+    final results = await Future.wait([for (var i = 0; i < 12; i++) auth.verifyPin('111111')]);
+    expect(storage.store[StoreKeys.failedAttempts], '5');
+    expect(results.where((r) => r == AuthStatus.lockedOut), hasLength(8));
+  });
+
+  test('no slip can turn one code into another (N6)', () {
+    const real = '123456';
+    for (final close in [
+      '123457', // one key wrong
+      '1234567', // one key extra
+      '124356', // two neighbours swapped
+      '1234990', // same first 4 digits
+      '023456', // one key wrong at the start
+      '1123456', // first key doubled
+    ]) {
+      expect(AuthService.validatePins(real, '864209', close), isNotNull, reason: 'wipe $close');
+      expect(AuthService.validatePins(real, close, '864209'), isNotNull, reason: 'second $close');
+    }
+    expect(AuthService.validatePins(real, real, '864209'), isNotNull, reason: 'second equals real');
+    expect(AuthService.validatePins(real, '864209', '864219'), isNotNull, reason: 'wipe one off the second');
+    expect(AuthService.validatePins(real, '864209', '975310'), isNull);
+  });
+
+  test('the wipe code is optional; without one, nothing wipes', () async {
+    expect(AuthService.validatePins('246813', '135792', ''), isNull);
+    await auth.setPins(realPin: '246813', duressPin: '135792', wipeCode: '975310');
+    await auth.setPins(realPin: '246813', duressPin: '135792', wipeCode: '');
+    expect(storage.store.containsKey(StoreKeys.wipeCode), isFalse);
+    expect(await auth.verifyPin('975310'), AuthStatus.failed);
+    expect(await auth.verifyPin('246813'), AuthStatus.authenticatedReal);
+  });
+
   test('each further miss waits longer', () {
     expect(AuthService.lockoutDelay(4), Duration.zero);
     expect(AuthService.lockoutDelay(5), const Duration(seconds: 30));
@@ -99,7 +156,7 @@ void main() {
 
   test('Bangla digits ০-৯ are the same code as 0-9, everywhere a code is typed', () async {
     expect(AuthService.asciiDigits('০১২৩৪৫৬৭৮৯'), '0123456789');
-    expect(AuthService.validatePins('২৪৬৮১৩', '246813', '975310'), 'All three codes must be different.');
+    expect(AuthService.validatePins('২৪৬৮১৩', '246813', '975310'), 'All the codes must be different.');
     await auth.setPins(realPin: '২৪৬৮১৩', duressPin: '135792', wipeCode: '৯৭৫৩১০');
     expect(await auth.verifyPin('246813'), AuthStatus.authenticatedReal);
     expect(await auth.verifyPin('১৩৫৭৯২'), AuthStatus.authenticatedDuress);
