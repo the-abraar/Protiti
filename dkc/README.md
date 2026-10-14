@@ -53,7 +53,7 @@ dkc/
 - On real Android phones (one each of Xiaomi, Oppo, Vivo, Realme if possible), with the app swiped away: power-button and shake SOS, the 5 s Cancel, the buzz patterns, the result and delivery notice, the second-PIN alert; shake thresholds on a rickshaw/CNG ride and in a bag; a call with the phone at the ear must not trigger. Then check each battery-guide deep link opens.
 - Verify any hotline other than 999 and 109 (PCSW, NGOs, campus numbers) with the service itself before listing it. The GD PDF uses `cybersupport.women@police.gov.bd`, the address on the police portal.
 - Decide whether to add an "export original file" option. Today the original stays only in the encrypted vault (and, for gallery imports, in her gallery), so nobody else can recompute a SHA-256 the PDF lists.
-- Add a siren sound at `assets/audio/siren.mp3`; the siren button plays nothing until then.
+- Check the siren on a real phone at full volume. It plays a generated tone (`assets/audio/siren.wav`, a 700-1500 Hz wail); swap in a louder licensed recording if it is not loud enough.
 - Pick a neutral `applicationId` / bundle ID before the first store upload; `com.protiti.protiti` shows in Android App info and cannot change once published.
 - On a real phone: check the launcher icon and label, Recents, App info and the permission prompts in English and Bangla.
 

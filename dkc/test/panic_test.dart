@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:protiti/data/services/acoustic_deterrent_service.dart';
 import 'package:protiti/data/services/secure_store.dart';
 import 'package:protiti/domain/use_cases/trigger_panic.dart';
 import 'package:protiti/ui/core/theme/app_theme.dart';
@@ -138,6 +140,15 @@ void main() {
       expect(d.statuses, {ayesha.phone: SmsStatus.failed});
       expect(d.allSent, isFalse);
     });
+  });
+
+  test('the siren button has a sound to play (N8)', () {
+    final siren = File('assets/${AcousticDeterrentService.sirenAsset}');
+    expect(siren.existsSync(), isTrue);
+    final head = siren.openSync().readSync(12);
+    expect(String.fromCharCodes(head.sublist(0, 4)), 'RIFF');
+    expect(String.fromCharCodes(head.sublist(8, 12)), 'WAVE');
+    expect(siren.lengthSync(), greaterThan(44 + 22050), reason: 'more than a header');
   });
 
   group('PanicScreen', () {
