@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
-import 'dart:io';
 import 'package:printing/printing.dart';
 import '../../../domain/models/complaint.dart';
 import '../../../domain/use_cases/generate_complaint.dart';
@@ -118,12 +117,11 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
       // Export can still proceed even if the local history save fails.
     }
 
-    // Use printing package to present the PDF for native export/sharing
+    // The PDF never touches disk here. The share sheet writes its own copy,
+    // which TempFiles.sweep removes when she comes back to the app.
     try {
-      final file = File(result.pdfPath);
-      final bytes = await file.readAsBytes();
       await Printing.sharePdf(
-        bytes: bytes,
+        bytes: result.pdfBytes,
         filename: '${result.dossierId}.pdf',
       );
     } catch (e) {
@@ -170,7 +168,7 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Text(
-              'Draft formal General Diary (GD) complaints formatted under Bangladesh Police & Cyber Tribunal standards.',
+              'Draft a General Diary (GD) complaint to print or share. Not reviewed by a lawyer.',
               style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary),
             ),
           ),
@@ -231,7 +229,7 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                       controller: _stationController,
                       autocorrect: false,
                       enableSuggestions: false,
-                      keyboardType: TextInputType.visiblePassword,
+                      enableIMEPersonalizedLearning: false,
                       decoration: const InputDecoration(
                         labelText:
                             'Jurisdiction Thana / Police Station (e.g. Dhanmondi, Gulshan)',
@@ -243,7 +241,7 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                       controller: _titleController,
                       autocorrect: false,
                       enableSuggestions: false,
-                      keyboardType: TextInputType.visiblePassword,
+                      enableIMEPersonalizedLearning: false,
                       decoration: const InputDecoration(
                         labelText:
                             'Allegation Title (e.g., Cyber Extortion / Stalking)',
@@ -255,7 +253,8 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                       controller: _descController,
                       autocorrect: false,
                       enableSuggestions: false,
-                      keyboardType: TextInputType.visiblePassword,
+                      enableIMEPersonalizedLearning: false,
+                      keyboardType: TextInputType.multiline,
                       decoration: const InputDecoration(
                         labelText: 'Chronological Description of Incident',
                         alignLabelWithHint: true,
@@ -270,7 +269,7 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                     : StepState.indexed,
               ),
               Step(
-                title: const Text('Attach Verified Evidence'),
+                title: const Text('Choose Evidence'),
                 subtitle: const Text('Choose which items go into the PDF'),
                 content: Consumer<VaultProvider>(
                   builder: (context, vaultProvider, _) {
@@ -362,7 +361,8 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                       const Text(
                         'To: The Officer-in-Charge (OC)\n'
                         'Subject: Application for lodging General Diary regarding cyber harassment and extortion.\n\n'
-                        'I, the undersigned, hereby report that I have been subjected to continuous cyber stalking and extortion. Attached hereto are cryptographic forensic exhibits bearing integrity verification hashes.',
+                        'I, the undersigned, hereby report the following incident. The items I chose are listed with the '
+                        'SHA-256 fingerprint of each original file, which anyone with the same file can recompute.',
                         style: TextStyle(fontSize: 12, height: 1.4),
                       ),
                       const SizedBox(height: 16),
@@ -386,10 +386,9 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                             SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                'This generates an offline PDF dossier with a cryptographic QR verification code -- it is NOT '
-                                'submitted live to gd.police.gov.bd or any government system (no public API exists for that). '
-                                'Present the exported PDF to the Duty Officer at your Thana, or forward it to the PCSW '
-                                'helpline (01320000888) for priority escalation.',
+                                'This makes an offline PDF draft. It is NOT sent to gd.police.gov.bd or any government '
+                                'system (no public API exists for that). Present the PDF to the Duty Officer at your '
+                                'Thana, or contact the PCSW helpline ($pcswPhone).',
                                 style: TextStyle(fontSize: 11, height: 1.3),
                               ),
                             ),
@@ -439,7 +438,7 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
             controller: _titleController,
             autocorrect: false,
             enableSuggestions: false,
-            keyboardType: TextInputType.visiblePassword,
+            enableIMEPersonalizedLearning: false,
             decoration: const InputDecoration(
               labelText: 'Topic / Note Title',
               prefixIcon: Icon(Icons.title),
@@ -451,7 +450,8 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
               controller: _descController,
               autocorrect: false,
               enableSuggestions: false,
-              keyboardType: TextInputType.visiblePassword,
+              enableIMEPersonalizedLearning: false,
+              keyboardType: TextInputType.multiline,
               decoration: const InputDecoration(
                 labelText: 'Note Content...',
                 alignLabelWithHint: true,
