@@ -22,7 +22,7 @@ A Digital Evidence Vault app designed for women facing online harassment in Bang
 - **Architecture:** MVVM (Model-View-ViewModel)
 - **Database:** SQLite with SQLCipher encryption
 - **Auth:** 6-10 digit PIN with escalating lockout; fingerprint/face opt-in (biometric only, never the phone PIN)
-- **Security:** AES-256 encryption, SHA-256 evidence hashing, app disguise mode
+- **Security:** AES-256 encryption, SHA-256 evidence hashing; the app only ever opens as a working calculator
 
 ### Project Structure
 
@@ -39,7 +39,7 @@ dkc/
     └── ui/
         ├── core/theme/     # Dark mode theme (Navy #0A1128, Blue #1282A2, Amber #FFC857)
         └── features/
-            ├── auth/       # Lock screen + calculator disguise
+            ├── auth/       # Calculator (the only lock screen) + code setup
             ├── vault/      # Evidence vault with 4-tab navigation
             ├── complaint/  # GD-Automator wizard
             ├── panic/      # Panic Frame emergency button
@@ -52,7 +52,16 @@ dkc/
 - Test on a real Android phone with a SIM: SOS with credit, without credit and in airplane mode; Recents thumbnail; wipe.
 - Verify any hotline other than 999 and 109 (PCSW, NGOs, campus numbers) with the service itself before listing it.
 - Add a siren sound at `assets/audio/siren.mp3`; the siren button plays nothing until then.
-- iOS: run `pod install` to drop the removed plugins from `ios/Podfile.lock`.
+- Pick a neutral `applicationId` / bundle ID before the first store upload; `com.protiti.protiti` shows in Android App info and cannot change once published.
+- On a real phone: check the launcher icon and label, Recents, App info and the permission prompts in English and Bangla.
+
+### The calculator disguise
+
+- The app always opens as a calculator that really works. She gets in by typing a code and pressing `=`; holding `=` asks for a fingerprint only if she turned that on. A wrong code shows nothing.
+- Setup shows once, on the first launch after she installs it. After the wipe code the app stays a plain calculator for good on that install; uninstalling and reinstalling starts fresh.
+- Launcher, Recents, App info and the iOS home screen say "Calculator" (Bangla "ক্যালকুলেটর" on Android) with a plain calculator icon. Permission prompts are neutral but honest ("Used to attach photos to your notes").
+- No icon or name switching at runtime. On iOS, `setAlternateIconName` always shows a system alert, which would draw attention. On Android, switching launcher `activity-alias` entries with `PackageManager.setComponentEnabledSetting` can remove her home-screen shortcuts. One fixed calculator face avoids both.
+- What to tell Apple and Google reviewers, without putting any hidden-feature text in the app: [`STORE_REVIEW.md`](STORE_REVIEW.md).
 
 ### Getting Started
 

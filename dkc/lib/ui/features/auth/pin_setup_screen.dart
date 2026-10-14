@@ -78,7 +78,13 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
         obscureText: true,
         keyboardType: TextInputType.number,
         maxLength: 10,
-        inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        // Bangla ০-৯ become 0-9 first; digitsOnly would otherwise drop them.
+        inputFormatters: [
+          TextInputFormatter.withFunction(
+            (_, value) => value.copyWith(text: AuthService.asciiDigits(value.text)),
+          ),
+          FilteringTextInputFormatter.digitsOnly,
+        ],
         decoration: InputDecoration(labelText: label),
       );
 
@@ -93,6 +99,10 @@ class _PinSetupScreenState extends State<PinSetupScreen> {
               '• Real PIN: opens your notes.\n'
               '• Second PIN: opens an ordinary-looking notes space instead. Use it if someone makes you unlock.\n'
               '• Wipe code: deletes everything on this phone at once.\n\n'
+              'This app always opens as a calculator that really works. To get in, type a code '
+              'and press "=". A wrong code shows nothing; it stays a calculator.\n\n'
+              'After the wipe code it stays a plain calculator for good. To start again, '
+              'uninstall it and install it again.\n\n'
               'A forgotten PIN cannot be recovered. Keep the codes somewhere only you can reach.',
             ),
             const SizedBox(height: 16),

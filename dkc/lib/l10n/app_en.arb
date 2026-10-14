@@ -8,13 +8,7 @@
   "panicOfflineReady": "OFFLINE SMS DISPATCH READY",
   "panicHoldInstruction": "Press & Hold for 3 seconds to broadcast SOS",
   "supportBridgeTitle": "Legal Aid & Support Bridge",
-  "myNotesSubtitle": "My Notes",
-  "lockoutMessage": "Too many attempts. Try again later.",
-  "incorrectPinMessage": "Incorrect PIN. Please re-enter.",
-  "biometricUnlockTooltip": "Biometric Unlock",
   "deleteTooltip": "Delete",
-  "switchToStandardLockTooltip": "Switch to Standard Lock",
-  "enableCalculatorDisguiseTooltip": "Enable Calculator Stealth Disguise",
   "calculatorLabel": "Calculator",
   "navFiles": "Files",
   "navNotes": "Notes",
@@ -48,7 +42,6 @@
       }
     }
   },
-  "enterTooltip": "Enter",
   "deleteItemTitle": "Delete this item?",
   "deleteItemBody": "It is removed from this phone and cannot be brought back.",
   "storageErrorMessage": "Your files could not be opened. Restart the phone and try again."

@@ -63,7 +63,9 @@ class _ProtitiAppState extends State<ProtitiApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
+      // Android shows the title and colour in Recents: a calculator, like the launcher.
+      onGenerateTitle: (context) => AppLocalizations.of(context)!.calculatorLabel,
+      color: Colors.black,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
