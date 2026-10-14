@@ -12,13 +12,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'Protiti (প্রতীতি)';
 
   @override
-  String get vaultAuthTitle => 'Forensic Vault Authentication';
-
-  @override
-  String get vaultAuthSubtitle =>
-      'Enter security PIN or use biometrics to access records';
-
-  @override
   String get panicSequenceActive => 'EMERGENCY SEQUENCE ACTIVE';
 
   @override
@@ -32,21 +25,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get supportBridgeTitle => 'Legal Aid & Support Bridge';
 
   @override
-  String get decoySupportTitle => 'Student Services & Campus Directory';
-
-  @override
-  String get decoyVaultTitle => 'Personal Notes & Files';
-
-  @override
   String get myNotesSubtitle => 'My Notes';
 
   @override
-  String get lockoutMessage =>
-      'Maximum attempts exceeded. Vault locked for 15 minutes.';
-
-  @override
-  String get wipeMessage =>
-      'Critical Error: Application Data Corrupted. Resetting...';
+  String get lockoutMessage => 'Too many attempts. Try again later.';
 
   @override
   String get incorrectPinMessage => 'Incorrect PIN. Please re-enter.';
@@ -68,40 +50,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get calculatorLabel => 'Calculator';
 
   @override
-  String get navVault => 'Vault';
-
-  @override
   String get navFiles => 'Files';
-
-  @override
-  String get navReport => 'Report';
 
   @override
   String get navNotes => 'Notes';
 
   @override
-  String get navPanicSos => 'Panic SOS';
-
-  @override
   String get navSafety => 'Safety';
-
-  @override
-  String get navSupport => 'Support';
 
   @override
   String get navHelp => 'Help';
 
   @override
-  String get secureEvidenceFab => 'Secure Evidence';
-
-  @override
   String get addFileFab => 'Add File';
 
   @override
-  String get safetySettingsTooltip => 'Safety Settings';
+  String get safetySettingsTooltip => 'Settings';
 
   @override
-  String get lockVaultTooltip => 'Lock Vault Immediately';
+  String get lockVaultTooltip => 'Lock';
 
   @override
   String get addTextNote => 'Add Text Note';
@@ -144,23 +111,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get save => 'Save';
 
   @override
-  String get evidenceDetailsTitle => 'Evidence Details';
+  String get evidenceDetailsTitle => 'Details';
 
   @override
   String get close => 'Close';
 
   @override
-  String get forensicVaultEmpty => 'Forensic Vault is Empty';
-
-  @override
   String get noPersonalFilesYet => 'No personal files saved yet';
-
-  @override
-  String get evidenceStoredSecurely =>
-      'Your evidence is stored securely and privately.';
-
-  @override
-  String get showingDecoyFiles => 'Showing 3 innocent decoy files.';
 
   @override
   String get disarmSosTooltip => 'Disarm SOS';
@@ -169,4 +126,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String callContactTooltip(String name) {
     return 'Call $name';
   }
+
+  @override
+  String get enterTooltip => 'Enter';
+
+  @override
+  String get deleteItemTitle => 'Delete this item?';
+
+  @override
+  String get deleteItemBody =>
+      'It is removed from this phone and cannot be brought back.';
+
+  @override
+  String get storageErrorMessage =>
+      'Your files could not be opened. Restart the phone and try again.';
 }

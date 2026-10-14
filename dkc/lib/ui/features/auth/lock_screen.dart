@@ -14,7 +14,10 @@ import '../../../data/services/background_sos_service.dart';
 import 'pin_setup_screen.dart';
 
 class LockScreen extends StatefulWidget {
-  const LockScreen({super.key});
+  /// True after a wipe: open on the plain calculator with no flash of anything else.
+  final bool startInCalculator;
+
+  const LockScreen({super.key, this.startInCalculator = false});
 
   @override
   State<LockScreen> createState() => _LockScreenState();
@@ -22,28 +25,31 @@ class LockScreen extends StatefulWidget {
 
 class _LockScreenState extends State<LockScreen> {
   final AuthService _authService = AuthService();
-  bool _isCalculatorMode = false;
+  late bool _isCalculatorMode = widget.startInCalculator;
   String _enteredPin = '';
   String _errorMessage = '';
-  bool _isBiometricLocked = false;
+  bool _biometricEnabled = false;
   bool _needsSetup = false;
+
+  static const _maxPinLength = 10;
 
   // Calculator disguise state
   String _calcDisplay = '0';
   double? _firstOperand;
   String? _operator;
   bool _shouldResetCalcDisplay = false;
+  // Digits exactly as typed since the last operator, so codes starting with 0 work.
+  String _typedDigits = '';
 
   @override
   void initState() {
     super.initState();
     _checkSetup();
     _checkBiometricStatus();
-    _applyLaunchDisguisePreference();
-    // Fire-and-forget: requests location/mic permissions and starts the
-    // hardware-button/shake/geofence SOS service once they're granted.
-    // Safe to call on every lock screen load — it no-ops if already running.
-    BackgroundSosService.ensureStarted();
+    if (!widget.startInCalculator) _applyLaunchDisguisePreference();
+    // Starts the power-button/shake SOS service only if she turned it on in
+    // Settings; never asks for a permission here (B17).
+    BackgroundSosService.startIfEnabled();
   }
 
   /// If the survivor has enabled "Always launch as calculator" in Settings,
@@ -59,29 +65,33 @@ class _LockScreenState extends State<LockScreen> {
   }
 
   Future<void> _checkSetup() async {
-    final done = await _authService.isSetupComplete();
-    if (mounted) setState(() => _needsSetup = !done);
-  }
-
-  Future<void> _checkBiometricStatus() async {
-    final locked = await _authService.isBiometricHardLocked();
-    if (mounted) {
-      setState(() => _isBiometricLocked = locked);
+    try {
+      final done = await _authService.isSetupComplete();
+      if (mounted) setState(() => _needsSetup = !done);
+    } catch (_) {
+      // Fail closed: storage is unreadable, so no code can unlock anything.
     }
   }
 
+  Future<void> _checkBiometricStatus() async {
+    try {
+      final enabled = await _authService.isBiometricEnabled();
+      if (mounted) setState(() => _biometricEnabled = enabled);
+    } catch (_) {}
+  }
+
   void _onNumberTap(String number) {
-    if (_enteredPin.length < 4) {
+    if (_enteredPin.length < _maxPinLength) {
       // HapticFeedback removed for tactical privacy
       setState(() {
         _errorMessage = '';
         _enteredPin += number;
       });
-
-      if (_enteredPin.length == 4) {
-        _verifyPin(_enteredPin);
-      }
     }
+  }
+
+  void _onSubmit() {
+    if (_enteredPin.length >= 4) _verifyPin(_enteredPin);
   }
 
   void _onBackspace() {
@@ -94,46 +104,50 @@ class _LockScreenState extends State<LockScreen> {
     }
   }
 
+  /// Used by both the keypad and the calculator. In the calculator a miss or
+  /// a lockout shows nothing at all: it just stays a calculator.
   Future<void> _verifyPin(String pin) async {
-    final status = await _authService.verifyPin(pin);
+    final silent = _isCalculatorMode;
+    AuthStatus status;
+    try {
+      status = await _authService.verifyPin(pin);
+    } catch (_) {
+      status = AuthStatus.failed;
+    }
     if (!mounted) return;
+    final l10n = AppLocalizations.of(context)!;
 
-    if (status == AuthStatus.lockedOut) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-           SnackBar(
-            content: Text(AppLocalizations.of(context)!.lockoutMessage),
-            backgroundColor: Colors.red,
-          )
-        );
+    switch (status) {
+      case AuthStatus.authenticatedReal:
+        _navigateToVault(isDecoy: false);
+      case AuthStatus.authenticatedDuress:
+        // Duress PIN entered: Quietly load harmless decoy vault
+        _navigateToVault(isDecoy: true);
+      case AuthStatus.wiped:
+        await _wipe();
+      case AuthStatus.lockedOut:
         setState(() {
           _enteredPin = '';
-          _errorMessage = '';
+          _errorMessage = silent ? '' : l10n.lockoutMessage;
         });
-      }
-    } else if (status == AuthStatus.wiped) {
-      await WipeService.executeNuclearWipe();
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(AppLocalizations.of(context)!.wipeMessage),
-            backgroundColor: Colors.red,
-          )
-        );
-        Navigator.of(context).pushNamedAndRemoveUntil('/', (route) => false);
-      }
-    } else if (status == AuthStatus.authenticatedReal) {
-      _navigateToVault(isDecoy: false);
-    } else if (status == AuthStatus.authenticatedDuress) {
-      // Duress PIN entered: Quietly load harmless decoy vault
-      _navigateToVault(isDecoy: true);
-    } else {
-      HapticFeedback.heavyImpact();
-      setState(() {
-        _enteredPin = '';
-        _errorMessage = AppLocalizations.of(context)!.incorrectPinMessage;
-      });
+      case AuthStatus.failed:
+        if (!silent) HapticFeedback.heavyImpact();
+        setState(() {
+          _enteredPin = '';
+          _errorMessage = silent ? '' : l10n.incorrectPinMessage;
+        });
     }
+  }
+
+  Future<void> _wipe() async {
+    try {
+      await WipeService.executeNuclearWipe();
+    } catch (_) {}
+    if (!mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const LockScreen(startInCalculator: true)),
+      (_) => false,
+    );
   }
 
   Future<void> _authenticateBiometric() async {
@@ -158,12 +172,8 @@ class _LockScreenState extends State<LockScreen> {
     );
   }
 
-  Future<void> _tryCalcUnlock(String code) async {
-    final status = await _authService.matchPin(code);
-    if (!mounted) return;
-    if (status == AuthStatus.authenticatedReal) _navigateToVault(isDecoy: false);
-    if (status == AuthStatus.authenticatedDuress) _navigateToVault(isDecoy: true);
-  }
+  static String _formatNumber(double value) =>
+      value % 1 == 0 ? value.toInt().toString() : value.toStringAsFixed(2);
 
   // --- Calculator Disguise Logic ---
   void _onCalcButtonPress(String label) {
@@ -174,9 +184,22 @@ class _LockScreenState extends State<LockScreen> {
         _firstOperand = null;
         _operator = null;
         _shouldResetCalcDisplay = false;
+        _typedDigits = '';
+      } else if (label == '%') {
+        _calcDisplay = _formatNumber((double.tryParse(_calcDisplay) ?? 0) / 100);
+        _shouldResetCalcDisplay = true;
+        _typedDigits = '';
+      } else if (label == '±') {
+        if (_calcDisplay != '0') {
+          _calcDisplay = _calcDisplay.startsWith('-') ? _calcDisplay.substring(1) : '-$_calcDisplay';
+        }
+        _typedDigits = '';
       } else if (label == '=') {
-        // Check stealth unlock passcode
-        _tryCalcUnlock(_calcDisplay);
+        // A bare 4-10 digit entry may be a code: checked like any PIN entry.
+        if (_operator == null && RegExp(r'^\d{4,10}$').hasMatch(_typedDigits)) {
+          _verifyPin(_typedDigits);
+        }
+        _typedDigits = '';
 
         // Standard arithmetic evaluation
         if (_firstOperand != null && _operator != null) {
@@ -198,9 +221,7 @@ class _LockScreenState extends State<LockScreen> {
                   : 0.0;
               break;
           }
-          _calcDisplay = result % 1 == 0
-              ? result.toInt().toString()
-              : result.toStringAsFixed(2);
+          _calcDisplay = _formatNumber(result);
           _firstOperand = null;
           _operator = null;
           _shouldResetCalcDisplay = true;
@@ -209,8 +230,10 @@ class _LockScreenState extends State<LockScreen> {
         _firstOperand = double.tryParse(_calcDisplay);
         _operator = label;
         _shouldResetCalcDisplay = true;
+        _typedDigits = '';
       } else {
         // Digit or dot
+        if (_typedDigits.length < _maxPinLength) _typedDigits += label;
         if (_calcDisplay == '0' || _shouldResetCalcDisplay) {
           _calcDisplay = label;
           _shouldResetCalcDisplay = false;
@@ -225,7 +248,8 @@ class _LockScreenState extends State<LockScreen> {
 
   @override
   Widget build(BuildContext context) {
-    if (_needsSetup) {
+    // After a wipe the calculator stays a calculator; setup is one toggle away.
+    if (_needsSetup && !_isCalculatorMode) {
       return PinSetupScreen(
         authService: _authService,
         onDone: () => setState(() => _needsSetup = false),
@@ -309,13 +333,13 @@ class _LockScreenState extends State<LockScreen> {
           ),
           const SizedBox(height: 32),
 
-          // PIN Indicators (4 dots)
+          // PIN indicators: one per digit typed, at least six.
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(4, (index) {
+            children: List.generate(_enteredPin.length < 6 ? 6 : _enteredPin.length, (index) {
               final isFilled = index < _enteredPin.length;
               return Container(
-                margin: const EdgeInsets.symmetric(horizontal: 12),
+                margin: const EdgeInsets.symmetric(horizontal: 6),
                 width: 16,
                 height: 16,
                 decoration: BoxDecoration(
@@ -358,27 +382,30 @@ class _LockScreenState extends State<LockScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    // Biometric Button
-                    if (!_isBiometricLocked)
-                      _buildActionButton(
-                        icon: Icons.fingerprint_rounded,
-                        onTap: _authenticateBiometric,
-                        tooltip: AppLocalizations.of(context)!.biometricUnlockTooltip,
-                      )
-                    else
-                      const SizedBox(width: 76, height: 76),
-                    _buildNumberButton('0'),
-                    // Backspace Button
                     _buildActionButton(
                       icon: Icons.backspace_rounded,
                       onTap: _onBackspace,
                       tooltip: AppLocalizations.of(context)!.deleteTooltip,
+                    ),
+                    _buildNumberButton('0'),
+                    _buildActionButton(
+                      icon: Icons.check_rounded,
+                      onTap: _onSubmit,
+                      tooltip: AppLocalizations.of(context)!.enterTooltip,
                     ),
                   ],
                 ),
               ],
             ),
           ),
+          if (_biometricEnabled) ...[
+            const SizedBox(height: 12),
+            _buildActionButton(
+              icon: Icons.fingerprint_rounded,
+              onTap: _authenticateBiometric,
+              tooltip: AppLocalizations.of(context)!.biometricUnlockTooltip,
+            ),
+          ],
           const SizedBox(height: 20),
         ],
       ),
@@ -432,17 +459,20 @@ class _LockScreenState extends State<LockScreen> {
     required VoidCallback onTap,
     required String tooltip,
   }) {
-    return InkWell(
-      splashColor: Colors.transparent,
-      highlightColor: Colors.transparent,
-      enableFeedback: false,
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(40),
-      child: Container(
-        width: 72,
-        height: 72,
-        alignment: Alignment.center,
-        child: Icon(icon, size: 28, color: Colors.grey[400]),
+    return Tooltip(
+      message: tooltip,
+      child: InkWell(
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+        enableFeedback: false,
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(40),
+        child: Container(
+          width: 72,
+          height: 72,
+          alignment: Alignment.center,
+          child: Icon(icon, size: 28, color: AppTheme.textSecondary),
+        ),
       ),
     );
   }

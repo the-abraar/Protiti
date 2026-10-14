@@ -2,10 +2,11 @@ import 'package:encrypt/encrypt.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
 import 'dart:math';
+import 'secure_store.dart';
 
 class EncryptionService {
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
-  static const String _keyKey = 'protiti_aes_key';
+  final FlutterSecureStorage _storage = secureStore;
+  static const String _keyKey = StoreKeys.evidenceKey;
 
   Future<Key> _getKey() async {
     String? base64Key = await _storage.read(key: _keyKey);

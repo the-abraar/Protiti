@@ -1,8 +1,11 @@
-import 'package:sqflite_sqlcipher/sqflite.dart';
-import 'package:path/path.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:path/path.dart';
+import 'package:sqflite_sqlcipher/sqflite.dart';
+import 'secure_store.dart';
 
 /// Manages two fully isolated encrypted SQLite databases: one for the real
 /// forensic vault, one for the decoy vault shown under duress. Each gets its
@@ -11,18 +14,20 @@ import 'dart:math';
 /// that it exists.
 class DatabaseService {
   final bool isDecoy;
+  final FlutterSecureStorage _secureStorage;
 
-  DatabaseService({this.isDecoy = false});
+  DatabaseService({this.isDecoy = false, FlutterSecureStorage? secureStorage})
+      : _secureStorage = secureStorage ?? secureStore;
 
   static Database? _realDb;
   static Database? _decoyDb;
-  final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
   static const String _realKeyStorageKey = 'app_state_key';
   static const String _decoyKeyStorageKey = 'app_cache_key';
 
-  // Innocuous filenames: neither name hints that a dual-vault scheme exists.
-  String get _fileName => isDecoy ? 'app_cache.db' : 'app_state.db';
+  /// Innocuous filenames: neither name hints that a dual-vault scheme exists.
+  static const fileNames = ['app_state.db', 'app_cache.db'];
+  String get _fileName => isDecoy ? fileNames[1] : fileNames[0];
   String get _keyStorageKey =>
       isDecoy ? _decoyKeyStorageKey : _realKeyStorageKey;
 
@@ -40,25 +45,37 @@ class DatabaseService {
     return _realDb!;
   }
 
-  /// Retrieves or generates a secure random 256-bit passphrase for local
-  /// encryption, scoped to whichever partition (real/decoy) this instance
-  /// addresses.
-  Future<String> getOrGenerateDbKey() async {
-    String? key;
-    try {
-      key = await _secureStorage.read(key: _keyStorageKey);
-    } catch (e) {
-      print('Warning: Secure storage unavailable. Using transient key.');
-    }
-
-    if (key == null || key.isEmpty) {
-      final random = Random.secure();
-      final values = List<int>.generate(32, (i) => random.nextInt(256));
-      key = base64UrlEncode(values);
+  /// Closes and forgets both handles, so a wipe leaves nothing readable in memory.
+  static Future<void> closeAll() async {
+    final handles = [_realDb, _decoyDb];
+    _realDb = null;
+    _decoyDb = null;
+    for (final db in handles) {
       try {
-        await _secureStorage.write(key: _keyStorageKey, value: key);
+        await db?.close();
       } catch (_) {}
     }
+  }
+
+  @visibleForTesting
+  static void debugSetHandles({Database? real, Database? decoy}) {
+    _realDb = real;
+    _decoyDb = decoy;
+  }
+
+  /// Retrieves or generates a secure random 256-bit passphrase for this
+  /// partition. Fails closed: a storage error, or a missing key for a file
+  /// that already exists, throws instead of opening with a key that would
+  /// be lost at the next launch.
+  Future<String> getOrGenerateDbKey() async {
+    final existing = await _secureStorage.read(key: _keyStorageKey);
+    if (existing != null && existing.isNotEmpty) return existing;
+    if (await File(join(await getDatabasesPath(), _fileName)).exists()) {
+      throw StateError('Storage key missing for an existing database file.');
+    }
+    final random = Random.secure();
+    final key = base64UrlEncode(List<int>.generate(32, (_) => random.nextInt(256)));
+    await _secureStorage.write(key: _keyStorageKey, value: key);
     return key;
   }
 
@@ -76,16 +93,19 @@ class DatabaseService {
         // Configure SQLCipher encryption key via PRAGMA
         await db.rawQuery("PRAGMA key = '$dbKey'");
       },
-      onCreate: (db, version) async {
-        if (isDecoy) {
-          await _createDecoyTables(db);
-          await _seedDecoyData(db);
-        } else {
-          await _createRealTables(db);
-          await _seedRealData(db);
-        }
-      },
+      onCreate: onCreate,
     );
+  }
+
+  /// A fresh real vault starts empty: no sample evidence, no placeholder contacts.
+  @visibleForTesting
+  Future<void> onCreate(Database db, int version) async {
+    if (isDecoy) {
+      await _createDecoyTables(db);
+      await _seedDecoyData(db);
+    } else {
+      await _createRealTables(db);
+    }
   }
 
   Future<void> _createRealTables(Database db) async {
@@ -130,72 +150,6 @@ class DatabaseService {
         extra_json TEXT,
         saved_at TEXT
       )''');
-  }
-
-  Future<void> _seedRealData(Database db) async {
-    final now = DateTime.now();
-    await db.insert('sys_analytics_cache', {
-      'req_id': 'real_ev_1',
-      'mime_type': 'screenshot',
-      'uri_path': null,
-      'ext_url': null,
-      'blob_ref':
-          'Threatening WhatsApp chat from perpetrator with time-stamped extortion demand',
-      'meta_tags': jsonEncode({
-        'source': 'WhatsApp',
-        'hash': 'sha256_mock_a8f9c1',
-      }),
-      'timestamp': now.subtract(const Duration(days: 1)).toIso8601String(),
-    });
-    await db.insert('sys_analytics_cache', {
-      'req_id': 'real_ev_2',
-      'mime_type': 'audio',
-      'uri_path': null,
-      'ext_url': null,
-      'blob_ref':
-          'Recorded audio harassment call with explicit death threat and location stalking',
-      'meta_tags': jsonEncode({'durationSeconds': 94, 'codec': 'm4a'}),
-      'timestamp': now.subtract(const Duration(days: 3)).toIso8601String(),
-    });
-    await db.insert('sys_analytics_cache', {
-      'req_id': 'real_ev_3',
-      'mime_type': 'pdf',
-      'uri_path': null,
-      'ext_url': null,
-      'blob_ref':
-          'Certified cyber incident log export documenting unauthorized login attempts',
-      'meta_tags': jsonEncode({'pages': 3, 'format': 'pdf'}),
-      'timestamp': now.subtract(const Duration(days: 5)).toIso8601String(),
-    });
-
-    // Seed emergency contacts (Default BD Helplines + Trusted Contact).
-    // Contacts live only in the real database: the panic/SOS flow must work
-    // identically in decoy mode for the survivor's safety, so it always
-    // reads from the real partition regardless of which PIN unlocked the UI.
-    await db.insert('net_telemetry_peers', {
-      'node_id': 'c_1',
-      'host_alias': 'National Emergency Police (999)',
-      'ipv4_route': '999',
-      'ipv6_route': 'help@police.gov.bd',
-      'subnet_mask': 'Emergency Response',
-      'is_active': 1,
-    });
-    await db.insert('net_telemetry_peers', {
-      'node_id': 'c_2',
-      'host_alias': 'GBV Helpline Bangladesh (109)',
-      'ipv4_route': '109',
-      'ipv6_route': 'helpline109@mowca.gov.bd',
-      'subnet_mask': 'Helpline',
-      'is_active': 1,
-    });
-    await db.insert('net_telemetry_peers', {
-      'node_id': 'c_3',
-      'host_alias': 'Ayesha (Sister / Trusted SOS)',
-      'ipv4_route': '+8801700000000',
-      'ipv6_route': 'ayesha@example.com',
-      'subnet_mask': 'Family',
-      'is_active': 1,
-    });
   }
 
   Future<void> _seedDecoyData(Database db) async {

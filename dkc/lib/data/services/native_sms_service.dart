@@ -5,7 +5,7 @@ import 'package:flutter/services.dart';
 /// an abuser standing over the victim could witness or intercept.
 ///
 /// iOS has no equivalent private API for silent SMS dispatch. On iOS this
-/// always returns false so callers fall back to the visible SMS-intent /
+/// always returns an empty map so callers fall back to the visible SMS-intent /
 /// share-sheet path, which still guarantees delivery.
 class NativeSmsService {
   static const MethodChannel _channel =
@@ -31,22 +31,24 @@ class NativeSmsService {
     }
   }
 
-  /// Returns true only if every recipient's SMS was handed to the radio
-  /// silently. Never throws, and never requests permission itself.
-  static Future<bool> sendSilently({
+  /// Per recipient: true only when the network accepted the message
+  /// (Android sentIntent). Empty when silent sending is unavailable here (iOS,
+  /// no permission, no channel on this engine). Never throws, and never
+  /// requests permission itself.
+  static Future<Map<String, bool>> sendSilently({
     required List<String> recipients,
     required String message,
   }) async {
-    if (recipients.isEmpty) return false;
+    if (recipients.isEmpty) return const {};
     try {
-      if (!await hasPermission()) return false;
-      return await _channel.invokeMethod<bool>('sendSilentSms', {
+      if (!await hasPermission()) return const {};
+      return await _channel.invokeMapMethod<String, bool>('sendSilentSms', {
             'recipients': recipients,
             'message': message,
           }) ??
-          false;
+          const {};
     } catch (_) {
-      return false;
+      return const {};
     }
   }
 }

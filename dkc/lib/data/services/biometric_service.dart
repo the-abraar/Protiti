@@ -1,14 +1,15 @@
 import 'package:local_auth/local_auth.dart';
 
 class BiometricService {
-  final LocalAuthentication auth = LocalAuthentication();
+  final LocalAuthentication auth;
+
+  BiometricService({LocalAuthentication? auth}) : auth = auth ?? LocalAuthentication();
 
   Future<bool> authenticate() async {
     try {
-      final bool didAuthenticate = await auth.authenticate(
-        localizedReason: 'Please authenticate to show vault',
-      );
-      return didAuthenticate;
+      // biometricOnly: the phone's own PIN or pattern, which an abuser often
+      // knows, must never open the app.
+      return await auth.authenticate(localizedReason: 'Unlock', biometricOnly: true);
     } catch (e) {
       return false;
     }

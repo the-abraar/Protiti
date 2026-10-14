@@ -4,35 +4,25 @@
   "@appTitle": {
     "description": "The title of the application"
   },
-  "vaultAuthTitle": "Forensic Vault Authentication",
-  "vaultAuthSubtitle": "Enter security PIN or use biometrics to access records",
   "panicSequenceActive": "EMERGENCY SEQUENCE ACTIVE",
   "panicOfflineReady": "OFFLINE SMS DISPATCH READY",
   "panicHoldInstruction": "Press & Hold for 3 seconds to broadcast SOS",
   "supportBridgeTitle": "Legal Aid & Support Bridge",
-  "decoySupportTitle": "Student Services & Campus Directory",
-  "decoyVaultTitle": "Personal Notes & Files",
   "myNotesSubtitle": "My Notes",
-  "lockoutMessage": "Maximum attempts exceeded. Vault locked for 15 minutes.",
-  "wipeMessage": "Critical Error: Application Data Corrupted. Resetting...",
+  "lockoutMessage": "Too many attempts. Try again later.",
   "incorrectPinMessage": "Incorrect PIN. Please re-enter.",
   "biometricUnlockTooltip": "Biometric Unlock",
   "deleteTooltip": "Delete",
   "switchToStandardLockTooltip": "Switch to Standard Lock",
   "enableCalculatorDisguiseTooltip": "Enable Calculator Stealth Disguise",
   "calculatorLabel": "Calculator",
-  "navVault": "Vault",
   "navFiles": "Files",
-  "navReport": "Report",
   "navNotes": "Notes",
-  "navPanicSos": "Panic SOS",
   "navSafety": "Safety",
-  "navSupport": "Support",
   "navHelp": "Help",
-  "secureEvidenceFab": "Secure Evidence",
   "addFileFab": "Add File",
-  "safetySettingsTooltip": "Safety Settings",
-  "lockVaultTooltip": "Lock Vault Immediately",
+  "safetySettingsTooltip": "Settings",
+  "lockVaultTooltip": "Lock",
   "addTextNote": "Add Text Note",
   "secureCameraCapture": "Secure Camera Capture",
   "secureAudioRecord": "Secure Audio Record",
@@ -46,12 +36,9 @@
   "evidenceDescriptionLabel": "Evidence Description",
   "cancel": "Cancel",
   "save": "Save",
-  "evidenceDetailsTitle": "Evidence Details",
+  "evidenceDetailsTitle": "Details",
   "close": "Close",
-  "forensicVaultEmpty": "Forensic Vault is Empty",
   "noPersonalFilesYet": "No personal files saved yet",
-  "evidenceStoredSecurely": "Your evidence is stored securely and privately.",
-  "showingDecoyFiles": "Showing 3 innocent decoy files.",
   "disarmSosTooltip": "Disarm SOS",
   "callContactTooltip": "Call {name}",
   "@callContactTooltip": {
@@ -60,5 +47,9 @@
         "type": "String"
       }
     }
-  }
+  },
+  "enterTooltip": "Enter",
+  "deleteItemTitle": "Delete this item?",
+  "deleteItemBody": "It is removed from this phone and cannot be brought back.",
+  "storageErrorMessage": "Your files could not be opened. Restart the phone and try again."
 }

@@ -1,197 +1,175 @@
-import 'package:url_launcher/url_launcher.dart';
-import 'package:share_plus/share_plus.dart';
-import '../../data/services/secure_audio_service.dart';
-import '../../data/services/location_service.dart';
-import '../../data/repositories/contact_repository.dart';
-import 'package:screen_brightness/screen_brightness.dart';
-import '../../data/services/native_sms_service.dart';
 import 'dart:io';
+import 'package:screen_brightness/screen_brightness.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../../data/repositories/contact_repository.dart';
+import '../../data/repositories/evidence_repository.dart';
+import '../../data/services/location_service.dart';
+import '../../data/services/native_sms_service.dart';
+import '../../data/services/secure_audio_service.dart';
+
+/// What is known about one recipient's message.
+enum SmsStatus {
+  /// The phone network accepted it.
+  sent,
+
+  /// The network refused it: no SIM, no credit, no signal, airplane mode.
+  failed,
+
+  /// Handed to the Messages app or share sheet; she still has to press Send.
+  unconfirmed,
+}
+
+class SmsDispatch {
+  /// 'sms', 'sms_app', 'share_sheet', 'failed' or 'no_contacts'.
+  final String method;
+  final Map<String, SmsStatus> statuses;
+
+  const SmsDispatch(this.method, this.statuses);
+
+  bool get allSent => statuses.isNotEmpty && statuses.values.every((s) => s == SmsStatus.sent);
+}
+
+typedef SmsDispatcher = Future<SmsDispatch> Function(List<String> recipients, String message);
+
+/// The foreground SMS path, shared by the SOS and the contact test message:
+/// silent SmsManager with per-recipient results on Android, else the visible
+/// Messages app, else the share sheet.
+Future<SmsDispatch> dispatchSms(List<String> recipients, String message) async {
+  if (recipients.isEmpty) return const SmsDispatch('no_contacts', {});
+  if (Platform.isAndroid) {
+    final results = await NativeSmsService.sendSilently(recipients: recipients, message: message);
+    if (results.isNotEmpty) {
+      return SmsDispatch('sms', {
+        for (final r in recipients) r: results[r] == true ? SmsStatus.sent : SmsStatus.failed,
+      });
+    }
+  }
+  final unconfirmed = {for (final r in recipients) r: SmsStatus.unconfirmed};
+  try {
+    final smsUri = Uri(scheme: 'sms', path: recipients.join(','), queryParameters: {'body': message});
+    if (await canLaunchUrl(smsUri) && await launchUrl(smsUri)) {
+      return SmsDispatch('sms_app', unconfirmed);
+    }
+  } catch (_) {}
+  try {
+    await SharePlus.instance.share(ShareParams(text: message));
+    return SmsDispatch('share_sheet', unconfirmed);
+  } catch (_) {
+    return SmsDispatch('failed', {for (final r in recipients) r: SmsStatus.failed});
+  }
+}
 
 class PanicResult {
-  final bool success;
   final String formattedMessage;
   final String locationDisplay;
   final double? latitude;
   final double? longitude;
-  final List<String> recipients;
   final DateTime timestamp;
-  final String dispatchMethod; // 'sms' or 'share_fallback'
+  final SmsDispatch dispatch;
 
   PanicResult({
-    required this.success,
     required this.formattedMessage,
     required this.locationDisplay,
     this.latitude,
     this.longitude,
-    required this.recipients,
     required this.timestamp,
-    required this.dispatchMethod,
+    required this.dispatch,
   });
+
+  List<String> get recipients => dispatch.statuses.keys.toList();
+  String get dispatchMethod => dispatch.method;
+  bool get success => dispatch.allSent;
 }
 
 class TriggerPanicUseCase {
   final LocationService locationService;
   final ContactRepository? contactRepository;
   final SecureAudioService audioService;
+  final EvidenceRepository evidenceRepository;
+  final SmsDispatcher sendSms;
 
-  TriggerPanicUseCase(this.locationService, {this.contactRepository, required this.audioService});
+  TriggerPanicUseCase(
+    this.locationService, {
+    this.contactRepository,
+    required this.audioService,
+    required this.evidenceRepository,
+    this.sendSms = dispatchSms,
+  });
 
-  /// Executes offline panic sequence:
-  /// 1. Obtains GPS coordinates with offline tolerance.
-  /// 2. Assembles lightweight text SMS payload (<160 chars per segment, zero media transmission).
-  /// 3. Launches native SMS intent directed at emergency contacts, or invokes share sheet fallback.
+  /// SMS first: the cached location only, nothing to wait for before the
+  /// message leaves. Screen dimming and the audio recording come after.
   Future<PanicResult> execute() async {
     final timestamp = DateTime.now();
 
-    // 1. Fetch Location
     double? lat;
     double? lng;
-    String locationStr;
-
-    try {
-      final pos = await locationService.getCurrentLocation();
-      if (pos != null) {
-        lat = pos.latitude;
-        lng = pos.longitude;
-        locationStr =
-            'https://maps.google.com/?q=${lat.toStringAsFixed(6)},${lng.toStringAsFixed(6)} (${lat.toStringAsFixed(4)}, ${lng.toStringAsFixed(4)})';
-            
-        if (pos.isMocked) {
-          locationStr += "\n[WARNING: GPS Coordinates are actively spoofed/mocked by a third-party app!]";
-        }
-      } else {
-        locationStr = 'GPS location unavailable (Offline/Indoor)';
+    String locationStr = 'GPS location unavailable';
+    final pos = await locationService.getLastKnownLocation();
+    if (pos != null) {
+      lat = pos.latitude;
+      lng = pos.longitude;
+      final at = pos.timestamp.toLocal();
+      locationStr =
+          'https://maps.google.com/?q=${lat.toStringAsFixed(6)},${lng.toStringAsFixed(6)} '
+          '(last known at ${_hhmm(at)})';
+      if (pos.isMocked) {
+        locationStr += "\n[WARNING: GPS Coordinates are actively spoofed/mocked by a third-party app!]";
       }
-    } catch (_) {
-      locationStr = 'Location permission restricted';
     }
 
-    // 2. Fetch Emergency Contact Phone Numbers
     List<String> recipientNumbers = [];
     if (contactRepository != null) {
       try {
         final contacts = await contactRepository!.getEmergencyContacts();
-        recipientNumbers = contacts
-            .map((c) => c.phone)
-            .where((p) => p.isNotEmpty)
-            .toList();
+        recipientNumbers = contacts.map((c) => c.phone).where((p) => p.isNotEmpty).toList();
       } catch (_) {}
     }
+    // No hotline fallback: 999 and 109 take calls, not texts. With no contact
+    // set, the screen says so and offers the call button instead.
 
-    // Default recipient fallback if no personal contact configured
-    if (recipientNumbers.isEmpty) {
-      recipientNumbers = ['999', '109'];
+    final message =
+        'EMERGENCY SOS [Protiti]: I need urgent help! My location: $locationStr at ${_hhmm(timestamp)} (BD Time). Please send assistance immediately.';
+
+    final dispatch = await sendSms(recipientNumbers, message);
+
+    if (dispatch.allSent) {
+      try {
+        // Blackout so the screen glow does not give her away. Skipped when
+        // anything failed: she must be able to read the error and call 999.
+        await ScreenBrightness().setApplicationScreenBrightness(0.0);
+      } catch (_) {}
     }
-
-    // 3. Construct High-Priority SMS Payload
-    String message =
-        'EMERGENCY SOS [Protiti]: I need urgent help! My location: $locationStr at ${timestamp.hour.toString().padLeft(2, '0')}:${timestamp.minute.toString().padLeft(2, '0')} (BD Time). Please send assistance immediately.';
-
-    // 4. Dispatch SOS
-    String dispatchMethod = 'local_sms';
-    bool dispatchSuccess = false;
-    {
-      // TACTICAL STEALTH: On Android, hand the message straight to the
-      // cellular radio via SmsManager. This never opens the Messages app,
-      // so nothing appears on-screen for an abuser to see or stop.
-      bool sentSilently = false;
-      if (Platform.isAndroid) {
-        try {
-          sentSilently = await NativeSmsService.sendSilently(
-            recipients: recipientNumbers,
-            message: message,
-          );
-        } catch (_) {
-          sentSilently = false;
-        }
-      }
-
-      if (sentSilently) {
-        dispatchSuccess = true;
-      } else {
-        // Silent dispatch unavailable (iOS, permission not yet granted, or
-        // no radio) — fall back to the SMS-app intent. This still
-        // guarantees delivery, but surfaces a visible compose screen.
-        try {
-          final separator = ',';
-          final recipientStr = recipientNumbers.join(separator);
-          final smsUri = Uri(
-            scheme: 'sms',
-            path: recipientStr,
-            queryParameters: {'body': message},
-          );
-
-          if (await canLaunchUrl(smsUri)) {
-            await launchUrl(smsUri);
-            dispatchSuccess = true;
-            dispatchMethod = 'local_sms_visible';
-          } else {
-            // Fallback to generic share sheet
-            await SharePlus.instance.share(
-              ShareParams(text: message, subject: 'EMERGENCY SOS [Protiti]'),
-            );
-            dispatchSuccess = true;
-            dispatchMethod = 'share_fallback';
-          }
-        } catch (_) {
-          // Last-resort fallback to SharePlus
-          try {
-            await SharePlus.instance.share(
-              ShareParams(text: message, subject: 'EMERGENCY SOS [Protiti]'),
-            );
-            dispatchSuccess = true;
-            dispatchMethod = 'share_fallback';
-          } catch (_) {
-            dispatchSuccess = false;
-            dispatchMethod = 'failed';
-          }
-        }
-      }
-    }
-
-    try {
-      // TACTICAL STEALTH: Immediately force the phone's hardware ringer into silent mode.
-      // If the victim is hiding from an active threat, we must prevent incoming phone calls 
-      // or notifications from audibly betraying their location.
-      // await SoundMode.setSoundMode(Profile.silent);
-    } catch (e) {
-      // Gracefully ignore if the OS blocks permission, but attempt the override
-    }
-
-    try {
-      // TACTICAL STEALTH: Immediately force the hardware screen brightness to absolute zero.
-      // If the victim is hiding in a dark room at night, the glow of the smartphone 
-      // screen can easily betray their position. We plunge the device into Blackout Mode.
-      await ScreenBrightness().setApplicationScreenBrightness(0.0);
-    } catch (e) {
-      // Gracefully ignore if the hardware doesn't support the override
-    }
-
-    // 1. Silently start capturing ambient audio of the physical attack
-    audioService.startRecording();
-    
-    // 2. Automatically stop, encrypt, and secure the audio file after 2 minutes
-    Future.delayed(const Duration(minutes: 2), () async {
-      await audioService.stopAndEncryptRecording();
-    });
+    _recordAmbientAudio();
 
     return PanicResult(
-      success: dispatchSuccess,
       formattedMessage: message,
       locationDisplay: locationStr,
       latitude: lat,
       longitude: lng,
-      recipients: recipientNumbers,
       timestamp: timestamp,
-      dispatchMethod: dispatchMethod,
+      dispatch: dispatch,
     );
   }
 
-  /// Forces the host OS to immediately open the phone dialer and call the 
+  static String _hhmm(DateTime t) =>
+      '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
+
+  /// Two minutes of ambient audio, saved as an evidence row. If the app dies
+  /// first, the next launch recovers the file.
+  Future<void> _recordAmbientAudio() async {
+    try {
+      if (!await audioService.startRecording(askPermission: false)) return;
+      await Future.delayed(const Duration(minutes: 2));
+      await audioService.stopAndSave(evidenceRepository, description: 'Emergency recording');
+    } catch (_) {}
+  }
+
+  /// Forces the host OS to immediately open the phone dialer and call the
   /// national emergency hotline, bypassing the need for the victim to manually dial.
   Future<void> launchEmergencyCall() async {
     // 999 is the National Emergency Hotline in Bangladesh
-    final Uri callUri = Uri.parse('tel:999'); 
+    final Uri callUri = Uri.parse('tel:999');
     try {
       if (await canLaunchUrl(callUri)) {
         await launchUrl(callUri);

@@ -23,6 +23,11 @@ class ContactRepository {
     );
   }
 
+  Future<void> deleteContact(String id) async {
+    final db = await dbService.database;
+    await db.delete('net_telemetry_peers', where: 'node_id = ?', whereArgs: [id]);
+  }
+
   Future<List<TrustedContact>> getAllContacts() async {
     final db = await dbService.database;
     final List<Map<String, dynamic>> maps = await db.query('net_telemetry_peers');

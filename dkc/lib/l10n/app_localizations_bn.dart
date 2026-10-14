@@ -12,13 +12,6 @@ class AppLocalizationsBn extends AppLocalizations {
   String get appTitle => 'প্রতীতি';
 
   @override
-  String get vaultAuthTitle => 'ফরেনসিক ভল্ট প্রমাণীকরণ';
-
-  @override
-  String get vaultAuthSubtitle =>
-      'রেকর্ড অ্যাক্সেস করতে নিরাপত্তা পিন বা বায়োমেট্রিক্স ব্যবহার করুন';
-
-  @override
   String get panicSequenceActive => 'জরুরী অবস্থা সক্রিয়';
 
   @override
@@ -32,21 +25,10 @@ class AppLocalizationsBn extends AppLocalizations {
   String get supportBridgeTitle => 'আইনি সহায়তা ও সমর্থন';
 
   @override
-  String get decoySupportTitle => 'ছাত্র পরিষেবা এবং ক্যাম্পাস ডিরেক্টরি';
-
-  @override
-  String get decoyVaultTitle => 'ব্যক্তিগত নোট এবং ফাইল';
-
-  @override
   String get myNotesSubtitle => 'আমার নোট';
 
   @override
-  String get lockoutMessage =>
-      'সর্বোচ্চ প্রচেষ্টা অতিক্রান্ত হয়েছে। ভল্ট ১৫ মিনিটের জন্য লক করা হয়েছে।';
-
-  @override
-  String get wipeMessage =>
-      'গুরুতর ত্রুটি: অ্যাপ্লিকেশন ডেটা নষ্ট হয়ে গেছে। পুনরায় সেট করা হচ্ছে...';
+  String get lockoutMessage => 'অনেকবার ভুল হয়েছে। পরে আবার চেষ্টা করুন।';
 
   @override
   String get incorrectPinMessage => 'ভুল পিন। আবার প্রবেশ করান।';
@@ -67,40 +49,25 @@ class AppLocalizationsBn extends AppLocalizations {
   String get calculatorLabel => 'ক্যালকুলেটর';
 
   @override
-  String get navVault => 'ভল্ট';
-
-  @override
   String get navFiles => 'ফাইল';
-
-  @override
-  String get navReport => 'রিপোর্ট';
 
   @override
   String get navNotes => 'নোট';
 
   @override
-  String get navPanicSos => 'প্যানিক এসওএস';
-
-  @override
   String get navSafety => 'নিরাপত্তা';
-
-  @override
-  String get navSupport => 'সহায়তা';
 
   @override
   String get navHelp => 'সাহায্য';
 
   @override
-  String get secureEvidenceFab => 'নিরাপদ প্রমাণ';
-
-  @override
   String get addFileFab => 'ফাইল যোগ করুন';
 
   @override
-  String get safetySettingsTooltip => 'নিরাপত্তা সেটিংস';
+  String get safetySettingsTooltip => 'সেটিংস';
 
   @override
-  String get lockVaultTooltip => 'অবিলম্বে ভল্ট লক করুন';
+  String get lockVaultTooltip => 'লক করুন';
 
   @override
   String get addTextNote => 'টেক্সট নোট যোগ করুন';
@@ -143,23 +110,13 @@ class AppLocalizationsBn extends AppLocalizations {
   String get save => 'সংরক্ষণ';
 
   @override
-  String get evidenceDetailsTitle => 'প্রমাণের বিস্তারিত';
+  String get evidenceDetailsTitle => 'বিস্তারিত';
 
   @override
   String get close => 'বন্ধ করুন';
 
   @override
-  String get forensicVaultEmpty => 'ফরেনসিক ভল্ট খালি';
-
-  @override
   String get noPersonalFilesYet => 'এখনো কোনো ব্যক্তিগত ফাইল সংরক্ষিত নেই';
-
-  @override
-  String get evidenceStoredSecurely =>
-      'আপনার প্রমাণ নিরাপদে এবং ব্যক্তিগতভাবে সংরক্ষিত আছে।';
-
-  @override
-  String get showingDecoyFiles => '৩টি সাধারণ ফাইল দেখানো হচ্ছে।';
 
   @override
   String get disarmSosTooltip => 'এসওএস নিষ্ক্রিয় করুন';
@@ -168,4 +125,18 @@ class AppLocalizationsBn extends AppLocalizations {
   String callContactTooltip(String name) {
     return '$name কে কল করুন';
   }
+
+  @override
+  String get enterTooltip => 'প্রবেশ করুন';
+
+  @override
+  String get deleteItemTitle => 'এটি মুছে ফেলবেন?';
+
+  @override
+  String get deleteItemBody =>
+      'এটি এই ফোন থেকে মুছে যাবে, আর ফিরিয়ে আনা যাবে না।';
+
+  @override
+  String get storageErrorMessage =>
+      'আপনার ফাইল খোলা যায়নি। ফোন রিস্টার্ট করে আবার চেষ্টা করুন।';
 }

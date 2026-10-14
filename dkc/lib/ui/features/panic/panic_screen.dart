@@ -5,8 +5,8 @@ import 'package:protiti/l10n/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
 import '../../../data/services/location_service.dart';
 import '../../../data/services/database_service.dart';
-import '../../../data/services/native_sms_service.dart';
 import '../../../data/repositories/contact_repository.dart';
+import '../../../data/repositories/evidence_repository.dart';
 import '../../../domain/use_cases/trigger_panic.dart';
 import '../../../data/services/secure_audio_service.dart';
 import '../../../data/services/flashlight_sos_service.dart';
@@ -15,8 +15,9 @@ import 'strobe_screen.dart';
 
 class PanicScreen extends StatefulWidget {
   final bool isDecoy;
+  final TriggerPanicUseCase? useCase;
 
-  const PanicScreen({super.key, this.isDecoy = false});
+  const PanicScreen({super.key, this.isDecoy = false, this.useCase});
 
   @override
   State<PanicScreen> createState() => _PanicScreenState();
@@ -40,17 +41,14 @@ class _PanicScreenState extends State<PanicScreen>
   @override
   void initState() {
     super.initState();
-    _panicUseCase = TriggerPanicUseCase(
-      LocationService(),
-      contactRepository: ContactRepository(DatabaseService()),
-      audioService: SecureAudioService(),
-    );
-
-    // Pre-arm the silent-SMS permission now, while nothing is wrong, so a
-    // real trigger never has to surface the OS permission dialog on-screen.
-    if (!widget.isDecoy) {
-      NativeSmsService.requestPermission();
-    }
+    // Permissions are asked in Settings, after an explanation, never here.
+    _panicUseCase = widget.useCase ??
+        TriggerPanicUseCase(
+          LocationService(),
+          contactRepository: ContactRepository(DatabaseService()),
+          audioService: SecureAudioService(),
+          evidenceRepository: EvidenceRepository(DatabaseService()),
+        );
 
     // Continuous pulse animation for SOS visibility
     _pulseController = AnimationController(
@@ -278,22 +276,22 @@ class _PanicScreenState extends State<PanicScreen>
           // Instructions / Status Text
           Text(
             _isTriggered
-                ? 'Emergency SOS triggered! Broadcasted to responders.'
+                ? (_isDispatching ? 'Sending SOS...' : 'SOS finished. See the result below.')
                 : (_isHolding
                       ? 'Keep holding... ${(3.0 - (_holdController.value * 3.0)).toStringAsFixed(1)}s'
-                      : 'Press & Hold for 3 seconds to broadcast SOS'),
+                      : AppLocalizations.of(context)!.panicHoldInstruction),
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 15,
               fontWeight: FontWeight.w600,
-              color: _isHolding ? AppTheme.brandSecondary : Colors.grey[300],
+              color: AppTheme.textPrimary,
             ),
           ),
           const SizedBox(height: 8),
-          Text(
-            'Dispatches GPS coordinates via offline SMS to emergency contacts without requiring mobile data.',
+          const Text(
+            'Texts your location to your trusted contacts by SMS. No mobile data needed.',
             textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+            style: TextStyle(fontSize: 12, color: AppTheme.textSecondary),
           ),
 
           const SizedBox(height: 28),
@@ -403,7 +401,7 @@ class _PanicScreenState extends State<PanicScreen>
                           style: TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.bold,
-                            color: AppTheme.brandSecondary,
+                            color: Colors.white,
                             letterSpacing: 1.5,
                           ),
                         ),
@@ -420,70 +418,106 @@ class _PanicScreenState extends State<PanicScreen>
   );
 }
 
+  static const _statusText = {
+    SmsStatus.sent: 'Sent',
+    SmsStatus.failed: 'Failed',
+    SmsStatus.unconfirmed: 'Not confirmed: press Send in Messages',
+  };
+
+  /// The real outcome per recipient. Anything short of "all sent" puts a
+  /// big Call 999 button right next to the problem.
   Widget _buildDispatchResultCard(PanicResult result) {
+    final allSent = result.success;
+    final String headline;
+    if (result.dispatchMethod == 'no_contacts') {
+      headline = 'No SOS text sent: you have no trusted contacts yet. Add them in Settings.';
+    } else if (allSent) {
+      headline = 'SOS text sent to every contact.';
+    } else if (result.dispatch.statuses.values.every((s) => s == SmsStatus.unconfirmed)) {
+      headline = 'SOS text not confirmed. Check that it was sent.';
+    } else {
+      headline = 'SOS text failed for some or all contacts.';
+    }
+    final accent = allSent ? AppTheme.brandSecondary : AppTheme.panicRed;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: AppTheme.primaryWhite,
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppTheme.panicRed.withValues(alpha: 0.5)),
+        border: Border.all(color: accent.withValues(alpha: 0.5)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              const Icon(
-                Icons.check_circle_outline,
-                color: Colors.greenAccent,
-                size: 20,
-              ),
+              Icon(allSent ? Icons.check_circle_outline : Icons.error_outline, color: accent, size: 20),
               const SizedBox(width: 8),
-              const Expanded(
+              Expanded(
                 child: Text(
-                  'Offline SMS Dispatched Successfully',
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
+                  headline,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: accent),
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.close, size: 18, color: Colors.grey),
+                icon: const Icon(Icons.close, size: 18, color: AppTheme.textSecondary),
                 onPressed: _resetEmergency,
                 tooltip: AppLocalizations.of(context)!.disarmSosTooltip,
               ),
             ],
           ),
-          const Divider(height: 16, color: Colors.white12),
-          Text(
-            'Location Coordinates:',
-            style: TextStyle(
-              fontSize: 12,
-              color: Colors.grey[400],
-              fontWeight: FontWeight.bold,
+          if (!allSent) ...[
+            const SizedBox(height: 12),
+            SizedBox(
+              width: double.infinity,
+              height: 64,
+              child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.panicRed,
+                  foregroundColor: Colors.white,
+                ),
+                icon: const Icon(Icons.phone_in_talk, size: 28),
+                label: const Text('Call 999', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                onPressed: _panicUseCase.launchEmergencyCall,
+              ),
             ),
+          ],
+          const Divider(height: 24),
+          for (final entry in result.dispatch.statuses.entries)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 4),
+              child: Text(
+                '${entry.key}: ${_statusText[entry.value]}',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: entry.value == SmsStatus.sent ? AppTheme.textPrimary : AppTheme.panicRed,
+                ),
+              ),
+            ),
+          const SizedBox(height: 8),
+          const Text(
+            'Location sent:',
+            style: TextStyle(fontSize: 12, color: AppTheme.textSecondary, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 4),
           SelectableText(
             result.locationDisplay,
-            style: const TextStyle(fontSize: 12, color: AppTheme.brandSecondary),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            'Recipients (${result.recipients.length}): ${result.recipients.join(", ")}',
-            style: const TextStyle(fontSize: 12, color: Colors.white70),
+            style: const TextStyle(fontSize: 12, color: AppTheme.textPrimary),
           ),
           const SizedBox(height: 8),
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: Colors.black26,
+              color: AppTheme.surfaceLight,
               borderRadius: BorderRadius.circular(6),
             ),
             child: Text(
               result.formattedMessage,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 11,
-                color: Colors.grey[300],
+                color: AppTheme.textPrimary,
                 fontStyle: FontStyle.italic,
               ),
             ),
@@ -493,6 +527,8 @@ class _PanicScreenState extends State<PanicScreen>
     );
   }
 
+  // Only hotlines checked so far. TODO(owner): verify PCSW (01320000888)
+  // and any campus or NGO numbers with the services themselves before adding them.
   Widget _buildEmergencyHotlines() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -501,12 +537,14 @@ class _PanicScreenState extends State<PanicScreen>
           children: const [
             Icon(Icons.phone_in_talk, size: 16, color: AppTheme.brandSecondary),
             SizedBox(width: 8),
-            Text(
-              'Direct Bangladesh Emergency Hotlines',
-              style: TextStyle(
-                fontSize: 13,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimary,
+            Expanded(
+              child: Text(
+                'Direct Bangladesh Emergency Hotlines',
+                style: TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.textPrimary,
+                ),
               ),
             ),
           ],
@@ -525,28 +563,8 @@ class _PanicScreenState extends State<PanicScreen>
             Expanded(
               child: _buildHotlineCard(
                 '109',
-                'GBV Toll-Free BD',
+                'Violence against women helpline',
                 AppTheme.brandSecondary,
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            Expanded(
-              child: _buildHotlineCard(
-                '10921',
-                'Violence Helpline',
-                AppTheme.brandSecondary,
-              ),
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: _buildHotlineCard(
-                '01320000888',
-                'Cyber Police BD',
-                Colors.deepPurpleAccent,
               ),
             ),
           ],
@@ -593,7 +611,7 @@ class _PanicScreenState extends State<PanicScreen>
                     label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 10, color: Colors.grey),
+                    style: const TextStyle(fontSize: 10, color: AppTheme.textSecondary),
                   ),
                 ],
               ),
@@ -604,7 +622,7 @@ class _PanicScreenState extends State<PanicScreen>
     );
   }
 
-  // Innocent Decoy View shown when Duress PIN (9999) was entered
+  // Innocent view shown after the second (duress) PIN
   Widget _buildDecoySafetyView() {
     return SingleChildScrollView(
       padding: const EdgeInsets.all(20),
@@ -626,17 +644,13 @@ class _PanicScreenState extends State<PanicScreen>
             ],
           ),
           const SizedBox(height: 12),
-          Text(
-            'General campus, traffic, and emergency assistance numbers for daily living in Dhaka.',
-            style: TextStyle(fontSize: 13, color: Colors.grey[400]),
+          const Text(
+            'Emergency assistance numbers for daily living in Bangladesh.',
+            style: TextStyle(fontSize: 13, color: AppTheme.textSecondary),
           ),
           const SizedBox(height: 20),
-          _buildDecoyItem(
-            'Dhaka Medical College Emergency',
-            '+880255165088',
-            'Medical',
-          ),
-          const SizedBox(height: 10),
+          // Verified national numbers only; TODO(owner): verify any local
+          // numbers (hospital, campus, traffic) before listing them here.
           _buildDecoyItem(
             'National Emergency Services',
             '999',
@@ -644,15 +658,9 @@ class _PanicScreenState extends State<PanicScreen>
           ),
           const SizedBox(height: 10),
           _buildDecoyItem(
-            'Dhaka University Proctor Office',
-            '01700000000',
-            'Campus Info',
-          ),
-          const SizedBox(height: 10),
-          _buildDecoyItem(
-            'Dhaka Traffic Control Room',
-            '01713398500',
-            'Transit Helpline',
+            'National Helpline',
+            '109',
+            'Public Service',
           ),
         ],
       ),
@@ -665,7 +673,7 @@ class _PanicScreenState extends State<PanicScreen>
       decoration: BoxDecoration(
         color: AppTheme.primaryWhite,
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: Colors.white10),
+        border: Border.all(color: AppTheme.accentSoft.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
@@ -683,7 +691,7 @@ class _PanicScreenState extends State<PanicScreen>
                 const SizedBox(height: 4),
                 Text(
                   category,
-                  style: const TextStyle(fontSize: 11, color: Colors.grey),
+                  style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary),
                 ),
               ],
             ),
