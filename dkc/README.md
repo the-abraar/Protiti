@@ -67,7 +67,7 @@ dkc/
 
 ### SOS
 
-- In the app: hold the SOS button 3 s, then 5 s to Cancel (or Send now). The SMS goes out silently on Android; on iOS the Messages sheet opens and she presses Send.
+- In the app: hold the SOS button 3 s, then 5 s to Cancel (or Send now). The SMS goes out silently on Android; on iOS the Messages sheet opens and she presses Send. If the screen goes away during the 5 s (screen off, another app, another tab), it sends at once by silent SMS, buzzes the result, and the SOS tab shows it later; on iOS that silent send cannot happen, so the SOS tab says it was not sent.
 - Android only, each off by default and turned on in Settings after an explanation: power button pressed 4 times within 3 s (ignored during a call), and hard shaking (4 peaks over 3 g within 3 s). Each waits 5 s first: two short buzzes and a notice with Cancel. One long buzz means every text was accepted, three long buzzes mean not; the notice gives the count, delivery reports and a Call 999 button. The service runs only while a trigger is on and does not restart after a reboot until she opens the app.
 - Second PIN (opt-in, off by default): opening with it sends the SOS silently, with no notice, buzz, recording or cancel window. The real SOS tab later shows whether it went.
 - iOS cannot run background triggers or send SMS silently, so Settings hides those switches there and says why.

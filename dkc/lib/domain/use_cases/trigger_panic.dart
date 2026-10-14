@@ -110,7 +110,8 @@ class TriggerPanicUseCase {
   /// message leaves. Then, if asked, screen dimming and the audio recording.
   /// [dim] is for the app on screen; the second-PIN alert turns off both,
   /// since a dark screen or the microphone indicator would give it away.
-  Future<PanicResult> execute({bool dim = true, bool record = true}) async {
+  /// [sms] replaces [sendSms] for this one send.
+  Future<PanicResult> execute({bool dim = true, bool record = true, SmsDispatcher? sms}) async {
     final timestamp = DateTime.now();
 
     double? lat;
@@ -140,7 +141,7 @@ class TriggerPanicUseCase {
       mocked: pos?.isMocked ?? false,
     );
 
-    final dispatch = await sendSms(recipientNumbers, message);
+    final dispatch = await (sms ?? sendSms)(recipientNumbers, message);
 
     if (dim && dispatch.allSent) {
       try {

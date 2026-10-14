@@ -26,12 +26,17 @@ class PanicScreen extends StatefulWidget {
 
   const PanicScreen({super.key, this.isDecoy = false, this.useCase, this.deliveries});
 
+  /// How an SOS goes out once the screen is gone mid-countdown: silent SMS
+  /// only, so nothing (Messages, a share sheet) pops up later for anyone to see.
+  @visibleForTesting
+  static SmsDispatcher unattendedSms = dispatchSilentSms;
+
   @override
   State<PanicScreen> createState() => _PanicScreenState();
 }
 
 class _PanicScreenState extends State<PanicScreen>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   late final AnimationController _pulseController;
   late final AnimationController _holdController;
 
@@ -54,6 +59,7 @@ class _PanicScreenState extends State<PanicScreen>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     // Permissions are asked in Settings, after an explanation, never here.
     _panicUseCase = widget.useCase ??
         TriggerPanicUseCase(
@@ -94,7 +100,34 @@ class _PanicScreenState extends State<PanicScreen>
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused && _sendIfLeftMidCountdown()) _resetEmergency();
+  }
+
+  /// She held SOS for 3 s, then the screen went away (screen off, another app,
+  /// a tab change, the vault locking). That sends at once, never cancels (N2).
+  /// Nothing is left on screen to show the result, so it buzzes the outcome
+  /// and the SOS tab reports it the next time she opens it.
+  bool _sendIfLeftMidCountdown() {
+    if (!(_countdown?.isActive ?? false)) return false;
+    _countdown!.cancel();
+    _sendUnattended(_panicUseCase);
+    return true;
+  }
+
+  static Future<void> _sendUnattended(TriggerPanicUseCase useCase) async {
+    PanicResult? result;
+    try {
+      result = await useCase.execute(dim: false, record: false, sms: PanicScreen.unattendedSms);
+      await AlertLog.record(result);
+    } catch (_) {}
+    await const SosAlerts().vibrate((result?.success ?? false) ? Buzz.sent : Buzz.failed);
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _sendIfLeftMidCountdown();
     _countdown?.cancel();
     _deliverySub?.cancel();
     _flashlightService.stopVisualSos();
@@ -493,7 +526,8 @@ class _PanicScreenState extends State<PanicScreen>
   );
 }
 
-  /// An alert sent while the app was not on screen (shortcut or second PIN).
+  /// An alert sent while the app was not on screen (shortcut, second PIN, or an
+  /// in-app SOS she left mid-countdown).
   Widget _buildLastAlert(String text) => Card(
         margin: const EdgeInsets.only(bottom: 16),
         child: ListTile(

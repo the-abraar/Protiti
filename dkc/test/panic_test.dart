@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:protiti/data/services/secure_store.dart';
 import 'package:protiti/domain/use_cases/trigger_panic.dart';
 import 'package:protiti/ui/core/theme/app_theme.dart';
 import 'package:protiti/ui/features/panic/panic_screen.dart';
@@ -189,6 +190,34 @@ void main() {
       await tester.pump(const Duration(seconds: 6));
       expect(sms.sent, hasLength(1), reason: 'the timer must not send again');
     });
+
+    // She turns the screen off, switches app, changes tab, or the vault locks (N2).
+    for (final (how, leave) in [
+      ('the screen goes away', (WidgetTester t) => t.pumpWidget(const SizedBox())),
+      ('the app is paused', (WidgetTester t) async {
+        t.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+        addTearDown(() => t.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed));
+      }),
+    ]) {
+      testWidgets('leaving mid-countdown sends at once, silently, and logs it: $how', (tester) async {
+        final storage = FakeSecureStorage()..install();
+        addTearDown(storage.uninstall);
+        final visible = FakeSms(), silent = FakeSms();
+        PanicScreen.unattendedSms = silent.call;
+        addTearDown(() => PanicScreen.unattendedSms = dispatchSilentSms);
+        await pumpPanic(tester, visible, [ayesha]);
+        await _holdSos(tester, waitOut: false);
+        await tester.pump(const Duration(seconds: 2));
+
+        await leave(tester);
+        await tester.pump();
+        expect(silent.sent, hasLength(1));
+        expect(visible.sent, isEmpty, reason: 'nothing may pop up later for anyone to see');
+        expect(storage.store[StoreKeys.lastAlert], endsWith('|1|1'), reason: 'the SOS tab tells her later');
+        await tester.pump(const Duration(seconds: 10));
+        expect(silent.sent, hasLength(1), reason: 'once only');
+      });
+    }
 
     testWidgets('delivery reports update each recipient', (tester) async {
       final reports = StreamController<(String, bool)>.broadcast();
