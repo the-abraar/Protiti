@@ -18,8 +18,8 @@ A prototype evidence vault for women facing online harassment in Bangladesh. It 
 - **PINs.** A real PIN (6 or more digits, set at first launch), a duress PIN that opens a separate decoy vault, and an optional wipe code that you choose. Codes must differ in at least 3 digits, so one slip cannot turn one into another.
 - **Biometrics.** Off by default. When turned on, fingerprint or face only (no device-PIN fallback).
 - **GD draft.** A guided form that makes a PDF draft for you to file in person. There is no e-GD API integration and no automatic law mapping.
-- **Panic screen.** One SMS SOS with your location to your saved contacts (contact setup is a known gap), plus one-tap dialing for 999, the 109 helpline and the PCSW hotline.
-- **Support directory.** A static list of hotlines and support organisations. No organisation has agreed to a partnership.
+- **Panic screen.** One SMS SOS with your location to your saved contacts (contact setup is a known gap), plus one-tap dialing for 999 and the 109 helpline.
+- **Support directory.** A static list of support organisations. Their phone numbers are hidden until each organisation confirms them. No organisation has agreed to a partnership.
 
 Cut from this prototype (unsafe, fake or unverified): the AI classifier, cloud backup, cloud SMS and certificate pinning, the geofence, root detection and self-wipe, P2P and Bluetooth transfer, sensor telemetry in the SOS, the proximity lock, fake notifications and calls, the thermal decoy, the 5-tap crash and the online decoy fetch.
 

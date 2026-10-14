@@ -8,6 +8,7 @@ import 'package:protiti/data/services/secure_store.dart';
 import 'package:protiti/domain/use_cases/trigger_panic.dart';
 import 'package:protiti/ui/core/theme/app_theme.dart';
 import 'package:protiti/ui/features/panic/panic_screen.dart';
+import 'package:protiti/ui/features/support/support_screen.dart';
 
 import 'helpers/app_harness.dart';
 import 'helpers/fakes.dart';
@@ -149,6 +150,14 @@ void main() {
     expect(String.fromCharCodes(head.sublist(0, 4)), 'RIFF');
     expect(String.fromCharCodes(head.sublist(8, 12)), 'WAVE');
     expect(siren.lengthSync(), greaterThan(44 + 22050), reason: 'more than a header');
+  });
+
+  testWidgets('the support directory offers no number its organisation has not confirmed (N17)', (tester) async {
+    await tester.pumpWidget(harness(const Scaffold(body: SupportScreen())));
+    expect(find.text('Ain o Salish Kendra (ASK)'), findsOneWidget);
+    expect(find.byIcon(Icons.call), findsNothing);
+    expect(find.text('01726222222'), findsNothing);
+    expect(find.textContaining('109'), findsOneWidget, reason: 'points her to a checked line instead');
   });
 
   group('PanicScreen', () {

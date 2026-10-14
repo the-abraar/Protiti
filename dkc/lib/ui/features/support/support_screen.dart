@@ -39,12 +39,21 @@ class SupportScreen extends StatelessWidget {
           'Confidential legal defense, pro-bono advocates, and psycho-social shelters across Bangladesh.',
           style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary),
         ),
+        const SizedBox(height: 8),
+        // N17: the same rule as the SOS hotlines. A wrong number here could
+        // reach a stranger. TODO(owner): add each number once the organisation confirms it.
+        const Text(
+          'Phone numbers appear here only once each organisation has confirmed them. Until then, '
+          'find the current number on the organisation\'s own website, or call 109 (violence '
+          'against women helpline) or 999.',
+          style: TextStyle(fontSize: 12, color: AppTheme.textSecondary),
+        ),
         const SizedBox(height: 16),
         _buildSupportCard(
           context: context,
           name: 'BLAST (Bangladesh Legal Aid & Services Trust)',
           specialty: 'Pro-Bono Legal Aid & Cyber Litigations',
-          phone: '+88028391970',
+          phone: null,
           location: 'Dhaka (National Coverage)',
           color: AppTheme.brandSecondary,
         ),
@@ -53,7 +62,7 @@ class SupportScreen extends StatelessWidget {
           context: context,
           name: 'Ain o Salish Kendra (ASK)',
           specialty: 'Human Rights, Legal Counseling & Shelter',
-          phone: '01726222222',
+          phone: null,
           location: 'Dhaka',
           color: AppTheme.accentSoft,
         ),
@@ -62,7 +71,7 @@ class SupportScreen extends StatelessWidget {
           context: context,
           name: 'One-Stop Crisis Centre (OCC - DMCH)',
           specialty: 'Immediate Medical, Legal, & Forensic Support',
-          phone: '+880255165088',
+          phone: null,
           location: 'Dhaka Medical College Hospital',
           color: AppTheme.panicRed,
         ),
@@ -71,7 +80,7 @@ class SupportScreen extends StatelessWidget {
           context: context,
           name: 'Bangladesh Mahila Parishad',
           specialty: 'Women Legal Protection & Crisis Intervention',
-          phone: '+88029587422',
+          phone: null,
           location: 'Sufia Kamal Bhaban, Dhaka',
           color: AppTheme.brandSecondary,
         ),
@@ -83,7 +92,7 @@ class SupportScreen extends StatelessWidget {
     required BuildContext context,
     required String name,
     required String specialty,
-    required String phone,
+    required String? phone,
     required String location,
     required Color color,
   }) {
@@ -110,11 +119,12 @@ class SupportScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                IconButton(
-                  icon: const Icon(Icons.call, color: AppTheme.brandSecondary),
-                  onPressed: () => _makePhoneCall(phone),
-                  tooltip: AppLocalizations.of(context)!.callContactTooltip(name),
-                ),
+                if (phone != null)
+                  IconButton(
+                    icon: const Icon(Icons.call, color: AppTheme.brandSecondary),
+                    onPressed: () => _makePhoneCall(phone),
+                    tooltip: AppLocalizations.of(context)!.callContactTooltip(name),
+                  ),
               ],
             ),
             const SizedBox(height: 4),
@@ -140,14 +150,15 @@ class SupportScreen extends StatelessWidget {
                   style: const TextStyle(fontSize: 11, color: Colors.grey),
                 ),
                 const Spacer(),
-                Text(
-                  phone,
-                  style: const TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.textPrimary,
+                if (phone != null)
+                  Text(
+                    phone,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.textPrimary,
+                    ),
                   ),
-                ),
               ],
             ),
           ],

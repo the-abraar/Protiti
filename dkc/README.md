@@ -14,7 +14,7 @@ A Digital Evidence Vault app designed for women facing online harassment in Bang
 - **📦 Secure Evidence Vault** — PIN-locked, encrypted storage with a **Duress PIN (Decoy Vault)** for physical coercion scenarios. Fingerprint unlock is opt-in.
 - **📝 GD-Automator** — Builds an offline GD draft PDF from the evidence she chooses. No AI, no network call.
 - **🚨 Panic Frame** — SMS SOS to the trusted contacts she adds, with the real per-recipient sent and delivered result and a Call 999 button when sending fails. See [SOS](#sos) below.
-- **🤝 Support Bridge** — Curated directory of pro-bono lawyers and mental health counselors
+- **🤝 Support Bridge** — Directory of legal aid and support organisations; their numbers are hidden until each one confirms them
 
 ### Tech Stack
 
