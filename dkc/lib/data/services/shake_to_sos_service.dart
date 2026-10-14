@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 import 'package:sensors_plus/sensors_plus.dart';
 import '../../domain/use_cases/trigger_panic.dart';
-import 'notification_service.dart';
 
 class ShakeToSosService {
   final TriggerPanicUseCase _triggerPanicUseCase;
@@ -51,11 +50,7 @@ class ShakeToSosService {
         // If we register 3 distinct, aggressive shakes -> Trigger SOS!
         if (_shakeCount >= 3) {
           _shakeCount = 0; // Reset
-          _triggerPanicUseCase.execute().then((_) async {
-             final notifier = StealthNotificationService();
-             await notifier.init();
-             await notifier.showStealthNotification(event: 'sos_sent');
-          });
+          _triggerPanicUseCase.execute();
         }
       }
     });

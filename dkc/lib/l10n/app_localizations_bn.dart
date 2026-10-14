@@ -52,10 +52,6 @@ class AppLocalizationsBn extends AppLocalizations {
   String get incorrectPinMessage => 'ভুল পিন। আবার প্রবেশ করান।';
 
   @override
-  String get compromisedDeviceWarning =>
-      'নিরাপত্তা সতর্কতা: ডিভাইসটি ঝুঁকিপূর্ণ হতে পারে। অনুগ্রহ করে সতর্কতার সাথে এগিয়ে যান।';
-
-  @override
   String get biometricUnlockTooltip => 'বায়োমেট্রিক আনলক';
 
   @override
@@ -99,12 +95,6 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get addFileFab => 'ফাইল যোগ করুন';
-
-  @override
-  String get offlineP2pExportTooltip => 'অফলাইন পি২পি এক্সপোর্ট';
-
-  @override
-  String get offlineP2pBeaconActivated => 'অফলাইন পি২পি বিকন সক্রিয় হয়েছে';
 
   @override
   String get safetySettingsTooltip => 'নিরাপত্তা সেটিংস';

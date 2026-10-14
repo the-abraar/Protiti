@@ -176,12 +176,6 @@ abstract class AppLocalizations {
   /// **'Incorrect PIN. Please re-enter.'**
   String get incorrectPinMessage;
 
-  /// No description provided for @compromisedDeviceWarning.
-  ///
-  /// In en, this message translates to:
-  /// **'Security Alert: Device may be compromised. Please proceed with caution.'**
-  String get compromisedDeviceWarning;
-
   /// No description provided for @biometricUnlockTooltip.
   ///
   /// In en, this message translates to:
@@ -271,18 +265,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add File'**
   String get addFileFab;
-
-  /// No description provided for @offlineP2pExportTooltip.
-  ///
-  /// In en, this message translates to:
-  /// **'Offline P2P Export'**
-  String get offlineP2pExportTooltip;
-
-  /// No description provided for @offlineP2pBeaconActivated.
-  ///
-  /// In en, this message translates to:
-  /// **'Offline P2P Beacon Activated'**
-  String get offlineP2pBeaconActivated;
 
   /// No description provided for @safetySettingsTooltip.
   ///

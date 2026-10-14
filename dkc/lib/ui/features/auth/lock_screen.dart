@@ -9,12 +9,8 @@ import '../../../data/repositories/evidence_repository.dart';
 import '../../../data/services/database_service.dart';
 import 'package:provider/provider.dart';
 import '../../../data/services/wipe_service.dart';
-import '../../../data/services/threat_detection_service.dart';
-import '../../../data/services/camouflage_service.dart';
-import '../../../data/services/alibi_service.dart';
 import '../../../data/services/disguise_settings_service.dart';
 import '../../../data/services/background_sos_service.dart';
-import 'thermal_decoy_screen.dart';
 import 'pin_setup_screen.dart';
 
 class LockScreen extends StatefulWidget {
@@ -29,8 +25,6 @@ class _LockScreenState extends State<LockScreen> {
   bool _isCalculatorMode = false;
   String _enteredPin = '';
   String _errorMessage = '';
-  bool _isCompromised = false;
-  int _crashTapCount = 0;
   bool _isBiometricLocked = false;
   bool _needsSetup = false;
 
@@ -44,7 +38,6 @@ class _LockScreenState extends State<LockScreen> {
   void initState() {
     super.initState();
     _checkSetup();
-    _scanThreats();
     _checkBiometricStatus();
     _applyLaunchDisguisePreference();
     // Fire-and-forget: requests location/mic permissions and starts the
@@ -74,13 +67,6 @@ class _LockScreenState extends State<LockScreen> {
     final locked = await _authService.isBiometricHardLocked();
     if (mounted) {
       setState(() => _isBiometricLocked = locked);
-    }
-  }
-
-  Future<void> _scanThreats() async {
-    final compromised = await ThreatDetectionService.isDeviceCompromised();
-    if (mounted) {
-      setState(() => _isCompromised = compromised);
     }
   }
 
@@ -268,46 +254,21 @@ class _LockScreenState extends State<LockScreen> {
               _isCalculatorMode ? Icons.lock_outline : Icons.calculate_outlined,
               color: AppTheme.brandSecondary,
             ),
-            onPressed: () async {
+            onPressed: () {
               setState(() {
                 _isCalculatorMode = !_isCalculatorMode;
                 _enteredPin = '';
                 _errorMessage = '';
                 _calcDisplay = '0';
               });
-              if (_isCalculatorMode) {
-                await CamouflageService.enableCalculatorDisguise();
-              } else {
-                await CamouflageService.restoreOriginalIdentity();
-              }
             },
           ),
         ],
       ),
-      body: Stack(
-        children: [
-          SafeArea(
-            child: _isCalculatorMode
-                ? _buildCalculatorBody()
-                : _buildStandardLockBody(),
-          ),
-          Positioned(
-            bottom: 20,
-            left: 20,
-            child: GestureDetector(
-              onDoubleTap: () {
-                // Silently trigger the alibi. No UI feedback is given.
-                // In exactly 15 seconds, a native phone call will ring.
-                AlibiService.scheduleFakeCall(delaySeconds: 15);
-              },
-              child: Container(
-                width: 50,
-                height: 50,
-                color: Colors.transparent, // Completely invisible trigger zone
-              ),
-            ),
-          ),
-        ],
+      body: SafeArea(
+        child: _isCalculatorMode
+            ? _buildCalculatorBody()
+            : _buildStandardLockBody(),
       ),
     );
   }
@@ -333,37 +294,12 @@ class _LockScreenState extends State<LockScreen> {
             ),
           ),
           const SizedBox(height: 24),
-          GestureDetector(
-            onTap: () {
-              _crashTapCount++;
-              
-              if (_crashTapCount >= 5) {
-                SystemChannels.platform.invokeMethod('SystemNavigator.pop');
-              }
-              
-              Future.delayed(const Duration(seconds: 2), () {
-                if (mounted) {
-                  setState(() {
-                    _crashTapCount = 0;
-                  });
-                }
-              });
-            },
-            onLongPress: () async {
-              await _authService.enforcePinHardLock();
-              if (!mounted) return;
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ThermalDecoyScreen()),
-              );
-            },
-            child: const Text(
-              'Protiti (প্রতীতি)',
-              style: TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.textPrimary,
-              ),
+          const Text(
+            'Protiti (প্রতীতি)',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: AppTheme.textPrimary,
             ),
           ),
           const SizedBox(height: 4),
@@ -372,29 +308,6 @@ class _LockScreenState extends State<LockScreen> {
             style: const TextStyle(fontSize: 15, color: AppTheme.textSecondary, fontWeight: FontWeight.w500),
           ),
           const SizedBox(height: 32),
-
-          if (_isCompromised)
-            Container(
-              margin: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppTheme.panicRed.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppTheme.panicRed.withOpacity(0.3)),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.warning_amber_rounded, color: AppTheme.panicRed),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      AppLocalizations.of(context)!.compromisedDeviceWarning,
-                      style: const TextStyle(color: AppTheme.panicRed, fontSize: 13, fontWeight: FontWeight.w500),
-                    ),
-                  ),
-                ],
-              ),
-            ),
 
           // PIN Indicators (4 dots)
           Row(

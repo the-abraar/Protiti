@@ -6,21 +6,8 @@ import 'package:protiti/l10n/app_localizations.dart';
 import 'ui/core/theme/app_theme.dart';
 import 'ui/features/auth/lock_screen.dart';
 
-import 'data/services/rasp_service.dart';
-
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // The background SOS service (hardware button / shake-to-SOS / geofence)
-  // requests its own location + microphone permissions and starts itself
-  // once they're granted — see BackgroundSosService.ensureStarted(), called
-  // from LockScreen.initState(). Starting it unconditionally here crashes on
-  // Android 14+, which requires a foreground service's declared permission
-  // types to already be granted before the service can start.
-
-  // Arm the Runtime Application Self-Protection (RASP) Engine
-  await RaspService.initializeRasp();
-  
   runApp(const ProtitiApp());
 }
 

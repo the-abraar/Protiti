@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'biometric_service.dart';
-import 'time_service.dart';
 
 enum AuthStatus { authenticatedReal, authenticatedDuress, wiped, failed, lockedOut }
 
@@ -103,7 +102,7 @@ class AuthService {
     final expiryStr = await _read(key: _lockoutExpiryKey);
     if (expiryStr != null) {
       final expiryTime = DateTime.parse(expiryStr);
-      final secureNow = await SecureTimeService.getSecureTime();
+      final secureNow = DateTime.now();
       
       if (secureNow.isBefore(expiryTime)) {
         return true; // Still serving the time-lock
@@ -122,7 +121,7 @@ class AuthService {
     
     if (attempts >= maxAttempts) {
       // Maximum guesses exceeded! Engage the 15-minute cryptographic time-lock.
-      final secureNow = await SecureTimeService.getSecureTime();
+      final secureNow = DateTime.now();
       final expiryTime = secureNow.add(const Duration(minutes: lockoutDurationMinutes));
       await _write(key: _lockoutExpiryKey, value: expiryTime.toIso8601String());
     } else {

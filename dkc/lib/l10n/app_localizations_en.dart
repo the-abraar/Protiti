@@ -52,10 +52,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get incorrectPinMessage => 'Incorrect PIN. Please re-enter.';
 
   @override
-  String get compromisedDeviceWarning =>
-      'Security Alert: Device may be compromised. Please proceed with caution.';
-
-  @override
   String get biometricUnlockTooltip => 'Biometric Unlock';
 
   @override
@@ -100,12 +96,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addFileFab => 'Add File';
-
-  @override
-  String get offlineP2pExportTooltip => 'Offline P2P Export';
-
-  @override
-  String get offlineP2pBeaconActivated => 'Offline P2P Beacon Activated';
 
   @override
   String get safetySettingsTooltip => 'Safety Settings';

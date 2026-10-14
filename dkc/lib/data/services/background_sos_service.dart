@@ -9,7 +9,6 @@ import '../../domain/use_cases/trigger_panic.dart';
 import 'location_service.dart';
 import '../repositories/contact_repository.dart';
 import 'database_service.dart';
-import 'geofence_service.dart';
 import 'secure_audio_service.dart';
 import 'package:hardware_sos/hardware_sos.dart' as hardware_sos;
 import 'dart:async';
@@ -94,9 +93,6 @@ class BackgroundSosService {
     final shakeService = ShakeToSosService(triggerPanic);
     shakeService.startListening();
     
-    final geofenceService = GeofenceService(triggerPanic);
-    geofenceService.startGeofenceMonitoring();
-    
     StreamSubscription? hardwareSosSubscription;
     if (Platform.isAndroid) {
       final hardwareSos = hardware_sos.HardwareSos();
@@ -110,7 +106,6 @@ class BackgroundSosService {
     service.on('stopService').listen((event) {
       hardwareSosSubscription?.cancel();
       shakeService.stopListening();
-      geofenceService.stopGeofenceMonitoring();
       service.stopSelf();
     });
   }

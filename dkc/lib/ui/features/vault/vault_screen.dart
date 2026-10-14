@@ -8,16 +8,11 @@ import 'package:provider/provider.dart';
 import 'vault_provider.dart';
 import 'secure_image_viewer.dart';
 import 'secure_audio_player.dart';
-import '../../../data/services/p2p_transfer_service.dart';
 import '../panic/panic_screen.dart';
 import '../complaint/complaint_wizard_screen.dart';
 import '../support/support_screen.dart';
 import '../settings/settings_screen.dart';
 import '../auth/lock_screen.dart';
-import '../../../data/services/proximity_lock_service.dart';
-import '../../../data/services/bluetooth_tether_service.dart';
-import '../../../data/services/screen_cast_monitor.dart';
-import '../../../data/services/auth_service.dart';
 
 class VaultScreen extends StatefulWidget {
   final bool isDecoy;
@@ -32,68 +27,12 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
   int _currentIndex = 0;
 
   late final List<Widget> _screens;
-  late final ProximityLockService _proximityService;
-  late final BluetoothTetherService _bluetoothTetherService;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     
-    _proximityService = ProximityLockService();
-    _bluetoothTetherService = BluetoothTetherService();
-    
-    // Security monitors (Bluetooth tether, proximity sensor, screen cast).
-    // Only armed for the real vault: false-triggering in decoy mode would
-    // itself be a giveaway that something unusual is happening. A 2-second
-    // grace period lets the screen finish settling before anything can arm.
-    if (!widget.isDecoy) {
-      Future.delayed(const Duration(seconds: 2), () {
-        if (!mounted) return;
-
-        _proximityService.startListening(() {
-          if (mounted) {
-            AuthService().enforcePinHardLock();
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (_) => const LockScreen()),
-              (route) => false,
-            );
-          }
-        });
-
-        _bluetoothTetherService.startTetherMonitoring(() {
-          if (mounted) {
-            AuthService().enforcePinHardLock();
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (_) => const LockScreen()),
-              (route) => false,
-            );
-          }
-        });
-
-        ScreenCastMonitor.startMonitoring(
-          onCastDetected: () async {
-            if (mounted) {
-              await AuthService().enforcePinHardLock();
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (_) => const LockScreen()),
-                (route) => false,
-              );
-            }
-          },
-          onScreenshotAttempted: () async {
-            if (mounted) {
-              await AuthService().enforcePinHardLock();
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (_) => const LockScreen()),
-                (route) => false,
-              );
-            }
-          },
-        );
-      });
-    }
-
     _screens = [
       VaultGridScreen(isDecoy: widget.isDecoy),
       ComplaintWizardScreen(isDecoy: widget.isDecoy),
@@ -118,9 +57,6 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _proximityService.stopListening();
-    _bluetoothTetherService.stopMonitoring();
-    ScreenCastMonitor.stopMonitoring();
     super.dispose();
   }
 
@@ -169,20 +105,6 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
           ],
         ),
         actions: [
-          if (!widget.isDecoy)
-            IconButton(
-              icon: const Icon(Icons.wifi_tethering),
-              tooltip: AppLocalizations.of(context)!.offlineP2pExportTooltip,
-              onPressed: () async {
-                final p2pService = P2PTransferService();
-                await p2pService.startOfflineBroadcast("System_Diagnostic_Sync");
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(AppLocalizations.of(context)!.offlineP2pBeaconActivated)),
-                  );
-                }
-              },
-            ),
           if (!widget.isDecoy)
             IconButton(
               icon: const Icon(Icons.settings_outlined),

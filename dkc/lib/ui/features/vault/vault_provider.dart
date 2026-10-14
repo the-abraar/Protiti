@@ -6,13 +6,9 @@ import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import '../../../data/repositories/evidence_repository.dart';
 import '../../../domain/models/evidence.dart';
-import '../../../domain/use_cases/analyze_evidence_use_case.dart';
-import '../../../data/services/jev_service.dart';
 import '../../../data/services/encryption_service.dart';
-import '../../../data/services/cloud_backup_service.dart';
 import '../../../data/services/secure_audio_service.dart';
 import '../../../data/services/hash_evidence_service.dart';
-import '../../../data/services/decoy_generator_service.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class VaultProvider extends ChangeNotifier {
@@ -34,51 +30,12 @@ class VaultProvider extends ChangeNotifier {
     notifyListeners();
     
     _items = await _repository.getEvidence();
-
-    // If the decoy vault is suspiciously empty, dynamically generate organic content
-    if (isDecoy && _items.isEmpty) {
-      final decoyService = DecoyGeneratorService(_repository);
-      await decoyService.seedDynamicDecoys();
-      // Reload the newly seeded items
-      _items = await _repository.getEvidence();
-    }
-    
     _isLoading = false;
     notifyListeners();
-    
-    // Fire-and-forget background cloud sync (only for real vault)
-    if (!isDecoy && _items.isNotEmpty) {
-      final backupService = CloudBackupService(EncryptionService());
-      backupService.performZeroKnowledgeBackup(_items);
-    }
   }
 
   Future<void> addEvidence(Evidence evidence) async {
-    // Only run expensive AI analysis if it's real evidence, not decoy grocery lists
-    if (!evidence.isDecoy) {
-      try {
-        final analysisCase = AnalyzeEvidenceUseCase(JevService('DKC_DEMO_API_KEY'));
-        final analysisResult = await analysisCase.call(evidence.description);
-        
-        // Enrich the evidence with the AI classification metadata
-        final enrichedEvidence = Evidence(
-          id: evidence.id,
-          type: evidence.type,
-          description: '${evidence.description}\n\n[AI Classification: ${analysisResult.harassmentType.toUpperCase()} | Severity: ${analysisResult.severityScore}/10]',
-          createdAt: evidence.createdAt,
-          isDecoy: evidence.isDecoy,
-        );
-
-        await _repository.addEvidence(enrichedEvidence);
-      } catch (e) {
-        // Fallback to standard save if AI network fails
-        await _repository.addEvidence(evidence);
-      }
-    } else {
-      // Save decoy evidence normally
-      await _repository.addEvidence(evidence);
-    }
-    
+    await _repository.addEvidence(evidence);
     await loadEvidence(); // Auto-refresh the list
   }
   
@@ -135,7 +92,6 @@ class VaultProvider extends ChangeNotifier {
         isDecoy: false,
       );
 
-      // Pass through our existing addEvidence method (which also triggers the AI)
       await addEvidence(evidence);
 
     } finally {
