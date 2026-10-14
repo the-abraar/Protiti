@@ -37,7 +37,7 @@ class SupportScreen extends StatelessWidget {
         const SizedBox(height: 6),
         Text(
           'Confidential legal defense, pro-bono advocates, and psycho-social shelters across Bangladesh.',
-          style: TextStyle(fontSize: 12, color: Colors.grey[400]),
+          style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary),
         ),
         const SizedBox(height: 16),
         _buildSupportCard(
@@ -145,7 +145,7 @@ class SupportScreen extends StatelessWidget {
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white70,
+                    color: AppTheme.textPrimary,
                   ),
                 ),
               ],
@@ -173,7 +173,7 @@ class SupportScreen extends StatelessWidget {
         const SizedBox(height: 6),
         Text(
           'University administrative contacts, student counseling, and academic advisement centers.',
-          style: TextStyle(fontSize: 12, color: Colors.grey[400]),
+          style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary),
         ),
         const SizedBox(height: 16),
         _buildSupportCard(

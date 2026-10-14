@@ -1,31 +1,62 @@
 import 'dart:io';
-import 'package:sqflite_sqlcipher/sqflite.dart';
+import 'package:flutter/foundation.dart';
+import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:sqflite_sqlcipher/sqflite.dart';
+import 'database_service.dart';
+import 'disguise_settings_service.dart';
+import 'evidence_files.dart';
+import 'secure_store.dart';
 
 class WipeService {
-  /// Executes a scorched-earth forensic wipe of all application data.
+  /// Destroys all app data. Keys go first, so anything a later step fails to
+  /// delete is already unreadable.
   static Future<void> executeNuclearWipe() async {
-    // 1. Erase both the real and decoy SQLite databases containing all text/metadata
-    final dbPath = await getDatabasesPath();
-    for (final name in ['app_state.db', 'app_cache.db']) {
-      final dbFile = File('$dbPath/$name');
-      if (dbFile.existsSync()) {
-        dbFile.deleteSync();
+    await DatabaseService.closeAll();
+    try {
+      await secureStore.deleteAll();
+    } catch (_) {}
+    await wipeFiles(
+      dbDir: Directory(await getDatabasesPath()),
+      docsDir: await getApplicationDocumentsDirectory(),
+      tempDir: await getTemporaryDirectory(),
+    );
+    // Whoever typed the wipe code, now or later, sees only a plain calculator.
+    await DisguiseSettingsService.setAlwaysLaunchAsCalculator(true);
+  }
+
+  @visibleForTesting
+  static Future<void> wipeFiles({
+    required Directory dbDir,
+    required Directory docsDir,
+    required Directory tempDir,
+  }) async {
+    for (final name in DatabaseService.fileNames) {
+      for (final suffix in const ['', '-wal', '-journal', '-shm']) {
+        await _delete(File(join(dbDir.path, '$name$suffix')));
       }
     }
-    
-    // 2. Shred all physical encrypted evidence files (Photos/Audio)
-    final dir = await getApplicationDocumentsDirectory();
-    final files = dir.listSync();
-    for (var f in files) {
-      if (f.path.endsWith('.enc') || f.path.endsWith('.enc_audio')) {
-        f.deleteSync();
-      }
+    final exts = [evidenceExt, recordingExt, ...legacyEvidenceExts];
+    for (final entity in await _list(docsDir)) {
+      if (entity is File && exts.any(entity.path.endsWith)) await _delete(entity);
     }
-    
-    // 3. Purge the Hardware Keystore (Destroys AES keys, PINs, and Drafts)
-    const storage = FlutterSecureStorage();
-    await storage.deleteAll();
+    // Temp holds exported PDFs, image-picker copies and decrypted playback files.
+    for (final entity in await _list(tempDir)) {
+      await _delete(entity);
+    }
+  }
+
+  static Future<List<FileSystemEntity>> _list(Directory dir) async {
+    try {
+      return await dir.list().toList();
+    } catch (_) {
+      return const [];
+    }
+  }
+
+  static Future<void> _delete(FileSystemEntity entity) async {
+    try {
+      if (await entity.exists()) await entity.delete(recursive: true);
+    } catch (_) {}
   }
 }

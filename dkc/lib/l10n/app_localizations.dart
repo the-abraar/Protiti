@@ -104,18 +104,6 @@ abstract class AppLocalizations {
   /// **'Protiti (প্রতীতি)'**
   String get appTitle;
 
-  /// No description provided for @vaultAuthTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Forensic Vault Authentication'**
-  String get vaultAuthTitle;
-
-  /// No description provided for @vaultAuthSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter security PIN or use biometrics to access records'**
-  String get vaultAuthSubtitle;
-
   /// No description provided for @panicSequenceActive.
   ///
   /// In en, this message translates to:
@@ -140,18 +128,6 @@ abstract class AppLocalizations {
   /// **'Legal Aid & Support Bridge'**
   String get supportBridgeTitle;
 
-  /// No description provided for @decoySupportTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Student Services & Campus Directory'**
-  String get decoySupportTitle;
-
-  /// No description provided for @decoyVaultTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Personal Notes & Files'**
-  String get decoyVaultTitle;
-
   /// No description provided for @myNotesSubtitle.
   ///
   /// In en, this message translates to:
@@ -161,26 +137,14 @@ abstract class AppLocalizations {
   /// No description provided for @lockoutMessage.
   ///
   /// In en, this message translates to:
-  /// **'Maximum attempts exceeded. Vault locked for 15 minutes.'**
+  /// **'Too many attempts. Try again later.'**
   String get lockoutMessage;
-
-  /// No description provided for @wipeMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Critical Error: Application Data Corrupted. Resetting...'**
-  String get wipeMessage;
 
   /// No description provided for @incorrectPinMessage.
   ///
   /// In en, this message translates to:
   /// **'Incorrect PIN. Please re-enter.'**
   String get incorrectPinMessage;
-
-  /// No description provided for @compromisedDeviceWarning.
-  ///
-  /// In en, this message translates to:
-  /// **'Security Alert: Device may be compromised. Please proceed with caution.'**
-  String get compromisedDeviceWarning;
 
   /// No description provided for @biometricUnlockTooltip.
   ///
@@ -212,23 +176,11 @@ abstract class AppLocalizations {
   /// **'Calculator'**
   String get calculatorLabel;
 
-  /// No description provided for @navVault.
-  ///
-  /// In en, this message translates to:
-  /// **'Vault'**
-  String get navVault;
-
   /// No description provided for @navFiles.
   ///
   /// In en, this message translates to:
   /// **'Files'**
   String get navFiles;
-
-  /// No description provided for @navReport.
-  ///
-  /// In en, this message translates to:
-  /// **'Report'**
-  String get navReport;
 
   /// No description provided for @navNotes.
   ///
@@ -236,23 +188,11 @@ abstract class AppLocalizations {
   /// **'Notes'**
   String get navNotes;
 
-  /// No description provided for @navPanicSos.
-  ///
-  /// In en, this message translates to:
-  /// **'Panic SOS'**
-  String get navPanicSos;
-
   /// No description provided for @navSafety.
   ///
   /// In en, this message translates to:
   /// **'Safety'**
   String get navSafety;
-
-  /// No description provided for @navSupport.
-  ///
-  /// In en, this message translates to:
-  /// **'Support'**
-  String get navSupport;
 
   /// No description provided for @navHelp.
   ///
@@ -260,40 +200,22 @@ abstract class AppLocalizations {
   /// **'Help'**
   String get navHelp;
 
-  /// No description provided for @secureEvidenceFab.
-  ///
-  /// In en, this message translates to:
-  /// **'Secure Evidence'**
-  String get secureEvidenceFab;
-
   /// No description provided for @addFileFab.
   ///
   /// In en, this message translates to:
   /// **'Add File'**
   String get addFileFab;
 
-  /// No description provided for @offlineP2pExportTooltip.
-  ///
-  /// In en, this message translates to:
-  /// **'Offline P2P Export'**
-  String get offlineP2pExportTooltip;
-
-  /// No description provided for @offlineP2pBeaconActivated.
-  ///
-  /// In en, this message translates to:
-  /// **'Offline P2P Beacon Activated'**
-  String get offlineP2pBeaconActivated;
-
   /// No description provided for @safetySettingsTooltip.
   ///
   /// In en, this message translates to:
-  /// **'Safety Settings'**
+  /// **'Settings'**
   String get safetySettingsTooltip;
 
   /// No description provided for @lockVaultTooltip.
   ///
   /// In en, this message translates to:
-  /// **'Lock Vault Immediately'**
+  /// **'Lock'**
   String get lockVaultTooltip;
 
   /// No description provided for @addTextNote.
@@ -377,7 +299,7 @@ abstract class AppLocalizations {
   /// No description provided for @evidenceDetailsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Evidence Details'**
+  /// **'Details'**
   String get evidenceDetailsTitle;
 
   /// No description provided for @close.
@@ -386,29 +308,11 @@ abstract class AppLocalizations {
   /// **'Close'**
   String get close;
 
-  /// No description provided for @forensicVaultEmpty.
-  ///
-  /// In en, this message translates to:
-  /// **'Forensic Vault is Empty'**
-  String get forensicVaultEmpty;
-
   /// No description provided for @noPersonalFilesYet.
   ///
   /// In en, this message translates to:
   /// **'No personal files saved yet'**
   String get noPersonalFilesYet;
-
-  /// No description provided for @evidenceStoredSecurely.
-  ///
-  /// In en, this message translates to:
-  /// **'Your evidence is stored securely and privately.'**
-  String get evidenceStoredSecurely;
-
-  /// No description provided for @showingDecoyFiles.
-  ///
-  /// In en, this message translates to:
-  /// **'Showing 3 innocent decoy files.'**
-  String get showingDecoyFiles;
 
   /// No description provided for @disarmSosTooltip.
   ///
@@ -421,6 +325,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Call {name}'**
   String callContactTooltip(String name);
+
+  /// No description provided for @enterTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter'**
+  String get enterTooltip;
+
+  /// No description provided for @deleteItemTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this item?'**
+  String get deleteItemTitle;
+
+  /// No description provided for @deleteItemBody.
+  ///
+  /// In en, this message translates to:
+  /// **'It is removed from this phone and cannot be brought back.'**
+  String get deleteItemBody;
+
+  /// No description provided for @storageErrorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your files could not be opened. Restart the phone and try again.'**
+  String get storageErrorMessage;
 }
 
 class _AppLocalizationsDelegate

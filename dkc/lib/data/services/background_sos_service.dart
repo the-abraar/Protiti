@@ -9,45 +9,66 @@ import '../../domain/use_cases/trigger_panic.dart';
 import 'location_service.dart';
 import '../repositories/contact_repository.dart';
 import 'database_service.dart';
-import 'geofence_service.dart';
+import '../repositories/evidence_repository.dart';
+import 'secure_store.dart';
 import 'secure_audio_service.dart';
 import 'package:hardware_sos/hardware_sos.dart' as hardware_sos;
 import 'dart:async';
 
 @pragma('vm:entry-point')
 class BackgroundSosService {
-  /// Requests the location + microphone permissions the Android manifest
-  /// declares for this foreground service (`foregroundServiceType=
-  /// "location|microphone"`). Android refuses to start a foreground service
-  /// with a declared type unless the matching runtime permission is already
-  /// granted, so this must succeed before [initializeService] is called —
-  /// calling it unconditionally is what used to crash the app on first launch.
-  static Future<bool> _requestRequiredPermissions() async {
+  /// Location + microphone, which the Android manifest declares for this
+  /// foreground service (`foregroundServiceType="location|microphone"`).
+  /// Android refuses to start it unless both are already granted. With
+  /// [ask] false this only checks and never shows an OS prompt.
+  static Future<bool> _hasRequiredPermissions({required bool ask}) async {
     if (!Platform.isAndroid) return true;
     try {
       var locationPermission = await Geolocator.checkPermission();
-      if (locationPermission == LocationPermission.denied) {
+      if (ask && locationPermission == LocationPermission.denied) {
         locationPermission = await Geolocator.requestPermission();
       }
       final hasLocation = locationPermission == LocationPermission.always ||
           locationPermission == LocationPermission.whileInUse;
-
-      final hasMic = await AudioRecorder().hasPermission();
-
+      final hasMic = await AudioRecorder().hasPermission(request: ask);
       return hasLocation && hasMic;
     } catch (_) {
       return false;
     }
   }
 
-  /// Requests the required permissions and starts the service only if they
-  /// were granted. Safe to call repeatedly (e.g. every time the lock screen
-  /// loads) — it silently no-ops if the service is already running or if
-  /// permissions are still denied, and never throws.
-  static Future<bool> ensureStarted() async {
+  /// Off until she turns it on in Settings, after an explanation (B17).
+  static Future<bool> isEnabled() async {
+    try {
+      return await secureStore.read(key: StoreKeys.sosTriggersOn) == 'true';
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Asks for the permissions (call only after explaining why) and starts
+  /// the service. Returns false, and stays off, if either was refused.
+  static Future<bool> enable() async {
+    if (!Platform.isAndroid && !Platform.isIOS) return false;
+    if (!await _hasRequiredPermissions(ask: true)) return false;
+    await secureStore.write(key: StoreKeys.sosTriggersOn, value: 'true');
+    await initializeService();
+    return true;
+  }
+
+  static Future<void> disable() async {
+    await secureStore.delete(key: StoreKeys.sosTriggersOn);
+    try {
+      FlutterBackgroundService().invoke('stopService');
+    } catch (_) {}
+  }
+
+  /// Called on every lock screen load. Starts the service only if she opted
+  /// in and the permissions are still granted; never prompts, never throws.
+  static Future<bool> startIfEnabled() async {
     if (!Platform.isAndroid && !Platform.isIOS) return false;
     try {
-      if (!await _requestRequiredPermissions()) return false;
+      if (!await isEnabled() || !await _hasRequiredPermissions(ask: false)) return false;
       await initializeService();
       return true;
     } catch (_) {
@@ -89,13 +110,11 @@ class BackgroundSosService {
       LocationService(),
       contactRepository: ContactRepository(DatabaseService()),
       audioService: SecureAudioService(),
+      evidenceRepository: EvidenceRepository(DatabaseService()),
     );
     // Initialize our dependencies inside this background isolate
     final shakeService = ShakeToSosService(triggerPanic);
     shakeService.startListening();
-    
-    final geofenceService = GeofenceService(triggerPanic);
-    geofenceService.startGeofenceMonitoring();
     
     StreamSubscription? hardwareSosSubscription;
     if (Platform.isAndroid) {
@@ -110,7 +129,6 @@ class BackgroundSosService {
     service.on('stopService').listen((event) {
       hardwareSosSubscription?.cancel();
       shakeService.stopListening();
-      geofenceService.stopGeofenceMonitoring();
       service.stopSelf();
     });
   }

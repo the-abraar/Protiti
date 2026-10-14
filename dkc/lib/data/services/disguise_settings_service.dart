@@ -1,4 +1,4 @@
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'secure_store.dart';
 
 /// Persists the survivor's choice of whether the app should always open
 /// straight into the calculator disguise, rather than the branded Protiti
@@ -7,8 +7,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 /// on a shared or monitored device who can't rely on remembering to tap the
 /// disguise toggle every single time the phone is opened.
 class DisguiseSettingsService {
-  static const _storage = FlutterSecureStorage();
-  static const _alwaysLaunchAsCalculatorKey = 'always_launch_as_calculator';
+  static const _storage = secureStore;
+  static const _alwaysLaunchAsCalculatorKey = StoreKeys.launchAsCalculator;
 
   static Future<bool> getAlwaysLaunchAsCalculator() async {
     try {

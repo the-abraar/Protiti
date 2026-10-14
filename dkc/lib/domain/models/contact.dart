@@ -15,6 +15,19 @@ class TrustedContact {
     required this.isEmergency,
   });
 
+  /// A Bangladeshi mobile number in any common form (01..., +8801..., 8801...,
+  /// spaces or dashes, Bangla digits) as +8801XXXXXXXXX, or null if invalid.
+  static String? normalizePhone(String input) {
+    const banglaDigits = '০১২৩৪৫৬৭৮৯';
+    final ascii = input.split('').map((c) {
+      final i = banglaDigits.indexOf(c);
+      return i >= 0 ? '$i' : c;
+    }).join();
+    final compact = ascii.replaceAll(RegExp(r'[\s\-().]'), '');
+    final match = RegExp(r'^(?:\+88|0088|88)?(01[3-9]\d{8})$').firstMatch(compact);
+    return match == null ? null : '+88${match.group(1)}';
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'id': id,

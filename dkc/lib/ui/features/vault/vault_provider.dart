@@ -6,13 +6,10 @@ import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import '../../../data/repositories/evidence_repository.dart';
 import '../../../domain/models/evidence.dart';
-import '../../../domain/use_cases/analyze_evidence_use_case.dart';
-import '../../../data/services/jev_service.dart';
 import '../../../data/services/encryption_service.dart';
-import '../../../data/services/cloud_backup_service.dart';
 import '../../../data/services/secure_audio_service.dart';
 import '../../../data/services/hash_evidence_service.dart';
-import '../../../data/services/decoy_generator_service.dart';
+import '../../../data/services/evidence_files.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class VaultProvider extends ChangeNotifier {
@@ -21,6 +18,7 @@ class VaultProvider extends ChangeNotifier {
   
   List<Evidence> _items = [];
   bool _isLoading = true;
+  bool _loadFailed = false;
 
   VaultProvider(this._repository, {required this.isDecoy}) {
     loadEvidence();
@@ -29,56 +27,26 @@ class VaultProvider extends ChangeNotifier {
   List<Evidence> get items => _items;
   bool get isLoading => _isLoading;
 
+  /// True when storage could not be opened (fail closed, never an empty fresh vault).
+  bool get loadFailed => _loadFailed;
+
   Future<void> loadEvidence() async {
     _isLoading = true;
     notifyListeners();
     
-    _items = await _repository.getEvidence();
-
-    // If the decoy vault is suspiciously empty, dynamically generate organic content
-    if (isDecoy && _items.isEmpty) {
-      final decoyService = DecoyGeneratorService(_repository);
-      await decoyService.seedDynamicDecoys();
-      // Reload the newly seeded items
+    try {
       _items = await _repository.getEvidence();
+      _loadFailed = false;
+    } catch (_) {
+      _items = [];
+      _loadFailed = true;
     }
-    
     _isLoading = false;
     notifyListeners();
-    
-    // Fire-and-forget background cloud sync (only for real vault)
-    if (!isDecoy && _items.isNotEmpty) {
-      final backupService = CloudBackupService(EncryptionService());
-      backupService.performZeroKnowledgeBackup(_items);
-    }
   }
 
   Future<void> addEvidence(Evidence evidence) async {
-    // Only run expensive AI analysis if it's real evidence, not decoy grocery lists
-    if (!evidence.isDecoy) {
-      try {
-        final analysisCase = AnalyzeEvidenceUseCase(JevService('DKC_DEMO_API_KEY'));
-        final analysisResult = await analysisCase.call(evidence.description);
-        
-        // Enrich the evidence with the AI classification metadata
-        final enrichedEvidence = Evidence(
-          id: evidence.id,
-          type: evidence.type,
-          description: '${evidence.description}\n\n[AI Classification: ${analysisResult.harassmentType.toUpperCase()} | Severity: ${analysisResult.severityScore}/10]',
-          createdAt: evidence.createdAt,
-          isDecoy: evidence.isDecoy,
-        );
-
-        await _repository.addEvidence(enrichedEvidence);
-      } catch (e) {
-        // Fallback to standard save if AI network fails
-        await _repository.addEvidence(evidence);
-      }
-    } else {
-      // Save decoy evidence normally
-      await _repository.addEvidence(evidence);
-    }
-    
+    await _repository.addEvidence(evidence);
     await loadEvidence(); // Auto-refresh the list
   }
   
@@ -115,7 +83,7 @@ class VaultProvider extends ChangeNotifier {
       // 3. Save ciphertext to isolated app documents directory
       final directory = await getApplicationDocumentsDirectory();
       final fileName = const Uuid().v4();
-      final file = File('${directory.path}/$fileName.bin');
+      final file = File('${directory.path}/$fileName$evidenceExt');
       await file.writeAsString(encryptedData);
 
       // 1. Generate Cryptographic Signature
@@ -135,7 +103,6 @@ class VaultProvider extends ChangeNotifier {
         isDecoy: false,
       );
 
-      // Pass through our existing addEvidence method (which also triggers the AI)
       await addEvidence(evidence);
 
     } finally {
@@ -180,7 +147,7 @@ class VaultProvider extends ChangeNotifier {
 
       final directory = await getApplicationDocumentsDirectory();
       final fileName = const Uuid().v4();
-      final file = File('${directory.path}/$fileName.bin');
+      final file = File('${directory.path}/$fileName$evidenceExt');
       await file.writeAsString(encryptedData);
 
       // 3. Generate Cryptographic Hash and Save to DB
@@ -218,8 +185,8 @@ class VaultProvider extends ChangeNotifier {
     if (isDecoy) return;
     
     final audioService = SecureAudioService();
-    await audioService.startRecording();
-    
+    if (!await audioService.startRecording()) return;
+
     // Show a dialog to stop recording
     if (!context.mounted) return;
     await showDialog(
@@ -244,21 +211,7 @@ class VaultProvider extends ChangeNotifier {
     try {
       final securePath = await audioService.stopAndEncryptRecording();
       if (securePath != null) {
-        final fileName = securePath.split('/').last;
-        final fileHash = await HashEvidenceService.generateFileHash(securePath);
-        final evidence = Evidence(
-          id: fileName,
-          type: 'audio',
-          description: 'Secure Audio Wiretap',
-          filePath: securePath,
-          metadata: {
-            'sha256_checksum': fileHash,
-            'capture_device_timestamp': DateTime.now().toUtc().toIso8601String(),
-          },
-          createdAt: DateTime.now(),
-          isDecoy: false,
-        );
-        await addEvidence(evidence);
+        await addEvidence(await audioService.evidenceFor(securePath, description: 'Audio recording'));
       }
     } finally {
       _isLoading = false;
@@ -266,8 +219,15 @@ class VaultProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> deleteEvidence(String id) async {
-    await _repository.deleteEvidence(id);
-    await loadEvidence(); // Auto-refresh the list
+  /// Removes the row and its encrypted file.
+  Future<void> deleteEvidence(Evidence item) async {
+    await _repository.deleteEvidence(item.id);
+    final path = item.filePath;
+    if (path != null) {
+      try {
+        await File(path).delete();
+      } catch (_) {}
+    }
+    await loadEvidence();
   }
 }

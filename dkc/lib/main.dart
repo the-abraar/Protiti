@@ -2,27 +2,47 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:secure_application/secure_application.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:protiti/l10n/app_localizations.dart'; 
+import 'package:protiti/l10n/app_localizations.dart';
+import 'data/repositories/evidence_repository.dart';
+import 'data/services/database_service.dart';
+import 'data/services/secure_audio_service.dart';
+import 'data/services/secure_store.dart';
 import 'ui/core/theme/app_theme.dart';
 import 'ui/features/auth/lock_screen.dart';
 
-import 'data/services/rasp_service.dart';
-
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // The background SOS service (hardware button / shake-to-SOS / geofence)
-  // requests its own location + microphone permissions and starts itself
-  // once they're granted — see BackgroundSosService.ensureStarted(), called
-  // from LockScreen.initState(). Starting it unconditionally here crashes on
-  // Android 14+, which requires a foreground service's declared permission
-  // types to already be granted before the service can start.
-
-  // Arm the Runtime Application Self-Protection (RASP) Engine
-  await RaspService.initializeRasp();
-  
+  try {
+    await migrateStoreKeys();
+  } catch (_) {}
   runApp(const ProtitiApp());
+  // Panic recordings cut off by a killed app become evidence rows now.
+  SecureAudioService()
+      .recoverPending(EvidenceRepository(DatabaseService()))
+      .catchError((_) => 0);
 }
+
+/// Secured from the first frame: Android FLAG_SECURE (also set natively in
+/// MainActivity) and the iOS app-switcher blur.
+final appSecurity = SecureApplicationController(SecureApplicationState(secured: true));
+
+/// MaterialApp.builder: sits above the Navigator, so every route, pushed or
+/// replaced, is under the same protection.
+Widget protectApp(BuildContext context, Widget? child) => SecureApplication(
+      secureApplicationController: appSecurity,
+      nativeRemoveDelay: 100,
+      // The vault already returns to the lock screen when backgrounded, so
+      // on return only the switcher cover needs lifting.
+      onNeedUnlock: (controller) async {
+        controller?.unlock();
+        return null;
+      },
+      child: SecureGate(
+        blurr: 20,
+        lockedBuilder: (context, _) => ColoredBox(color: Theme.of(context).scaffoldBackgroundColor),
+        child: child ?? const SizedBox.shrink(),
+      ),
+    );
 
 class ProtitiApp extends StatefulWidget {
   const ProtitiApp({super.key});
@@ -32,20 +52,16 @@ class ProtitiApp extends StatefulWidget {
 }
 
 class _ProtitiAppState extends State<ProtitiApp> {
+  final bool _isSupported = Platform.isAndroid || Platform.isIOS;
+
   @override
   void initState() {
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
+    if (_isSupported) appSecurity.secure();
   }
 
   @override
   Widget build(BuildContext context) {
-    final isSupported = Platform.isAndroid || Platform.isIOS;
-    
     return MaterialApp(
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       debugShowCheckedModeBanner: false,
@@ -62,26 +78,8 @@ class _ProtitiAppState extends State<ProtitiApp> {
         Locale('en'),
         Locale('bn'),
       ],
-      home: isSupported 
-        ? SecureApplication(
-            nativeRemoveDelay: 100,
-            autoUnlockNative: true,
-            child: Builder(builder: (context) {
-              // Secures the app by blurring it in the background task switcher
-              // and blocking OS-level screenshots.
-              return SecureGate(
-                blurr: 20,
-                lockedBuilder: (context, secureNotifier) => const Scaffold(
-                  backgroundColor: Color(0xFFF7F9FC),
-                  body: Center(
-                    child: Icon(Icons.lock_outline, size: 48, color: Color(0xFFA0AEC0)),
-                  ),
-                ),
-                child: const LockScreen(),
-              );
-            }),
-          )
-        : const LockScreen(),
+      builder: _isSupported ? protectApp : null,
+      home: const LockScreen(),
     );
   }
 }

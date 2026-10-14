@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:secure_application/secure_application.dart';
 import 'package:protiti/l10n/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
 import '../../../domain/models/evidence.dart';
@@ -8,16 +7,11 @@ import 'package:provider/provider.dart';
 import 'vault_provider.dart';
 import 'secure_image_viewer.dart';
 import 'secure_audio_player.dart';
-import '../../../data/services/p2p_transfer_service.dart';
 import '../panic/panic_screen.dart';
 import '../complaint/complaint_wizard_screen.dart';
 import '../support/support_screen.dart';
 import '../settings/settings_screen.dart';
 import '../auth/lock_screen.dart';
-import '../../../data/services/proximity_lock_service.dart';
-import '../../../data/services/bluetooth_tether_service.dart';
-import '../../../data/services/screen_cast_monitor.dart';
-import '../../../data/services/auth_service.dart';
 
 class VaultScreen extends StatefulWidget {
   final bool isDecoy;
@@ -32,95 +26,23 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
   int _currentIndex = 0;
 
   late final List<Widget> _screens;
-  late final ProximityLockService _proximityService;
-  late final BluetoothTetherService _bluetoothTetherService;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     
-    _proximityService = ProximityLockService();
-    _bluetoothTetherService = BluetoothTetherService();
-    
-    // Security monitors (Bluetooth tether, proximity sensor, screen cast).
-    // Only armed for the real vault: false-triggering in decoy mode would
-    // itself be a giveaway that something unusual is happening. A 2-second
-    // grace period lets the screen finish settling before anything can arm.
-    if (!widget.isDecoy) {
-      Future.delayed(const Duration(seconds: 2), () {
-        if (!mounted) return;
-
-        _proximityService.startListening(() {
-          if (mounted) {
-            AuthService().enforcePinHardLock();
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (_) => const LockScreen()),
-              (route) => false,
-            );
-          }
-        });
-
-        _bluetoothTetherService.startTetherMonitoring(() {
-          if (mounted) {
-            AuthService().enforcePinHardLock();
-            Navigator.of(context).pushAndRemoveUntil(
-              MaterialPageRoute(builder: (_) => const LockScreen()),
-              (route) => false,
-            );
-          }
-        });
-
-        ScreenCastMonitor.startMonitoring(
-          onCastDetected: () async {
-            if (mounted) {
-              await AuthService().enforcePinHardLock();
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (_) => const LockScreen()),
-                (route) => false,
-              );
-            }
-          },
-          onScreenshotAttempted: () async {
-            if (mounted) {
-              await AuthService().enforcePinHardLock();
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (_) => const LockScreen()),
-                (route) => false,
-              );
-            }
-          },
-        );
-      });
-    }
-
     _screens = [
       VaultGridScreen(isDecoy: widget.isDecoy),
       ComplaintWizardScreen(isDecoy: widget.isDecoy),
       PanicScreen(isDecoy: widget.isDecoy),
       SupportScreen(isDecoy: widget.isDecoy),
     ];
-
-    // Enable/disable screenshot protection ONCE after the first frame.
-    // Must NOT be called from build() — doing so triggers SecureGate to 
-    // show its lockedBuilder overlay on every rebuild, causing the gray screen.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      final secureProvider = SecureApplicationProvider.of(context, listen: false);
-      if (!widget.isDecoy) {
-        secureProvider?.secure();
-      } else {
-        secureProvider?.open();
-      }
-    });
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
-    _proximityService.stopListening();
-    _bluetoothTetherService.stopMonitoring();
-    ScreenCastMonitor.stopMonitoring();
     super.dispose();
   }
 
@@ -146,57 +68,37 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
     );
   }
 
+  // Chrome (app bar, tabs, button) is identical in both modes: the duress
+  // view must not look different from the real one (B2).
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
-            Icon(
-              widget.isDecoy
-                  ? Icons.folder_shared_outlined
-                  : Icons.lock_clock_outlined,
-              size: 20,
-              color: widget.isDecoy ? AppTheme.accentSoft : AppTheme.brandSecondary,
-            ),
+            const Icon(Icons.folder_outlined, size: 20, color: AppTheme.brandSecondary),
             const SizedBox(width: 8),
             Text(
-              widget.isDecoy
-                  ? AppLocalizations.of(context)!.decoyVaultTitle
-                  : AppLocalizations.of(context)!.appTitle,
+              l10n.appTitle,
               style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
           ],
         ),
         actions: [
-          if (!widget.isDecoy)
-            IconButton(
-              icon: const Icon(Icons.wifi_tethering),
-              tooltip: AppLocalizations.of(context)!.offlineP2pExportTooltip,
-              onPressed: () async {
-                final p2pService = P2PTransferService();
-                await p2pService.startOfflineBroadcast("System_Diagnostic_Sync");
-                if (mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(AppLocalizations.of(context)!.offlineP2pBeaconActivated)),
-                  );
-                }
-              },
-            ),
-          if (!widget.isDecoy)
-            IconButton(
-              icon: const Icon(Icons.settings_outlined),
-              tooltip: AppLocalizations.of(context)!.safetySettingsTooltip,
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const SettingsScreen()),
-                );
-              },
-            ),
           IconButton(
-            tooltip: AppLocalizations.of(context)!.lockVaultTooltip,
-            icon: const Icon(Icons.lock, color: Colors.white70),
+            icon: const Icon(Icons.settings_outlined),
+            tooltip: l10n.safetySettingsTooltip,
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => SettingsScreen(isDecoy: widget.isDecoy)),
+              );
+            },
+          ),
+          IconButton(
+            tooltip: l10n.lockVaultTooltip,
+            icon: const Icon(Icons.lock),
             onPressed: _lockVault,
           ),
         ],
@@ -211,43 +113,18 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
         },
         type: BottomNavigationBarType.fixed,
         items: [
+          BottomNavigationBarItem(icon: const Icon(Icons.folder), label: l10n.navFiles),
+          BottomNavigationBarItem(icon: const Icon(Icons.edit_note), label: l10n.navNotes),
           BottomNavigationBarItem(
-            icon: Icon(widget.isDecoy ? Icons.folder : Icons.shield),
-            label: widget.isDecoy
-                ? AppLocalizations.of(context)!.navFiles
-                : AppLocalizations.of(context)!.navVault,
+            icon: const Icon(Icons.health_and_safety_outlined),
+            label: l10n.navSafety,
           ),
-          BottomNavigationBarItem(
-            icon: Icon(widget.isDecoy ? Icons.edit_note : Icons.description),
-            label: widget.isDecoy
-                ? AppLocalizations.of(context)!.navNotes
-                : AppLocalizations.of(context)!.navReport,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              widget.isDecoy ? Icons.info_outline : Icons.warning_amber,
-            ),
-            label: widget.isDecoy
-                ? AppLocalizations.of(context)!.navSafety
-                : AppLocalizations.of(context)!.navPanicSos,
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              widget.isDecoy
-                  ? Icons.contact_support_outlined
-                  : Icons.support_agent,
-            ),
-            label: widget.isDecoy
-                ? AppLocalizations.of(context)!.navHelp
-                : AppLocalizations.of(context)!.navSupport,
-          ),
+          BottomNavigationBarItem(icon: const Icon(Icons.help_outline), label: l10n.navHelp),
         ],
       ),
       floatingActionButton: _currentIndex == 0
           ? FloatingActionButton.extended(
-              backgroundColor: widget.isDecoy
-                  ? AppTheme.accentSoft
-                  : AppTheme.brandSecondary,
+              backgroundColor: AppTheme.brandSecondary,
               onPressed: () {
                 if (widget.isDecoy) {
                   _showAddDialog(context);
@@ -270,29 +147,29 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                             leading: const Icon(Icons.camera_alt, color: AppTheme.brandSecondary),
                             title: Text(AppLocalizations.of(context)!.secureCameraCapture, style: const TextStyle(color: AppTheme.textPrimary)),
                             onTap: () async {
+                              final vault = Provider.of<VaultProvider>(context, listen: false);
                               Navigator.pop(ctx);
-                              await Provider.of<VaultProvider>(context, listen: false)
-                                  .captureAndSaveSecureImage();
+                              await vault.captureAndSaveSecureImage();
                             },
                           ),
                           ListTile(
                             leading: const Icon(Icons.mic, color: AppTheme.brandSecondary),
                             title: Text(AppLocalizations.of(context)!.secureAudioRecord, style: const TextStyle(color: AppTheme.textPrimary)),
                             onTap: () async {
+                              final vault = Provider.of<VaultProvider>(context, listen: false);
                               Navigator.pop(ctx);
-                              await Provider.of<VaultProvider>(context, listen: false)
-                                  .captureAndSaveSecureAudio(context);
+                              await vault.captureAndSaveSecureAudio(context);
                             },
                           ),
                           ListTile(
                             leading: const Icon(Icons.photo_library, color: AppTheme.brandSecondary),
                             title: Text(AppLocalizations.of(context)!.secureGalleryImport, style: const TextStyle(color: AppTheme.textPrimary)),
                             onTap: () async {
+                              final vault = Provider.of<VaultProvider>(context, listen: false);
                               Navigator.pop(ctx);
-                              final success = await Provider.of<VaultProvider>(context, listen: false)
-                                  .importAndScrubGalleryImage();
+                              final success = await vault.importAndScrubGalleryImage();
 
-                              if (success && mounted) {
+                              if (success && context.mounted) {
                                  // CRITICAL: We cannot silently delete from the public gallery due to OS rules.
                                  // We MUST show a highly visible alert forcing the user to do it manually.
                                  showDialog(
@@ -328,9 +205,7 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                 }
               },
               icon: const Icon(Icons.add),
-              label: Text(widget.isDecoy
-                  ? AppLocalizations.of(context)!.addFileFab
-                  : AppLocalizations.of(context)!.secureEvidenceFab),
+              label: Text(l10n.addFileFab),
             )
           : null,
     );
@@ -383,9 +258,10 @@ class _VaultScreenState extends State<VaultScreen> with WidgetsBindingObserver {
                     isDecoy: widget.isDecoy,
                   );
 
-                  await Provider.of<VaultProvider>(context, listen: false).addEvidence(newEvidence);
+                  final vault = Provider.of<VaultProvider>(context, listen: false);
+                  await vault.addEvidence(newEvidence);
 
-                  if (context.mounted) {
+                  if (ctx.mounted) {
                     Navigator.pop(ctx);
                   }
                 }
@@ -427,17 +303,35 @@ class VaultGridScreen extends StatelessWidget {
   }
 
   Color _getBadgeColor(String type) {
-    if (isDecoy) return AppTheme.brandSecondary;
     switch (type.toLowerCase()) {
       case 'audio':
         return AppTheme.panicRed;
       case 'screenshot':
-        return AppTheme.brandSecondary;
       case 'pdf':
         return AppTheme.brandSecondary;
       default:
-        return AppTheme.accentSoft;
+        return AppTheme.textSecondary;
     }
+  }
+
+  Future<void> _confirmDelete(BuildContext context, Evidence item) async {
+    final vault = Provider.of<VaultProvider>(context, listen: false);
+    final l10n = AppLocalizations.of(context)!;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.deleteItemTitle),
+        content: Text(l10n.deleteItemBody),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: Text(l10n.cancel)),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.deleteTooltip, style: const TextStyle(color: AppTheme.panicRed)),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) await vault.deleteEvidence(item);
   }
 
   @override
@@ -455,17 +349,14 @@ class VaultGridScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
-                  isDecoy ? Icons.folder_open : Icons.shield_outlined,
-                  size: 64,
-                  color: Colors.grey,
-                ),
+                const Icon(Icons.folder_open, size: 64, color: AppTheme.textSecondary),
                 const SizedBox(height: 16),
                 Text(
-                  isDecoy
-                      ? AppLocalizations.of(context)!.noPersonalFilesYet
-                      : AppLocalizations.of(context)!.forensicVaultEmpty,
-                  style: const TextStyle(fontSize: 16, color: Colors.grey),
+                  provider.loadFailed
+                      ? AppLocalizations.of(context)!.storageErrorMessage
+                      : AppLocalizations.of(context)!.noPersonalFilesYet,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(fontSize: 16, color: AppTheme.textSecondary),
                 ),
               ],
             ),
@@ -474,184 +365,131 @@ class VaultGridScreen extends StatelessWidget {
 
         return RefreshIndicator(
           onRefresh: () => provider.loadEvidence(),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                color: isDecoy
-                    ? Colors.grey[100]
-                    : AppTheme.surfaceLight,
-                child: Row(
-                  children: [
-                    Icon(
-                      isDecoy
-                          ? Icons.visibility_off_outlined
-                          : Icons.verified_user_outlined,
-                      size: 18,
-                      color: isDecoy ? Colors.grey : AppTheme.brandSecondary,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        isDecoy
-                            ? AppLocalizations.of(context)!.showingDecoyFiles
-                            : AppLocalizations.of(context)!.evidenceStoredSecurely,
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: isDecoy
-                              ? Colors.grey[600]
-                              : AppTheme.textPrimary,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: GridView.builder(
-                  padding: const EdgeInsets.all(16),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 14,
-                    mainAxisSpacing: 14,
-                    mainAxisExtent: 220,
-                  ),
-                  itemCount: items.length,
-                  itemBuilder: (context, index) {
-                    final item = items[index];
-                    final dateStr =
-                        '${item.createdAt.day}/${item.createdAt.month}/${item.createdAt.year}';
+          child: GridView.builder(
+            padding: const EdgeInsets.all(16),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 14,
+              mainAxisSpacing: 14,
+              mainAxisExtent: 220,
+            ),
+            itemCount: items.length,
+            itemBuilder: (context, index) {
+              final item = items[index];
+              final dateStr =
+                  '${item.createdAt.day}/${item.createdAt.month}/${item.createdAt.year}';
 
-                    return InkWell(
-                      onTap: () {
-                        if (item.type == 'image' && item.filePath != null) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => SecureImageViewer(filePath: item.filePath!),
-                            ),
-                          );
-                        } else if (item.type == 'audio' && item.filePath != null) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => SecureAudioPlayer(filePath: item.filePath!),
-                            ),
-                          );
-                        } else {
-                          showDialog(
-                            context: context,
-                            builder: (ctx) => AlertDialog(
-                              backgroundColor: AppTheme.primaryWhite,
-                              title: Text(AppLocalizations.of(context)!.evidenceDetailsTitle, style: const TextStyle(color: AppTheme.textPrimary)),
-                              content: SingleChildScrollView(
-                                child: Text(item.description, style: const TextStyle(color: AppTheme.textPrimary)),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(ctx),
-                                  child: Text(AppLocalizations.of(context)!.close),
-                                )
-                              ]
-                            )
-                          );
-                        }
-                      },
-                      child: Card(
-                        elevation: 1,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          side: BorderSide(
-                            color: isDecoy
-                                ? Colors.black12
-                                : AppTheme.accentSoft.withValues(alpha: 0.2),
-                          ),
+              return InkWell(
+                onTap: () {
+                  if (item.type == 'image' && item.filePath != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => SecureImageViewer(filePath: item.filePath!),
+                      ),
+                    );
+                  } else if (item.type == 'audio' && item.filePath != null) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => SecureAudioPlayer(filePath: item.filePath!),
+                      ),
+                    );
+                  } else {
+                    showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        backgroundColor: AppTheme.primaryWhite,
+                        title: Text(AppLocalizations.of(context)!.evidenceDetailsTitle, style: const TextStyle(color: AppTheme.textPrimary)),
+                        content: SingleChildScrollView(
+                          child: Text(item.description, style: const TextStyle(color: AppTheme.textPrimary)),
                         ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx),
+                            child: Text(AppLocalizations.of(context)!.close),
+                          )
+                        ]
+                      )
+                    );
+                  }
+                },
+                child: Card(
+                  elevation: 1,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(color: AppTheme.accentSoft.withValues(alpha: 0.2)),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(8),
-                                  decoration: BoxDecoration(
-                                    color: _getBadgeColor(
-                                      item.type,
-                                    ).withValues(alpha: 0.15),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Icon(
-                                    _getIconForType(item.type),
-                                    size: 26,
-                                    color: _getBadgeColor(item.type),
-                                  ),
-                                ),
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 6,
-                                    vertical: 2,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.surfaceLight,
-                                    borderRadius: BorderRadius.circular(4),
-                                  ),
-                                  child: Text(
-                                    item.type.toUpperCase(),
-                                    style: const TextStyle(
-                                      fontSize: 9,
-                                      fontWeight: FontWeight.bold,
-                                      color: AppTheme.textSecondary,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            const Spacer(),
-                            Text(
-                              item.description,
-                              maxLines: 3,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 13,
-                                color: AppTheme.textPrimary,
+                            Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: _getBadgeColor(item.type).withValues(alpha: 0.15),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Icon(
+                                _getIconForType(item.type),
+                                size: 26,
+                                color: _getBadgeColor(item.type),
                               ),
                             ),
-                            const SizedBox(height: 6),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Text(
-                                  dateStr,
-                                  style: const TextStyle(
-                                    color: AppTheme.textSecondary,
-                                    fontSize: 11,
-                                  ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: AppTheme.surfaceLight,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                item.type.toUpperCase(),
+                                style: const TextStyle(
+                                  fontSize: 9,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.textSecondary,
                                 ),
-                                if (!isDecoy)
-                                  const Icon(
-                                    Icons.shield,
-                                    size: 14,
-                                    color: AppTheme.accentSoft,
-                                  ),
-                              ],
+                              ),
                             ),
                           ],
                         ),
-                      ),
+                        const Spacer(),
+                        Text(
+                          item.description,
+                          maxLines: 3,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 13,
+                            color: AppTheme.textPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              dateStr,
+                              style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete_outline, size: 18, color: AppTheme.textSecondary),
+                              tooltip: AppLocalizations.of(context)!.deleteTooltip,
+                              visualDensity: VisualDensity.compact,
+                              onPressed: () => _confirmDelete(context, item),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                  );
-                },
+                  ),
                 ),
-              ),
-            ],
+              );
+            },
           ),
         );
       },

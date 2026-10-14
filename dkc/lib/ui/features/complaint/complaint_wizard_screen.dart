@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
 import 'dart:io';
@@ -8,6 +7,7 @@ import '../../../domain/models/complaint.dart';
 import '../../../domain/use_cases/generate_complaint.dart';
 import '../../../data/repositories/complaint_repository.dart';
 import '../../../data/services/database_service.dart';
+import '../../../data/services/secure_store.dart';
 import '../../core/theme/app_theme.dart';
 import '../vault/vault_provider.dart';
 
@@ -25,7 +25,9 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descController = TextEditingController();
   final TextEditingController _stationController = TextEditingController();
-  final FlutterSecureStorage _storage = const FlutterSecureStorage();
+  final _storage = secureStore;
+  // Everything is attached unless she unticks it.
+  final Set<String> _excludedIds = {};
 
   @override
   void initState() {
@@ -41,15 +43,15 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
   Future<void> _loadSecureDraft() async {
     if (widget.isDecoy) {
       _titleController.text =
-          await _storage.read(key: 'decoy_draft_title') ?? '';
-      _descController.text = await _storage.read(key: 'decoy_draft_desc') ?? '';
+          await _storage.read(key: StoreKeys.notesDraftTitle) ?? '';
+      _descController.text = await _storage.read(key: StoreKeys.notesDraftBody) ?? '';
       return;
     }
 
-    _titleController.text = await _storage.read(key: 'gd_draft_title') ?? '';
-    _descController.text = await _storage.read(key: 'gd_draft_desc') ?? '';
+    _titleController.text = await _storage.read(key: StoreKeys.draftTitle) ?? '';
+    _descController.text = await _storage.read(key: StoreKeys.draftDescription) ?? '';
     _stationController.text =
-        await _storage.read(key: 'gd_draft_station') ?? '';
+        await _storage.read(key: StoreKeys.draftStation) ?? '';
   }
 
   Timer? _debounce;
@@ -58,12 +60,12 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
       if (widget.isDecoy) {
-        _storage.write(key: 'decoy_draft_title', value: _titleController.text);
-        _storage.write(key: 'decoy_draft_desc', value: _descController.text);
+        _storage.write(key: StoreKeys.notesDraftTitle, value: _titleController.text);
+        _storage.write(key: StoreKeys.notesDraftBody, value: _descController.text);
       } else {
-        _storage.write(key: 'gd_draft_title', value: _titleController.text);
-        _storage.write(key: 'gd_draft_desc', value: _descController.text);
-        _storage.write(key: 'gd_draft_station', value: _stationController.text);
+        _storage.write(key: StoreKeys.draftTitle, value: _titleController.text);
+        _storage.write(key: StoreKeys.draftDescription, value: _descController.text);
+        _storage.write(key: StoreKeys.draftStation, value: _stationController.text);
       }
     });
   }
@@ -79,8 +81,10 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
 
   Future<void> _generateAndExportPDF() async {
     final useCase = GenerateComplaintUseCase();
-    final vaultEvidence =
-        Provider.of<VaultProvider>(context, listen: false).items;
+    final vaultEvidence = Provider.of<VaultProvider>(context, listen: false)
+        .items
+        .where((e) => !_excludedIds.contains(e.id))
+        .toList();
 
     final result = await useCase.execute(
       vaultEvidence,
@@ -154,9 +158,11 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                   size: 22,
                 ),
                 const SizedBox(width: 8),
-                const Text(
-                  'Legal GD & Complaint Generator',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                const Expanded(
+                  child: Text(
+                    'Legal GD & Complaint Generator',
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ],
             ),
@@ -165,7 +171,7 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Text(
               'Draft formal General Diary (GD) complaints formatted under Bangladesh Police & Cyber Tribunal standards.',
-              style: TextStyle(fontSize: 12, color: Colors.grey[400]),
+              style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary),
             ),
           ),
           const SizedBox(height: 12),
@@ -265,14 +271,15 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
               ),
               Step(
                 title: const Text('Attach Verified Evidence'),
-                subtitle: const Text('Link cryptographic items from vault'),
+                subtitle: const Text('Choose which items go into the PDF'),
                 content: Consumer<VaultProvider>(
                   builder: (context, vaultProvider, _) {
                     final items = vaultProvider.items;
+                    final chosen = items.where((e) => !_excludedIds.contains(e.id)).length;
                     final summary = items.isEmpty
-                        ? 'No vault evidence yet. Anything you save in the Vault tab is attached to this GD automatically.'
-                        : '${items.length} vault evidence item${items.length == 1 ? '' : 's'} will be attached '
-                              '(${items.map((e) => e.type).toSet().join(', ')}), each with a SHA-256 hash.';
+                        ? 'No evidence yet. Save items in the Files tab, then come back to choose them.'
+                        : '$chosen of ${items.length} item${items.length == 1 ? '' : 's'} will go into the PDF. '
+                              'Untick anything you do not want to include.';
 
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -282,7 +289,7 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                           decoration: BoxDecoration(
                             color: AppTheme.primaryWhite,
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.white10),
+                            border: Border.all(color: AppTheme.accentSoft.withValues(alpha: 0.3)),
                           ),
                           child: Row(
                             children: [
@@ -303,23 +310,22 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 12),
-                        ElevatedButton.icon(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppTheme.accentSoft,
+                        const SizedBox(height: 8),
+                        for (final item in items)
+                          CheckboxListTile(
+                            dense: true,
+                            contentPadding: EdgeInsets.zero,
+                            value: !_excludedIds.contains(item.id),
+                            title: Text(item.description, maxLines: 2, overflow: TextOverflow.ellipsis),
+                            subtitle: Text(item.type),
+                            onChanged: (include) => setState(() {
+                              if (include == true) {
+                                _excludedIds.remove(item.id);
+                              } else {
+                                _excludedIds.add(item.id);
+                              }
+                            }),
                           ),
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'Add more evidence from the Vault tab, then come back — it is attached automatically.',
-                                ),
-                              ),
-                            );
-                          },
-                          icon: const Icon(Icons.add_photo_alternate_outlined),
-                          label: const Text('Select Additional Evidence'),
-                        ),
                       ],
                     );
                   },
@@ -426,7 +432,7 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
           const SizedBox(height: 8),
           Text(
             'Draft class essays, personal reminders, or travel itineraries.',
-            style: TextStyle(fontSize: 13, color: Colors.grey[400]),
+            style: const TextStyle(fontSize: 13, color: AppTheme.textSecondary),
           ),
           const SizedBox(height: 20),
           TextField(
