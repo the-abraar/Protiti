@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../../../data/services/encryption_service.dart';
 
@@ -9,19 +8,9 @@ class SecureImageViewer extends StatelessWidget {
 
   SecureImageViewer({super.key, required this.filePath});
 
-  Future<ImageProvider> _decryptImage() async {
-    final file = File(filePath);
-    final encryptedData = await file.readAsString();
-    
-    // 1. Decrypt AES ciphertext back to base64
-    final base64Image = await _encryptionService.decrypt(encryptedData);
-    
-    // 2. Decode base64 to raw bytes
-    final bytes = base64Decode(base64Image);
-    
-    // 3. Return exclusively in volatile memory!
-    return MemoryImage(bytes);
-  }
+  /// Decrypted only into memory, never to a file.
+  Future<ImageProvider> _decryptImage() async =>
+      MemoryImage(await _encryptionService.decryptToBytes(File(filePath)));
 
   @override
   Widget build(BuildContext context) {

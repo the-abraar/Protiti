@@ -37,6 +37,44 @@
   "cancel": "Cancel",
   "save": "Save",
   "evidenceDetailsTitle": "Details",
+
+"secureScreenshotImport": "Import Screenshot",
+
+"addDetailsTitle": "Add details (optional)",
+
+"skip": "Skip",
+
+"evidencePlatformLabel": "App or platform, e.g. Facebook (optional)",
+
+"evidenceUrlLabel": "Link to the post or profile (optional)",
+
+"captureSourceLabel": "Source",
+
+"captureSourceName": "{source, select, camera{Camera} gallery{Gallery} screenshot{Screenshot} note{Typed note} audio{Microphone} other{Not recorded}}",
+
+"capturedAtLabel": "Saved at (this phone's clock, UTC)",
+
+"platformLabel": "App or platform",
+
+"linkLabel": "Link",
+
+"sha256Label": "SHA-256 of the original",
+
+"notRecorded": "Not recorded (saved by an older version)",
+
+"@captureSourceName": {
+
+"placeholders": {
+
+"source": {
+
+"type": "String"
+
+}
+
+}
+
+},
   "close": "Close",
   "noPersonalFilesYet": "No personal files saved yet",
   "disarmSosTooltip": "Disarm SOS",

@@ -113,6 +113,53 @@ class AppLocalizationsBn extends AppLocalizations {
   String get evidenceDetailsTitle => 'বিস্তারিত';
 
   @override
+  String get secureScreenshotImport => 'স্ক্রিনশট যোগ করুন';
+
+  @override
+  String get addDetailsTitle => 'বিস্তারিত যোগ করুন (ঐচ্ছিক)';
+
+  @override
+  String get skip => 'বাদ দিন';
+
+  @override
+  String get evidencePlatformLabel =>
+      'অ্যাপ বা প্ল্যাটফর্ম, যেমন Facebook (ঐচ্ছিক)';
+
+  @override
+  String get evidenceUrlLabel => 'পোস্ট বা প্রোফাইলের লিংক (ঐচ্ছিক)';
+
+  @override
+  String get captureSourceLabel => 'উৎস';
+
+  @override
+  String captureSourceName(String source) {
+    String _temp0 = intl.Intl.selectLogic(source, {
+      'camera': 'ক্যামেরা',
+      'gallery': 'গ্যালারি',
+      'screenshot': 'স্ক্রিনশট',
+      'note': 'লেখা নোট',
+      'audio': 'মাইক্রোফোন',
+      'other': 'লেখা নেই',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get capturedAtLabel => 'সংরক্ষণের সময় (এই ফোনের ঘড়ি, UTC)';
+
+  @override
+  String get platformLabel => 'অ্যাপ বা প্ল্যাটফর্ম';
+
+  @override
+  String get linkLabel => 'লিংক';
+
+  @override
+  String get sha256Label => 'মূল ফাইলের SHA-256';
+
+  @override
+  String get notRecorded => 'লেখা নেই (পুরোনো সংস্করণে সংরক্ষিত)';
+
+  @override
   String get close => 'বন্ধ করুন';
 
   @override

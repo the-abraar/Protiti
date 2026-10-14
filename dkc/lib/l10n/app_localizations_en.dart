@@ -114,6 +114,53 @@ class AppLocalizationsEn extends AppLocalizations {
   String get evidenceDetailsTitle => 'Details';
 
   @override
+  String get secureScreenshotImport => 'Import Screenshot';
+
+  @override
+  String get addDetailsTitle => 'Add details (optional)';
+
+  @override
+  String get skip => 'Skip';
+
+  @override
+  String get evidencePlatformLabel =>
+      'App or platform, e.g. Facebook (optional)';
+
+  @override
+  String get evidenceUrlLabel => 'Link to the post or profile (optional)';
+
+  @override
+  String get captureSourceLabel => 'Source';
+
+  @override
+  String captureSourceName(String source) {
+    String _temp0 = intl.Intl.selectLogic(source, {
+      'camera': 'Camera',
+      'gallery': 'Gallery',
+      'screenshot': 'Screenshot',
+      'note': 'Typed note',
+      'audio': 'Microphone',
+      'other': 'Not recorded',
+    });
+    return '$_temp0';
+  }
+
+  @override
+  String get capturedAtLabel => 'Saved at (this phone\'s clock, UTC)';
+
+  @override
+  String get platformLabel => 'App or platform';
+
+  @override
+  String get linkLabel => 'Link';
+
+  @override
+  String get sha256Label => 'SHA-256 of the original';
+
+  @override
+  String get notRecorded => 'Not recorded (saved by an older version)';
+
+  @override
   String get close => 'Close';
 
   @override

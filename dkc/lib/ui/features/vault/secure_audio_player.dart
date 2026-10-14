@@ -1,83 +1,94 @@
+import 'dart:async';
 import 'dart:io';
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:uuid/uuid.dart';
-import '../../../data/services/encryption_service.dart';
+import '../../../data/services/secure_audio_service.dart';
 
+/// Plays an encrypted recording. The decrypted copy exists only while it is
+/// playing: pause, the end of the track and closing the screen delete it, and
+/// the next play decrypts it again from where she paused.
 class SecureAudioPlayer extends StatefulWidget {
   final String filePath;
-  const SecureAudioPlayer({super.key, required this.filePath});
+  final AudioPlayer? player;
+  const SecureAudioPlayer({super.key, required this.filePath, @visibleForTesting this.player});
 
   @override
   State<SecureAudioPlayer> createState() => _SecureAudioPlayerState();
 }
 
 class _SecureAudioPlayerState extends State<SecureAudioPlayer> {
-  final AudioPlayer _audioPlayer = AudioPlayer();
-  final EncryptionService _encryptionService = EncryptionService();
-  bool _isPlaying = false;
-  File? _decryptedTempFile;
-  bool _isLoading = true;
+  late final AudioPlayer _audioPlayer = widget.player ?? AudioPlayer();
+  final SecureAudioService _audio = SecureAudioService();
+  StreamSubscription<void>? _onComplete;
+  File? _plain;
+  Duration _resumeAt = Duration.zero;
+  bool _busy = false;
 
   @override
   void initState() {
     super.initState();
-    _prepareAudio();
-    
-    _audioPlayer.onPlayerStateChanged.listen((state) {
-      if (mounted) {
-        setState(() {
-          _isPlaying = state == PlayerState.playing;
-        });
-      }
+    _onComplete = _audioPlayer.onPlayerComplete.listen((_) {
+      _resumeAt = Duration.zero;
+      _discard();
     });
   }
 
-  Future<void> _prepareAudio() async {
+  Future<void> _play() async {
+    setState(() => _busy = true);
     try {
-      // 1. Read encrypted ciphertext
-      final file = File(widget.filePath);
-      final encryptedData = await file.readAsString();
-      
-      // 2. Decrypt AES block back to base64
-      final base64Audio = await _encryptionService.decrypt(encryptedData);
-      final bytes = base64Decode(base64Audio);
-      
-      // 3. Write strictly to the OS temp cache (AudioPlayer requires a physical URI to stream)
-      final tempDir = await getTemporaryDirectory();
-      _decryptedTempFile = File('${tempDir.path}/${const Uuid().v4()}.m4a');
-      await _decryptedTempFile!.writeAsBytes(bytes);
-      
-      await _audioPlayer.setSourceDeviceFile(_decryptedTempFile!.path);
-      
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
-    } catch (e) {
+      _plain = await _audio.decryptForPlayback(widget.filePath);
+      if (!mounted) return _discard();
+      await _audioPlayer.setSourceDeviceFile(_plain!.path);
+      await _audioPlayer.seek(_resumeAt);
+      await _audioPlayer.resume();
+    } catch (_) {
+      await _discard();
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Failed to decrypt audio evidence.')),
         );
       }
+    } finally {
+      if (mounted) setState(() => _busy = false);
     }
+  }
+
+  Future<void> _pause() async {
+    setState(() => _busy = true);
+    try {
+      _resumeAt = await _audioPlayer.getCurrentPosition() ?? _resumeAt;
+      // Stop releases the file before it is deleted.
+      await _audioPlayer.stop();
+    } finally {
+      await _discard();
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  Future<void> _discard() async {
+    final file = _plain;
+    _plain = null;
+    if (mounted) setState(() {});
+    try {
+      if (file != null && await file.exists()) await file.delete();
+    } catch (_) {}
   }
 
   @override
   void dispose() {
+    _onComplete?.cancel();
     _audioPlayer.dispose();
-    
-    // FORENSIC WIPE: Guarantee destruction of the plaintext audio the millisecond the screen closes
-    if (_decryptedTempFile != null && _decryptedTempFile!.existsSync()) {
-      _decryptedTempFile!.deleteSync();
-    }
+    try {
+      _plain?.deleteSync();
+    } catch (_) {}
+    _plain = null;
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final playing = _plain != null;
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -85,19 +96,14 @@ class _SecureAudioPlayerState extends State<SecureAudioPlayer> {
         title: const Text('Secure Audio Review', style: TextStyle(fontSize: 14)),
       ),
       body: Center(
-        child: _isLoading 
+        child: _busy
             ? const CircularProgressIndicator(color: Colors.white)
             : IconButton(
                 iconSize: 64,
                 color: Colors.white,
-                icon: Icon(_isPlaying ? Icons.pause_circle_filled : Icons.play_circle_fill),
-                onPressed: () {
-                  if (_isPlaying) {
-                    _audioPlayer.pause();
-                  } else {
-                    _audioPlayer.resume();
-                  }
-                },
+                tooltip: playing ? 'Pause' : 'Play',
+                icon: Icon(playing ? Icons.pause_circle_filled : Icons.play_circle_fill),
+                onPressed: playing ? _pause : _play,
               ),
       ),
     );

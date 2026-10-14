@@ -92,10 +92,13 @@ class EvidenceRepository {
         } catch (_) {}
       }
 
+      final filePath = e['uri_path'] as String?;
+      final type = e['mime_type'] as String;
       return Evidence(
         id: e['req_id'] as String,
-        type: e['mime_type'] as String,
-        filePath: e['uri_path'] as String?,
+        // Builds before Oct 2026 saved typed notes as 'screenshot' with no file.
+        type: type == 'screenshot' && (filePath == null || filePath.isEmpty) ? 'text' : type,
+        filePath: filePath,
         url: e['ext_url'] as String?,
         description: e['blob_ref'] as String,
         metadata: meta,

@@ -77,8 +77,11 @@ class FakeEvidenceRepository extends EvidenceRepository {
       : items = items ?? [],
         super(DatabaseService());
 
+  /// Same id replaces, like the real table's ConflictAlgorithm.replace.
   @override
-  Future<void> addEvidence(Evidence evidence) async => items.add(evidence);
+  Future<void> addEvidence(Evidence evidence) async => items
+    ..removeWhere((e) => e.id == evidence.id)
+    ..add(evidence);
 
   @override
   Future<List<Evidence>> getEvidence() async => List.of(items);

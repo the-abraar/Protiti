@@ -1,26 +1,31 @@
-import 'dart:io';
 import 'dart:convert';
+import 'dart:io';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:uuid/uuid.dart';
 import '../../../data/repositories/evidence_repository.dart';
 import '../../../domain/models/evidence.dart';
 import '../../../data/services/encryption_service.dart';
 import '../../../data/services/secure_audio_service.dart';
-import '../../../data/services/hash_evidence_service.dart';
 import '../../../data/services/evidence_files.dart';
-import 'package:flutter_image_compress/flutter_image_compress.dart';
+
+typedef PickImage = Future<XFile?> Function(ImageSource source);
 
 class VaultProvider extends ChangeNotifier {
   final EvidenceRepository _repository;
   final bool isDecoy;
-  
+  final PickImage _pickImage;
+
   List<Evidence> _items = [];
   bool _isLoading = true;
   bool _loadFailed = false;
+  bool _pickerOpen = false;
 
-  VaultProvider(this._repository, {required this.isDecoy}) {
+  VaultProvider(this._repository, {required this.isDecoy, PickImage? pickImage})
+      : _pickImage = pickImage ?? ((source) => ImagePicker().pickImage(source: source)) {
     loadEvidence();
   }
 
@@ -30,10 +35,21 @@ class VaultProvider extends ChangeNotifier {
   /// True when storage could not be opened (fail closed, never an empty fresh vault).
   bool get loadFailed => _loadFailed;
 
+  /// True while the system camera or photo picker that she opened from here
+  /// is on screen. It sends the app to the background, which must not lock
+  /// the vault and drop the photo (B18).
+  bool get pickerOpen => _pickerOpen;
+
+  @override
+  void notifyListeners() {
+    // A save that finishes after the vault screen closed must still land.
+    if (hasListeners) super.notifyListeners();
+  }
+
   Future<void> loadEvidence() async {
     _isLoading = true;
     notifyListeners();
-    
+
     try {
       _items = await _repository.getEvidence();
       _loadFailed = false;
@@ -49,146 +65,79 @@ class VaultProvider extends ChangeNotifier {
     await _repository.addEvidence(evidence);
     await loadEvidence(); // Auto-refresh the list
   }
-  
-  Future<void> captureAndSaveSecureImage() async {
-    // Only allow real evidence to use the secure camera pipeline
-    if (isDecoy) return; 
 
-    final picker = ImagePicker();
-    // Force camera source to prevent picking from compromised public galleries
-    final photo = await picker.pickImage(source: ImageSource.camera);
-    if (photo == null) return;
+  /// A typed note. Its hash is of the text exactly as saved.
+  Future<void> addNote(String text, {String platform = '', String url = ''}) async {
+    final now = DateTime.now();
+    final note = Evidence(
+      id: now.millisecondsSinceEpoch.toString(),
+      type: 'text',
+      description: text,
+      createdAt: now,
+      isDecoy: isDecoy,
+      metadata: isDecoy
+          ? null
+          : Evidence.captureMetadata(source: 'note', sha256: sha256.convert(utf8.encode(text)).toString(), capturedAt: now),
+    );
+    await addEvidence(isDecoy ? note : note.withDetails(description: text, platform: platform, url: url));
+  }
 
+  /// Opens the camera or the gallery and stores the file exactly as the OS
+  /// hands it over: hashed and encrypted in one pass, never re-encoded and
+  /// never stripped of EXIF. [captureSource] is camera, gallery or screenshot.
+  /// Returns the saved item, or null if she backed out.
+  Future<Evidence?> addImage(ImageSource source, {required String captureSource}) async {
+    if (isDecoy) return null;
+
+    final XFile? photo;
+    _pickerOpen = true;
+    try {
+      photo = await _pickImage(source);
+    } finally {
+      _pickerOpen = false;
+    }
+    if (photo == null) return null;
+
+    final picked = File(photo.path);
     try {
       _isLoading = true;
       notifyListeners();
 
-      // 1. Read image to memory
-      final rawBytes = await photo.readAsBytes();
-      
-      // FORENSIC SANITIZATION: Strip all EXIF metadata (GPS coords, device model) 
-      // to protect the victim's safe house location before the evidence is permanently sealed.
-      final sanitizedBytes = await FlutterImageCompress.compressWithList(
-        rawBytes,
-        keepExif: false, // CRITICAL: Drops all geolocation and device tags!
-        quality: 90,
-      );
-
-      final base64Image = base64Encode(sanitizedBytes);
-
-      // 2. Encrypt the raw image data via our AES service
-      final encryptionService = EncryptionService();
-      final encryptedData = await encryptionService.encrypt(base64Image);
-
-      // 3. Save ciphertext to isolated app documents directory
-      final directory = await getApplicationDocumentsDirectory();
-      final fileName = const Uuid().v4();
-      final file = File('${directory.path}/$fileName$evidenceExt');
-      await file.writeAsString(encryptedData);
-
-      // 1. Generate Cryptographic Signature
-      final fileHash = await HashEvidenceService.generateFileHash(file.path);
-
-      // 4. Create database record
+      final now = DateTime.now();
+      final id = const Uuid().v4();
+      final file = File(p.join((await getApplicationDocumentsDirectory()).path, '$id$evidenceExt'));
+      final hash = await EncryptionService().encryptFile(picked, file);
       final evidence = Evidence(
-        id: fileName,
+        id: id,
         type: 'image',
-        description: 'Secure Camera Capture',
+        description: captureSource == 'camera' ? 'Camera photo' : (captureSource == 'screenshot' ? 'Screenshot' : 'Gallery photo'),
         filePath: file.path,
-        metadata: {
-          'sha256_checksum': fileHash,
-          'capture_device_timestamp': DateTime.now().toUtc().toIso8601String(),
-        },
-        createdAt: DateTime.now(),
-        isDecoy: false,
+        metadata: Evidence.captureMetadata(source: captureSource, sha256: hash, capturedAt: now),
+        createdAt: now,
       );
-
-      await addEvidence(evidence);
-
+      await _repository.addEvidence(evidence);
+      return evidence;
     } finally {
-      // 5. FORENSIC WIPE: Delete the unencrypted cache file generated by ImagePicker
-      final cacheFile = File(photo.path);
-      if (cacheFile.existsSync()) {
-        cacheFile.deleteSync();
-      }
-      
-      _isLoading = false;
-      notifyListeners();
+      // The picker's plaintext copy in the cache; the gallery original is hers to delete.
+      try {
+        if (await picked.exists()) await picked.delete();
+      } catch (_) {}
+      await loadEvidence();
     }
   }
 
-  /// Imports an existing photo from the public gallery, encrypts it, 
-  /// and ensures the victim is warned to delete the unencrypted original.
-  Future<bool> importAndScrubGalleryImage() async {
-    if (isDecoy) return false; 
+  /// Saves her description, platform and link on an item already stored.
+  Future<void> updateDetails(Evidence item, {required String description, required String platform, required String url}) =>
+      addEvidence(item.withDetails(description: description, platform: platform, url: url));
 
-    final picker = ImagePicker();
-    // Allow picking from the compromised public gallery
-    final photo = await picker.pickImage(source: ImageSource.gallery);
-    if (photo == null) return false;
+  Future<Evidence?> captureAndSaveSecureAudio(BuildContext context) async {
+    if (isDecoy) return null;
 
-    try {
-      _isLoading = true;
-      notifyListeners();
-
-      final rawBytes = await photo.readAsBytes();
-      
-      // 1. Scrub EXIF Metadata
-      final sanitizedBytes = await FlutterImageCompress.compressWithList(
-        rawBytes,
-        keepExif: false,
-        quality: 90,
-      );
-
-      // 2. Encrypt and Save
-      final base64Image = base64Encode(sanitizedBytes);
-      final encryptionService = EncryptionService();
-      final encryptedData = await encryptionService.encrypt(base64Image);
-
-      final directory = await getApplicationDocumentsDirectory();
-      final fileName = const Uuid().v4();
-      final file = File('${directory.path}/$fileName$evidenceExt');
-      await file.writeAsString(encryptedData);
-
-      // 3. Generate Cryptographic Hash and Save to DB
-      final fileHash = await HashEvidenceService.generateFileHash(file.path);
-      final evidence = Evidence(
-        id: fileName,
-        type: 'image',
-        description: 'Secure Gallery Import',
-        filePath: file.path,
-        metadata: {
-          'sha256_checksum': fileHash,
-          'capture_device_timestamp': DateTime.now().toUtc().toIso8601String(),
-          'source': 'gallery_import',
-        },
-        createdAt: DateTime.now(),
-        isDecoy: false,
-      );
-
-      await addEvidence(evidence);
-      
-      // Return true to indicate a successful import so the UI can trigger the warning
-      return true;
-
-    } finally {
-      // Clear the temporary cache from the image picker
-      final cacheFile = File(photo.path);
-      if (cacheFile.existsSync()) cacheFile.deleteSync();
-      
-      _isLoading = false;
-      notifyListeners();
-    }
-  }
-
-  Future<void> captureAndSaveSecureAudio(BuildContext context) async {
-    if (isDecoy) return;
-    
     final audioService = SecureAudioService();
-    if (!await audioService.startRecording()) return;
+    if (!await audioService.startRecording()) return null;
 
     // Show a dialog to stop recording
-    if (!context.mounted) return;
+    if (!context.mounted) return null;
     await showDialog(
       context: context,
       barrierDismissible: false,
@@ -204,18 +153,14 @@ class VaultProvider extends ChangeNotifier {
         ],
       )
     );
-    
+
     _isLoading = true;
     notifyListeners();
-    
+
     try {
-      final securePath = await audioService.stopAndEncryptRecording();
-      if (securePath != null) {
-        await addEvidence(await audioService.evidenceFor(securePath, description: 'Audio recording'));
-      }
+      return await audioService.stopAndSave(_repository, description: 'Audio recording');
     } finally {
-      _isLoading = false;
-      notifyListeners();
+      await loadEvidence();
     }
   }
 
