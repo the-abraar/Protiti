@@ -1,4 +1,10 @@
 # Protiti to Bangladesh Police Online e-GD Schema Mapping
+
+> **Design sketch, not an integration. UNVERIFIED, needs counsel (2026-10-14).**
+> - Bangladesh Police offers no public e-GD API. The app's own PDF says so, and the app submits nothing to the police.
+> - Every "Cyber Protection Act 2026" section and every "65B" field below is unverified (see `cyber_protection_act_2026_guide.md`).
+> - **PCSW email, verify with PCSW: the [Bangladesh Police portal](https://police.portal.gov.bd/pages/static-pages/6922df86933eb65569e228c0) lists `cybersupport.women@police.gov.bd` (page last updated Dec 2023).** This document and the app (`dkc/lib/domain/use_cases/generate_complaint.dart`) use `pcsw@police.gov.bd`.
+> - The automated PCSW email and the USSD fallback described below are not built.
 **Document Reference:** PROTITI-EGD-MAP-2026-V1  
 **Target Systems:** Bangladesh Police Online GD Portal (`gd.police.gov.bd`), Police Cyber Support for Women (PCSW), CID Cyber Police Centre (CPC), National Emergency Service (999).  
 **Purpose:** Technical and administrative specification for transforming Protiti's in-app legal questionnaire into the official Bangladesh Police Online General Diary API payload.
@@ -51,7 +57,7 @@ Protiti implements an internal jurisdictional lookup matching Bangladesh's 8 adm
 
 ---
 
-## 3. Incident Taxonomy & Categorization
+## 3. Incident Taxonomy & Categorization (law sections UNVERIFIED, needs counsel)
 
 The Bangladesh Police e-GD portal categorizes cyber incidents under specific statutory codes. Protiti maps user-friendly intake questions directly into official police incident taxonomies:
 
@@ -66,7 +72,7 @@ The Bangladesh Police e-GD portal categorizes cyber incidents under specific sta
 
 ---
 
-## 4. Complete JSON Schema Specification (`protiti_egd_payload_v1.json`)
+## 4. Complete JSON Schema Specification (`protiti_egd_payload_v1.json`) (hypothetical; statute and 65B fields UNVERIFIED, needs counsel)
 
 This schema represents the JSON payload produced by Protiti for automated submission to `gd.police.gov.bd` and generation of courtroom-compliant documentation:
 
@@ -266,7 +272,7 @@ When a female victim indicates an incident of Non-Consensual Intimate Imagery (N
 1.  **Immediate PCSW Hotline Trigger:**
     *   Direct click-to-call link: `tel:01320000888`
     *   24/7 dedicated support desk operated exclusively by female officers.
-2.  **Automated Encrypted Email Dispatch (`pcsw@police.gov.bd`):**
+2.  **Automated Encrypted Email Dispatch (`pcsw@police.gov.bd`, verify with PCSW: the [Bangladesh Police portal](https://police.portal.gov.bd/pages/static-pages/6922df86933eb65569e228c0) lists `cybersupport.women@police.gov.bd` (page last updated Dec 2023)):** Not built.
     *   The app compiles an official encrypted transmission directly addressed to PCSW Headquarters.
     *   **Email Subject:** `[URGENT-PCSW COMPLAINT] GBCV Incident Report - Ref: PROTITI-[DOSSIER-ID]`
     *   **Body Content:** Official intake statement in Bengali, verified complainant phone number, and suspect digital profile coordinates.

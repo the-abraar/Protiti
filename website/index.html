@@ -52,7 +52,7 @@
             </h2>
             <p class="text-xl text-secondary italic">"সন্দেহহীন সত্য, অকাট্য প্রমাণের অধিকার"</p>
             <p class="text-lg text-secondary leading-relaxed">
-                A Digital Evidence Vault app providing a frame of safety to structure the path to justice. Protiti empowers women facing online harassment in Bangladesh by securely documenting and formatting evidence for direct legal action.
+                A research prototype of an evidence vault for women facing online harassment in Bangladesh. It keeps screenshots, photos and notes encrypted on the phone and drafts a General Diary (GD) text for manual filing. <strong>Not for real use:</strong> unsafe for survivors until reviewed by a security expert and a field partner.
             </p>
             <div class="pt-4 flex gap-4">
                 <a href="#solution" class="bg-amethyst text-white px-8 py-3 rounded-md font-semibold hover:bg-amethyst-light transition shadow-lg shadow-[#4A154B]/50">See How it Works</a>
@@ -75,7 +75,7 @@
                     <h3 class="text-3xl font-bold flex items-center gap-3">
                         <span class="text-crimson">Chaos</span> The Reality
                     </h3>
-                    <p class="text-gray-300"><strong>64% of Bangladeshi women face digital violence.</strong> Victims are silenced by an overwhelming lack of structure and social stigma.</p>
+                    <p class="text-gray-300"><strong>About 64% of the 359 women who completed a 2022 ActionAid Bangladesh online survey said they had faced online violence</strong> (<a href="https://en.prothomalo.com/bangladesh/15il1p6qqq" class="underline">Prothom Alo, 28 Nov 2022</a>; not a national sample). Stigma keeps many from reporting.</p>
                     <ul class="space-y-4 text-secondary">
                         <li class="flex items-start gap-3">
                             <span class="text-crimson mt-1 font-bold">✗</span>
@@ -83,11 +83,11 @@
                         </li>
                         <li class="flex items-start gap-3">
                             <span class="text-crimson mt-1 font-bold">✗</span>
-                            <span><strong>Legal Complexity:</strong> Filing a General Diary (GD) and navigating the Cyber Protection Act, 2026 is intimidating.</span>
+                            <span><strong>Legal Complexity:</strong> Filing a General Diary (GD) and working out which cyber law applies is intimidating.</span>
                         </li>
                         <li class="flex items-start gap-3">
                             <span class="text-crimson mt-1 font-bold">✗</span>
-                            <span><strong>Metadata Gap:</strong> Screenshots are dismissed because they lack timestamps, URLs, and required metadata under the Evidence Act.</span>
+                            <span><strong>Metadata Gap:</strong> Screenshots without dates, links and account names are easy to doubt.</span>
                         </li>
                     </ul>
                 </div>
@@ -97,19 +97,19 @@
                     <h3 class="text-3xl font-bold flex items-center gap-3">
                         <span class="text-teal-custom">Clarity</span> The Protiti Solution
                     </h3>
-                    <p class="text-gray-300">We shift the burden of proof from the victim's trauma to undisputed certitude.</p>
+                    <p class="text-gray-300">We help survivors keep their evidence in one safe, organised place.</p>
                     <ul class="space-y-4 text-secondary">
                         <li class="flex items-start gap-3">
                             <span class="text-teal-custom mt-1 font-bold">✓</span>
-                            <span><strong>Zero-Knowledge Security:</strong> End-to-end encryption with local SQLCipher storage and encrypted cloud backups.</span>
+                            <span><strong>On-device encryption:</strong> Evidence is stored in an encrypted SQLCipher database on the phone. Nothing is uploaded.</span>
                         </li>
                         <li class="flex items-start gap-3">
                             <span class="text-teal-custom mt-1 font-bold">✓</span>
-                            <span><strong>Legal Logic Engine:</strong> Our Complaint Wizard directly maps incident data to the Cyber Protection Act, 2026 and Bangladesh Police e-GD schema.</span>
+                            <span><strong>GD draft:</strong> A guided form makes a PDF draft to file in person. There is no e-GD integration, and no lawyer has reviewed the output.</span>
                         </li>
                         <li class="flex items-start gap-3">
                             <span class="text-teal-custom mt-1 font-bold">✓</span>
-                            <span><strong>Resilience:</strong> Offline-first design with a dedicated hardware SOS plugin and P2P secure transfer.</span>
+                            <span><strong>Works offline:</strong> The vault, the GD draft and the SMS SOS do not need mobile data.</span>
                         </li>
                     </ul>
                 </div>
@@ -124,22 +124,22 @@
             <div class="bg-card p-6 rounded-xl border border-gray-800 hover:border-amethyst transition duration-300 group">
                 <div class="text-4xl mb-4 group-hover:scale-110 transition">📦</div>
                 <h4 class="text-xl font-semibold mb-3 text-gold">Secure Evidence Vault</h4>
-                <p class="text-secondary text-sm leading-relaxed">Encrypted SQLCipher storage. Features a Duress PIN that opens a Decoy Vault (powered by our Decoy Generator Service) for physical coercion scenarios.</p>
+                <p class="text-secondary text-sm leading-relaxed">Encrypted SQLCipher storage on the phone. A separate duress PIN opens a decoy vault for coercion scenarios.</p>
             </div>
             <div class="bg-card p-6 rounded-xl border border-gray-800 hover:border-amethyst transition duration-300 group">
                 <div class="text-4xl mb-4 group-hover:scale-110 transition">📝</div>
-                <h4 class="text-xl font-semibold mb-3 text-gold">GD-Automator Wizard</h4>
-                <p class="text-secondary text-sm leading-relaxed">Guided by Jev AI, it structures evidence (with cryptographic Alibi Service metadata) into actionable formats ready for Police API integration.</p>
+                <h4 class="text-xl font-semibold mb-3 text-gold">GD Draft Wizard</h4>
+                <p class="text-secondary text-sm leading-relaxed">A guided form turns your account of the incident and your evidence list into a GD draft PDF. You file it yourself; there is no police API.</p>
             </div>
             <div class="bg-card p-6 rounded-xl border border-gray-800 hover:border-amethyst transition duration-300 group">
                 <div class="text-4xl mb-4 group-hover:scale-110 transition">🚨</div>
-                <h4 class="text-xl font-semibold mb-3 text-gold">Panic Frame & Background SOS</h4>
-                <p class="text-secondary text-sm leading-relaxed">A native hardware SOS plugin sends offline-first SMS coordinates and direct alerts to PCSW in severe danger.</p>
+                <h4 class="text-xl font-semibold mb-3 text-gold">Panic Screen</h4>
+                <p class="text-secondary text-sm leading-relaxed">Sends one SMS with your location to your saved contacts, and dials 999, 109 or the PCSW hotline with one tap. It does not alert PCSW by itself.</p>
             </div>
             <div class="bg-card p-6 rounded-xl border border-gray-800 hover:border-amethyst transition duration-300 group">
                 <div class="text-4xl mb-4 group-hover:scale-110 transition">🤝</div>
-                <h4 class="text-xl font-semibold mb-3 text-gold">Support Bridge</h4>
-                <p class="text-secondary text-sm leading-relaxed">Connects victims with vetted pro-bono lawyers (BLAST, BNWLA) and mental health counselors via secure P2P transfers.</p>
+                <h4 class="text-xl font-semibold mb-3 text-gold">Support Directory</h4>
+                <p class="text-secondary text-sm leading-relaxed">A list of hotlines, legal aid and counselling services. No organisation has agreed to a partnership yet.</p>
             </div>
         </div>
     </section>
@@ -149,26 +149,26 @@
         <div class="container mx-auto px-6 text-center">
             <h2 class="text-3xl font-bold mb-6">Target Community & Impact</h2>
             <p class="text-gray-300 max-w-2xl mx-auto mb-12">
-                Designed for female university students (18-30) facing digital harassment. Implemented through a phased 8-month roadmap, including pilot testing in home divisions and campus workshops.
+                Intended for female university students (18-30) facing digital harassment. The 8-month plan includes campus workshops and a pilot; no pilot has run yet. The goals below are aims, not results.
             </p>
             <div class="grid md:grid-cols-3 gap-8">
                 <div class="p-8 border border-gray-800 rounded-lg bg-elevated shadow-lg">
-                    <div class="text-5xl font-bold text-gold mb-4">80%+</div>
-                    <p class="text-secondary">Reduction in accidental evidence destruction due to panic.</p>
+                    <div class="text-5xl font-bold text-gold mb-4">Keep</div>
+                    <p class="text-secondary">Fewer survivors lose evidence by deleting it in panic.</p>
                 </div>
                 <div class="p-8 border border-gray-800 rounded-lg bg-elevated shadow-lg">
-                    <div class="text-5xl font-bold text-teal-custom mb-4">3x</div>
-                    <p class="text-secondary">Increase in actionable, court-admissible General Diaries filed.</p>
+                    <div class="text-5xl font-bold text-teal-custom mb-4">Draft</div>
+                    <p class="text-secondary">More complete GD drafts that a duty officer can act on.</p>
                 </div>
                 <div class="p-8 border border-gray-800 rounded-lg bg-elevated shadow-lg">
-                    <div class="text-5xl font-bold text-amethyst mb-4">Swift</div>
-                    <p class="text-secondary">Escalation of severe extortion/deepfake cases directly to female cyber officers.</p>
+                    <div class="text-5xl font-bold text-amethyst mb-4">Refer</div>
+                    <p class="text-secondary">Faster contact with PCSW, the police unit for women facing cyber harassment, in extortion and deepfake cases.</p>
                 </div>
             </div>
             
             <div class="mt-16 max-w-4xl mx-auto p-8 rounded-xl bg-gradient-to-r from-[#4A154B]/20 to-transparent border-l-4 border-teal-custom text-left">
                 <p class="italic text-xl text-gray-300">
-                    "With Protiti, the burden of proof shifts from the victim's trauma to undisputed certitude — turning deleted chats into courtroom-ready evidence under the Evidence (Amendment) Act, 2022."
+                    The Evidence (Amendment) Act 2022 lets courts in Bangladesh consider digital records. Protiti aims to help survivors keep those records safe and organised. No lawyer has yet reviewed whether its output would be accepted in court.
                 </p>
             </div>
         </div>
@@ -180,10 +180,8 @@
             <p class="mb-6 text-lg text-gray-300"><strong>Every woman deserves a frame of safety. Help us build the structure for justice.</strong></p>
             <div class="flex justify-center gap-6 mb-8">
                 <a href="tech.html" class="text-teal-custom hover:text-gold transition">Technology</a>
-                <a href="#" class="text-teal-custom hover:text-gold transition">Open Source Schema</a>
-                <a href="#" class="text-teal-custom hover:text-gold transition">Contact Support</a>
             </div>
-            <p class="text-secondary">&copy; 2026 Project Protiti. DKC Digital Respect & Cohesion Fellowship. Phase 1 Implementation.</p>
+            <p class="text-secondary">&copy; 2026 Project Protiti. DKC Digital Respect & Cohesion Fellowship. Research prototype; not for real use.</p>
         </div>
     </footer>
 

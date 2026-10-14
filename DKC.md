@@ -110,9 +110,9 @@ Each application must be submitted as a team of 3–5 members:
 ```
 Sep 2026 ──── Applications Open
     │
-30 Sep 2026 ── Application Deadline  ← YOU ARE HERE
+30 Sep 2026 ── Application Deadline (passed)
     │
-Oct 2026 ──── Team Selection (three-stage evaluation)
+Oct 2026 ──── Team Selection (three-stage evaluation)  ← 14 Oct 2026: awaiting result
     │
 Oct 2026 ──── Innovation Bootcamp (3-day residential)
     │              → Co-design, facilitation, digital literacy,
@@ -252,4 +252,4 @@ A **DKC / SURGE / UNDP joint certificate** and membership in the **DKC Alumni Ne
 ---
 
 *Document compiled on 25 September 2026 from [digitalkhichurichallenge.com](https://www.digitalkhichurichallenge.com/en)*
-*You have **5 days** until the deadline.*
+*Status 14 Oct 2026: the application deadline has passed; the team is waiting for the selection result.*

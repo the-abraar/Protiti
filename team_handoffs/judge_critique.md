@@ -105,7 +105,7 @@ The team responded with an intense cross-functional sprint across Dev, Legal, De
 ### 6. Full Bengali Localization & Rural Accessibility
 * **Evaluation:** **FLAWED EXECUTION — HIGH DESIGN STANDARDS, ENGLISH-ONLY CODEBASE.**
 * **What Works:**
-  - `pitch_materials/protiti_mockup.html` and `design_handoff.md` feature excellent bilingual typography pairing Poppins/Inter with Hind Siliguri and deep cultural resonance.
+  - `website/protiti_mockup.html` and `design_handoff.md` feature excellent bilingual typography pairing Poppins/Inter with Hind Siliguri and deep cultural resonance.
   - Trauma-informed Bengali microcopy standards are well-documented.
 * **The Fatal Bugs & Blindspots:**
   1. **Codebase is 100% English Hardcoded:** In `dkc/lib/`, every button, header, and error message is hardcoded in English: `"Enter security PIN"`, `"Incorrect PIN. Please re-enter"`, `"Secure New Evidence"`, `"Hold for 3 seconds to activate"`. There is no `intl` or `.arb` localization file. A semi-literate victim in rural Barishal or Rangpur will not understand why an authentication attempt failed or how to file a complaint.

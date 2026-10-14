@@ -1,5 +1,7 @@
 # Design System & Brand Handoff: Protiti (প্রতীতি)
 
+> Note (2026-10-14): every mention of the "Cyber Protection Act 2026" here is UNVERIFIED, needs counsel (see `legal/cyber_protection_act_2026_guide.md`). Partners named here are proposed, not agreed. The app is a research prototype and not for real use.
+
 **Document Version:** 2.0  
 **Project:** Project Protiti — Digital Evidence Vault & Legal GD Automator  
 **Fellowship:** DKC Fellowship 2026 (UNDP Bangladesh)  
@@ -193,7 +195,7 @@ flowchart TD
 
 | Deliverable Asset | Location / File Path | Status | Purpose |
 |---|---|---|---|
-| **Interactive HTML Mockup** | `pitch_materials/protiti_mockup.html` | ✅ Complete | Responsive, interactive prototype with bilingual toggle, decoy vault, stealth calculator, and panic SOS hold simulation. |
+| **Interactive HTML Mockup** | `website/protiti_mockup.html` | ✅ Complete | Responsive, interactive prototype with bilingual toggle, decoy vault, stealth calculator, and panic SOS hold simulation. |
 | **Flutter Theme Tokens** | `dkc/lib/ui/core/theme/app_theme.dart` | ✅ Complete | Official Dart theme tokens for Light and Dark modes with Protiti Amethyst, Teal, Gold, and Crimson color schemes. |
 | **Design System Specification** | `team_handoffs/design_handoff.md` | ✅ Complete | This comprehensive document covering typography, color hierarchy, trauma UX, and stealth launcher specs. |
 | **Pitch Presentation Slides** | `pitch_materials/pitch_deck.md` | ✅ Synced | Fellowship pitch deck incorporating Protiti branding, statistics, and legal framework. |

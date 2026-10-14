@@ -1,12 +1,14 @@
-# Institutional Legal Partnership Framework: Project Protiti, BLAST & BNWLA
+# Proposed Institutional Legal Partnership Framework: Project Protiti, BLAST & BNWLA
+
+> **PROPOSED, not agreed (2026-10-14).** Nothing in this document is signed. BLAST and BNWLA have not agreed to any clause, protocol or role below. Every "Section 65A/65B" and "Section 22A" reference is UNVERIFIED, needs counsel: they are Indian Evidence Act numbers (see `cyber_protection_act_2026_guide.md`). The app produces no Section 65B certificate.
 **Document Reference:** PROTITI-MOU-BLAST-BNWLA-2026  
 **Partners:**
 1. **Project Protiti** (Digital Respect & Cohesion Fellowship 2026, UNDP / PTIB / SURGE)
 2. **Bangladesh Legal Aid and Services Trust (BLAST)** (বাংলাদেশ লিগ্যাল এইড অ্যান্ড সার্ভিসেস ট্রাস্ট)
 3. **Bangladesh National Woman Lawyers' Association (BNWLA)** (বাংলাদেশ জাতীয় মহিলা আইনজীবী সমিতি)
 
-**Status:** Official Fellowship Partnership Proposal & Standard Operating Procedure (SOP)  
-**Effective Date:** October 2026 – February 2027 (and nationwide scale-up)
+**Status:** Proposal only. Not discussed with or agreed by BLAST or BNWLA.  
+**Effective Date:** None. Proposed window: October 2026 – February 2027.
 
 ---
 
@@ -60,7 +62,7 @@ flowchart TD
 
 ## 3. Operational Protocols
 
-### Protocol 1: Cryptographic Hash Vetting & Section 65B Co-Certification
+### Protocol 1 (proposed): Cryptographic Hash Vetting & Section 65B Co-Certification (UNVERIFIED, needs counsel)
 To neutralize the defense argument that Protiti is an "uncertified private app":
 1.  **Open Cryptographic Audit:** BLAST’s cyber law specialists and independent digital forensic consultants audit Protiti’s deterministic hashing algorithm (`NIST FIPS 180-4 SHA-256`).
 2.  **Institutional Certificate Format:** When a Protiti user exports an evidence package for court, the generated Section 65B Certificate includes:
@@ -69,7 +71,7 @@ To neutralize the defense argument that Protiti is an "uncertified private app":
         *"Cryptographic integrity protocol certified compliant with Evidence (Amendment) Act 2022 standards by BLAST & BNWLA Legal-Forensics Working Group."*
 3.  **Bench Demonstration:** BLAST/BNWLA advocates are provided with standardized judicial cheat-sheets to demonstrate CLI verification (`sha256sum`) directly in front of the Cyber Tribunal Judge.
 
-### Protocol 2: Secure Pro-Bono Referral & Safe Handover
+### Protocol 2 (proposed): Secure Pro-Bono Referral & Safe Handover
 Victims must never have their raw intimate media leaked or mishandled:
 1.  **Zero-Knowledge Evidence Handover:** The victim maintains sole custody of the encryption keys on her phone. No media is stored on unencrypted servers.
 2.  **Consent-Gated Referral Dispatch:** If the victim requests legal aid within Protiti:
@@ -78,7 +80,7 @@ Victims must never have their raw intimate media leaked or mishandled:
     *   Raw media is only decrypted in an in-person, confidential consultation between the victim and her assigned woman attorney.
 3.  **Thana Escort Protocol:** BNWLA community paralegals escort victims to local Thanas (*Police Stations*) to ensure Duty Officers do not dismiss the e-GD or harass the victim.
 
-### Protocol 3: Divisional Cyber Tribunal Litigation Pipeline
+### Protocol 3 (proposed): Divisional Cyber Tribunal Litigation Pipeline
 The 8 administrative divisions of Bangladesh house dedicated Cyber Tribunals:
 
 ```
@@ -100,7 +102,9 @@ The 8 administrative divisions of Bangladesh house dedicated Cyber Tribunals:
 
 ---
 
-## 4. Draft Memorandum of Understanding (MoU) Clauses
+## 4. Proposed Memorandum of Understanding (MoU) Clauses
+
+> Proposed wording for a future discussion. No party has agreed to these clauses.
 
 ### Clause 4.1: Admissibility and Expert Testimony
 > *"BLAST and BNWLA agree that upon verification of Protiti's forensic architecture, panel advocates representing indigent victims will tender Protiti evidentiary dossiers under Section 65A/65B of the Evidence Act, 1872 (as amended in 2022) and, where necessary, petition the Court under Section 45A for formal CID Forensic Lab corroboration."*
@@ -115,7 +119,7 @@ The 8 administrative divisions of Bangladesh house dedicated Cyber Tribunals:
 
 ## 5. Strategic Defense Against Hackathon / Fellowship Judges
 
-When judges question the viability of Project Protiti, the team uses this established institutional alliance:
+When judges question the viability of Project Protiti, the team can describe this **proposed** partnership. Say plainly that no partner has agreed yet; do not present it as an alliance.
 
 *   **Judge's Attack:** *"A mobile app cannot solve police refusal or represent a poor girl in court."*
 *   **Protiti Team Response:**  

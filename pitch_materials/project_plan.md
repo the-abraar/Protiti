@@ -1,5 +1,7 @@
 # Protiti (প্রতীতি): Digital Evidence Vault - Project Plan
 
+> Note (2026-10-14): every mention of the "Cyber Protection Act 2026" here is UNVERIFIED, needs counsel (see `legal/cyber_protection_act_2026_guide.md`). Partners named here are proposed, not agreed. The app is a research prototype and not for real use.
+
 ## 1. Project Overview
 * **Vision**: Empower women in Bangladesh facing online harassment to securely document evidence and confidently seek legal recourse.
 * **Mission**: Provide a secure, private, and legally-aligned mobile application to capture, store, and act upon digital evidence of online harassment.

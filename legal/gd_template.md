@@ -1,5 +1,7 @@
 # General Diary (GD) Templates for Online Harassment
 
+> Not reviewed by counsel (2026-10-14). The name of the cyber law in force is UNVERIFIED, so the templates say "the relevant cyber laws". A lawyer or PCSW should confirm the wording before use.
+
 When filing a GD for online harassment, cyberbullying, or non-consensual image sharing, victims should provide clear details, preserve evidence (screenshots/URLs), and submit it to the local police station or via the online GD portal.
 
 ## English GD Template
@@ -23,7 +25,7 @@ The link to the profile/content is: [Insert URL here].
 
 This incident has caused me severe mental distress and I fear for my safety and reputation. I have taken screenshots of the offensive content, profiles, and messages, which are attached to this application as evidence.
 
-Therefore, I kindly request you to record this matter as a General Diary for my legal protection and take necessary legal actions against the perpetrator under the relevant cyber laws (including the Cyber Protection Act, 2026).
+Therefore, I kindly request you to record this matter as a General Diary for my legal protection and take necessary legal actions against the perpetrator under the relevant cyber laws.
 
 **Yours sincerely,**
 
@@ -60,7 +62,7 @@ Therefore, I kindly request you to record this matter as a General Diary for my 
 
 এই ঘটনার কারণে আমি সামাজিকভাবে হেয় প্রতিপন্ন হচ্ছি এবং চরম মানসিক নিরাপত্তাহীনতায় ভুগছি। আমি উক্ত আপত্তিকর কন্টেন্ট, প্রোফাইল এবং মেসেজের স্ক্রিনশট নিয়েছি, যা প্রমাণস্বরূপ এই আবেদনের সাথে সংযুক্ত করা হলো।
 
-এমতাবস্থায়, বিনীত প্রার্থনা, বিষয়টি আপনার থানায় সাধারণ ডায়েরি (জিডি) ভুক্ত করে আমার আইনি নিরাপত্তা নিশ্চিত করতে এবং সাইবার নিরাপত্তা আইন (সাইবার সুরক্ষা আইন, ২০২৬) অনুযায়ী অপরাধীর বিরুদ্ধে প্রয়োজনীয় আইনানুগ ব্যবস্থা গ্রহণ করতে মর্জি হয়।
+এমতাবস্থায়, বিনীত প্রার্থনা, বিষয়টি আপনার থানায় সাধারণ ডায়েরি (জিডি) ভুক্ত করে আমার আইনি নিরাপত্তা নিশ্চিত করতে এবং প্রচলিত সাইবার আইন অনুযায়ী অপরাধীর বিরুদ্ধে প্রয়োজনীয় আইনানুগ ব্যবস্থা গ্রহণ করতে মর্জি হয়।
 
 **বিনীত নিবেদক,**
 

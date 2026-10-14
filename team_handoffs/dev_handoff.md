@@ -1,5 +1,7 @@
 # Protiti (প্রতীতি) Developer Handoff
 
+> **Status (2026-10-14): partly out of date.** These features were cut from the app: Jev AI, cloud backup (including the backup proposed under Encrypted Cloud Vault Backup below), Twilio cloud SMS and pinning, the geofence, RASP self-wipe and root detection, P2P and Bluetooth tether, sensor telemetry in the SOS, the proximity lock, fake notifications, the thermal decoy, the 5-tap crash, the alibi/fake call and the decoy fetch. PINs need 6 or more digits, the wipe code is user-chosen, and biometrics are opt-in and biometric-only. The current feature list is in the root `README.md`.
+
 ## 1. Overview & Architectural State
 **Protiti (formerly Shield-Frame)** is an offline-first, trauma-informed digital forensics and personal safety application designed for survivors of Gender-Based Violence (GBV) and digital harassment in Bangladesh.
 

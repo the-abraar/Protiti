@@ -1,4 +1,6 @@
 # Project Protiti (প্রতীতি) — BDT 50,000 Seed Grant Budget Allocation
+
+> Note (2026-10-14): every mention of the "Cyber Protection Act 2026" here is UNVERIFIED, needs counsel (see `legal/cyber_protection_act_2026_guide.md`). Partners named here are proposed, not agreed. The app is a research prototype and not for real use.
 **DKC Digital Respect & Cohesion Fellowship 2026 | UNDP Bangladesh, EU & SURGE**
 *Grant Period: October 2026 – May 2027 (8 Months) | Total Grant Amount: BDT 50,000*
 
