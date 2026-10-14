@@ -99,7 +99,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       context,
       title: 'SOS text and location',
       body: 'When you hold the SOS button, this app texts your trusted contacts with where '
-          'you are. For that, the phone will now ask to let it send SMS and see your location. '
+          'you are. If the screen goes off or you leave it during the ${sosCancelWindow.inSeconds} '
+          'seconds after, it sends at once. For that, the phone will now ask to let it send SMS '
+          'and see your location. '
           'Nothing is sent until you trigger an SOS. Android may keep a copy of each text in '
           'your Messages app, where anyone who opens it can read it.',
       request: _requestSosPermissions,
@@ -132,11 +134,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
       title: text.title,
       body: '${text.gesture} and, after ${sosCancelWindow.inSeconds} seconds, your trusted '
           'contacts get your SOS text with your location. ${text.risk} Two short buzzes mean it '
-          'is about to send: tap Cancel on the notice if it was a mistake. One long buzz means '
-          'it was sent. Three long buzzes mean it was not sent to everyone, so call 999.\n\n'
-          'A small service keeps running, with a notice saying so. The phone will ask to send '
-          'SMS, show notices, see your location and use the microphone (it records two minutes '
-          'of sound as evidence). Android may keep a copy of each text in your Messages app. '
+          'is about to send. To stop a mistake, unlock the phone and tap Cancel on the notice in '
+          'the notification shade within those ${sosCancelWindow.inSeconds} seconds. One long '
+          'buzz means it was sent. Three long buzzes mean it was not sent to everyone, so call 999.\n\n'
+          'The notices stay plain so someone holding your phone learns little: '
+          '"$sosCountdownNotice", then "Done: 2 of 2." or "$sosNotSentNotice", with a Call button '
+          'that opens the dialer with 999. Nothing shows on the lock screen and nothing pops up.\n\n'
+          'A small service keeps running, with a notice that says "$sosServiceNotice" The phone '
+          'will ask to send SMS, show notices, see your location and use the microphone. It '
+          'records two minutes of sound as evidence; while it does, Android shows a green '
+          'microphone dot and lists this app as using the microphone. That cannot be hidden. '
+          'Android may keep a copy of each text in your Messages app. '
           'Try it once now, then tap Cancel.',
       request: () => BackgroundSosService.enable(t),
     );

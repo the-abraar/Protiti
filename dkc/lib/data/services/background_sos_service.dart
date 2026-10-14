@@ -60,22 +60,24 @@ class SosAlerts {
   }
 }
 
-/// The foreground-service notice: honest about what runs, nothing more.
-const sosServiceNotice = 'Alert shortcuts are on.';
-final sosCountdownNotice = 'Sending your message in ${sosCancelWindow.inSeconds} seconds.';
-const sosNotSentNotice = 'Message not sent. Call 999 if you can.';
+/// Every notice is plain, never a heads-up, and hidden on a secure lock screen
+/// (N4): someone holding the phone learns little from it. Settings tells her
+/// what each one means, and the buzz patterns say the same by feel.
+/// The foreground-service notice: honest that something runs, nothing more.
+const sosServiceNotice = 'Running.';
+final sosCountdownNotice = 'Starting in ${sosCancelWindow.inSeconds} seconds.';
+const sosNotSentNotice = 'Not done.';
 
 /// The real outcome, never better than it was.
 String sosResultNotice(SmsDispatch d, {int delivered = 0, int undelivered = 0}) {
   final total = d.statuses.length;
   final sent = d.statuses.values.where((s) => s == SmsStatus.sent).length;
-  if (total == 0) return 'Not sent: no trusted contacts set. Call 999 if you can.';
+  if (total == 0) return 'Not done: nothing set up.';
   if (sent == 0) return sosNotSentNotice;
   return [
-    'Message sent to $sent of $total.',
-    if (delivered > 0) 'Delivered to $delivered.',
-    if (undelivered > 0) 'Not delivered to $undelivered.',
-    if (sent < total || undelivered > 0) 'Call 999 if you can.',
+    'Done: $sent of $total.',
+    if (delivered > 0) '$delivered confirmed.',
+    if (undelivered > 0) '$undelivered not confirmed.',
   ].join(' ');
 }
 
