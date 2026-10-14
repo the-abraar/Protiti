@@ -2,7 +2,8 @@ package com.protiti.protiti
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.telephony.SmsManager
+import android.os.Bundle
+import android.view.WindowManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import io.flutter.embedding.android.FlutterFragmentActivity
@@ -19,6 +20,16 @@ class MainActivity : FlutterFragmentActivity() {
     private val smsChannelName = "com.protiti.protiti/sms"
     private val smsPermissionRequestCode = 4001
     private var pendingPermissionResult: MethodChannel.Result? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        // Whole app, every route, before the first frame: no screenshots, no
+        // screen recording, no readable Recents thumbnail.
+        window.setFlags(
+            WindowManager.LayoutParams.FLAG_SECURE,
+            WindowManager.LayoutParams.FLAG_SECURE
+        )
+        super.onCreate(savedInstanceState)
+    }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
@@ -40,13 +51,12 @@ class MainActivity : FlutterFragmentActivity() {
                         }
                     }
                     "sendSilentSms" -> {
+                        val recipients = call.argument<List<String>>("recipients") ?: emptyList()
+                        val message = call.argument<String>("message") ?: ""
                         if (!hasSmsPermission()) {
-                            result.success(false)
+                            result.success(recipients.associateWith { false })
                         } else {
-                            @Suppress("UNCHECKED_CAST")
-                            val recipients = call.argument<List<String>>("recipients") ?: emptyList()
-                            val message = call.argument<String>("message") ?: ""
-                            result.success(sendSilentSms(recipients, message))
+                            SmsSender.send(this, recipients, message) { result.success(it) }
                         }
                     }
                     else -> result.notImplemented()
@@ -57,20 +67,6 @@ class MainActivity : FlutterFragmentActivity() {
     private fun hasSmsPermission(): Boolean {
         return ContextCompat.checkSelfPermission(this, Manifest.permission.SEND_SMS) ==
             PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun sendSilentSms(recipients: List<String>, message: String): Boolean {
-        if (recipients.isEmpty() || message.isEmpty()) return false
-        return try {
-            val smsManager = SmsManager.getDefault()
-            for (recipient in recipients) {
-                val parts = smsManager.divideMessage(message)
-                smsManager.sendMultipartTextMessage(recipient, null, parts, null, null)
-            }
-            true
-        } catch (e: Exception) {
-            false
-        }
     }
 
     override fun onRequestPermissionsResult(
