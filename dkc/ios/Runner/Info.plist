@@ -3,15 +3,15 @@
 <plist version="1.0">
 <dict>
 	<key>NSFaceIDUsageDescription</key>
-	<string>Protiti uses Face ID to securely unlock your Forensic Vault.</string>
+	<string>Lets you unlock with Face ID.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Protiti needs your location to send emergency SOS coordinates.</string>
+	<string>Used to add your location to messages you send.</string>
 	<key>NSCameraUsageDescription</key>
-	<string>Protiti uses the camera to securely capture evidence.</string>
+	<string>Used to take photos for your notes.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Protiti accesses photos to attach screenshot evidence.</string>
+	<string>Used to attach photos to your notes.</string>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>Protiti uses the microphone to securely record audio evidence.</string>
+	<string>Used to record sound when you ask it to.</string>
 	<key>NSBonjourServices</key>
 	<array>
 		<string>_dartobservatory._tcp</string>
@@ -37,7 +37,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Protiti</string>
+	<string>Calculator</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -45,7 +45,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>protiti</string>
+	<string>Calculator</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
