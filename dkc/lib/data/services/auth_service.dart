@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:math';
+import 'package:crypto/crypto.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'biometric_service.dart';
 import 'time_service.dart';
@@ -11,11 +14,6 @@ class AuthService {
   static const String _realPinKey = 'protiti_real_pin';
   static const String _duressPinKey = 'protiti_duress_pin';
 
-  // Default demonstration PINs:
-  // Real PIN: '1234' -> Displays confidential forensic vault
-  // Duress PIN: '9999' -> Displays innocent decoy vault under coercive duress
-  static const String defaultRealPin = '1234';
-  static const String defaultDuressPin = '9999';
   static const String defaultWipePin = '0000';
 
   AuthService({
@@ -43,22 +41,44 @@ class AuthService {
     catch (_) {}
   }
 
-  Future<String> getRealPin() async {
-    final pin = await _read(key: _realPinKey);
-    return pin ?? defaultRealPin;
+  /// Stored as `salt:sha256(salt+pin)`. shortcut: a 4-digit PIN is brute-forceable
+  /// offline if secure storage is extracted; upgrade to a slow KDF (PBKDF2/Argon2).
+  String _hash(String pin, [String? salt]) {
+    salt ??= base64UrlEncode(List<int>.generate(16, (_) => Random.secure().nextInt(256)));
+    return '$salt:${sha256.convert(utf8.encode('$salt$pin')).toString()}';
   }
 
-  Future<String> getDuressPin() async {
-    final pin = await _read(key: _duressPinKey);
-    return pin ?? defaultDuressPin;
+  bool _matches(String? stored, String pin) =>
+      stored != null && stored.contains(':') && _hash(pin, stored.split(':').first) == stored;
+
+  /// False until the user has chosen their own PINs; no PIN is valid before that.
+  Future<bool> isSetupComplete() async =>
+      await _read(key: _realPinKey) != null && await _read(key: _duressPinKey) != null;
+
+  /// Returns an error message, or null if the pair is acceptable.
+  static String? validatePins(String realPin, String duressPin) {
+    final digits = RegExp(r'^\d{4}$');
+    if (!digits.hasMatch(realPin) || !digits.hasMatch(duressPin)) return 'PINs must be 4 digits.';
+    if (realPin == duressPin) return 'Duress PIN must differ from the real PIN.';
+    if (realPin == defaultWipePin || duressPin == defaultWipePin) return '0000 is reserved.';
+    return null;
   }
 
   Future<void> setPins({
     required String realPin,
     required String duressPin,
   }) async {
-    await _write(key: _realPinKey, value: realPin);
-    await _write(key: _duressPinKey, value: duressPin);
+    final err = validatePins(realPin, duressPin);
+    if (err != null) throw ArgumentError(err);
+    await _write(key: _realPinKey, value: _hash(realPin));
+    await _write(key: _duressPinKey, value: _hash(duressPin));
+  }
+
+  /// Side-effect-free check (no attempt counting); used by the calculator disguise.
+  Future<AuthStatus> matchPin(String pin) async {
+    if (_matches(await _read(key: _realPinKey), pin)) return AuthStatus.authenticatedReal;
+    if (_matches(await _read(key: _duressPinKey), pin)) return AuthStatus.authenticatedDuress;
+    return AuthStatus.failed;
   }
 
   static const _attemptsKey = 'pin_failed_attempts';
@@ -120,22 +140,18 @@ class AuthService {
     // 1. Immediately block if actively locked out
     if (await isLockedOut()) return AuthStatus.lockedOut;
 
-    final real = await getRealPin();
-    final duress = await getDuressPin();
+    if (!await isSetupComplete()) return AuthStatus.failed;
 
     if (enteredPin == defaultWipePin) {
       await _resetAttempts();
       return AuthStatus.wiped;
     }
 
-    if (enteredPin == real) {
+    final match = await matchPin(enteredPin);
+    if (match != AuthStatus.failed) {
       await _resetAttempts();
       await _delete(key: _biometricLockKey);
-      return AuthStatus.authenticatedReal;
-    } else if (enteredPin == duress) {
-      await _resetAttempts();
-      await _delete(key: _biometricLockKey);
-      return AuthStatus.authenticatedDuress;
+      return match;
     } else {
       // 2. Record the failed attempt and evaluate for lockout
       await _recordFailedAttempt();

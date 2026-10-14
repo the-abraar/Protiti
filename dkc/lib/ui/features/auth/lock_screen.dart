@@ -15,6 +15,7 @@ import '../../../data/services/alibi_service.dart';
 import '../../../data/services/disguise_settings_service.dart';
 import '../../../data/services/background_sos_service.dart';
 import 'thermal_decoy_screen.dart';
+import 'pin_setup_screen.dart';
 
 class LockScreen extends StatefulWidget {
   const LockScreen({super.key});
@@ -31,6 +32,7 @@ class _LockScreenState extends State<LockScreen> {
   bool _isCompromised = false;
   int _crashTapCount = 0;
   bool _isBiometricLocked = false;
+  bool _needsSetup = false;
 
   // Calculator disguise state
   String _calcDisplay = '0';
@@ -41,6 +43,7 @@ class _LockScreenState extends State<LockScreen> {
   @override
   void initState() {
     super.initState();
+    _checkSetup();
     _scanThreats();
     _checkBiometricStatus();
     _applyLaunchDisguisePreference();
@@ -60,6 +63,11 @@ class _LockScreenState extends State<LockScreen> {
     if (alwaysCalculator && mounted) {
       setState(() => _isCalculatorMode = true);
     }
+  }
+
+  Future<void> _checkSetup() async {
+    final done = await _authService.isSetupComplete();
+    if (mounted) setState(() => _needsSetup = !done);
   }
 
   Future<void> _checkBiometricStatus() async {
@@ -164,6 +172,13 @@ class _LockScreenState extends State<LockScreen> {
     );
   }
 
+  Future<void> _tryCalcUnlock(String code) async {
+    final status = await _authService.matchPin(code);
+    if (!mounted) return;
+    if (status == AuthStatus.authenticatedReal) _navigateToVault(isDecoy: false);
+    if (status == AuthStatus.authenticatedDuress) _navigateToVault(isDecoy: true);
+  }
+
   // --- Calculator Disguise Logic ---
   void _onCalcButtonPress(String label) {
     HapticFeedback.selectionClick();
@@ -175,13 +190,7 @@ class _LockScreenState extends State<LockScreen> {
         _shouldResetCalcDisplay = false;
       } else if (label == '=') {
         // Check stealth unlock passcode
-        if (_calcDisplay == AuthService.defaultRealPin) {
-          _navigateToVault(isDecoy: false);
-          return;
-        } else if (_calcDisplay == AuthService.defaultDuressPin) {
-          _navigateToVault(isDecoy: true);
-          return;
-        }
+        _tryCalcUnlock(_calcDisplay);
 
         // Standard arithmetic evaluation
         if (_firstOperand != null && _operator != null) {
@@ -230,6 +239,12 @@ class _LockScreenState extends State<LockScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_needsSetup) {
+      return PinSetupScreen(
+        authService: _authService,
+        onDone: () => setState(() => _needsSetup = false),
+      );
+    }
     return Scaffold(
       backgroundColor: _isCalculatorMode
           ? Colors.black

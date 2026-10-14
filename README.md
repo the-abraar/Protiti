@@ -5,14 +5,14 @@
 
 > **Note:** "Protiti" (প্রতীতি - Deep Conviction & Undisputed Certitude) is the official brand identity. Rooted in Bengali epistemology and cultural resonance, Protiti establishes indisputable digital evidence for women facing online harassment in Bangladesh. See [`team_handoffs/design_handoff.md`](team_handoffs/design_handoff.md) for the brand identity and verified uniqueness audit.
 
-A Digital Evidence Vault app designed for women facing online harassment in Bangladesh. Protiti provides a secure, encrypted framework to document screenshots, links, and timestamps of abuse in a format that is legally admissible and ready for police reporting.
+A Digital Evidence Vault app designed for women facing online harassment in Bangladesh. Protiti provides a secure, encrypted framework to document screenshots, links, and timestamps of abuse in a format designed to support police reporting (not legal advice; admissibility has not been reviewed by counsel).
 
 ## 🎯 DKC Fellowship — Theme: Gender-based Online Violence
 
 ### Core Features
 
 - **📦 Secure Evidence Vault** — Biometric-locked, encrypted storage with a **Duress PIN (Decoy Vault)** for physical coercion scenarios
-- **📝 GD-Automator** — Uses TypeSafe's "Jev" AI to map data to the **Cyber Protection Act 2026** and designed for direct **Bangladesh Police e-GD API** integration
+- **📝 GD-Automator** — Uses TypeSafe's "Jev" AI to map data to the **Cyber Protection Act 2026** and drafts GD text for manual filing (no e-GD API integration exists)
 - **🚨 Panic Frame** — Offline-first SOS alert with SMS fallback for low-connectivity environments
 - **🤝 Support Bridge** — Curated directory of pro-bono lawyers and mental health counselors
 
@@ -21,7 +21,7 @@ A Digital Evidence Vault app designed for women facing online harassment in Bang
 - **Framework:** Flutter + Dart
 - **Architecture:** MVVM (Model-View-ViewModel)
 - **Database:** SQLite with SQLCipher encryption
-- **AI Engine:** TypeSafe AI "Jev" (System One) for fast, hallucination-free legal triage
+- **AI Engine:** TypeSafe AI "Jev" (System One) for fast legal triage (AI output can be wrong; verify with a lawyer)
 - **Auth:** Biometric (fingerprint/face) + PIN
 - **Security:** AES-256 encryption, SHA-256 evidence hashing, app disguise mode
 
@@ -50,14 +50,14 @@ dkc/
 ### Getting Started
 
 ```bash
-cd protiti
+cd dkc
 flutter pub get
 flutter run
 ```
 
 ### Impact
 
-> *64% of Bangladeshi women face digital violence. Most cases go unreported because evidence is lost, legal processes are intimidating, and support is hard to find. Protiti changes that.*
+> *Most cases go unreported because evidence is lost, legal processes are intimidating, and support is hard to find. Protiti changes that.*
 
 ---
 
