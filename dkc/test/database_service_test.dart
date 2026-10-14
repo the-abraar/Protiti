@@ -9,6 +9,7 @@ import 'helpers/fakes.dart';
 class RecordingDatabase implements Database {
   final List<String> statements = [];
   final List<String> insertsInto = [];
+  final List<Map<String, Object?>> rows = [];
   final List<(String, List<Object?>?)> deletes = [];
   bool closed = false;
 
@@ -19,6 +20,7 @@ class RecordingDatabase implements Database {
   Future<int> insert(String table, Map<String, Object?> values,
       {String? nullColumnHack, ConflictAlgorithm? conflictAlgorithm}) async {
     insertsInto.add(table);
+    rows.add(values);
     return 1;
   }
 
@@ -49,6 +51,20 @@ void main() {
 
   test('real and decoy vaults use separate tables', () {
     expect(DatabaseService().evidenceTable, isNot(DatabaseService(isDecoy: true).evidenceTable));
+  });
+
+  test('each fresh second-PIN space gets a different few ordinary notes (N14)', () async {
+    final seen = <String>{};
+    for (var i = 0; i < 10; i++) {
+      final db = RecordingDatabase();
+      await DatabaseService(isDecoy: true).onCreate(db, 1);
+      expect(db.rows.length, inInclusiveRange(2, 4));
+      for (final row in db.rows) {
+        expect(DatabaseService.decoyNotePool, contains(row['body_text']));
+      }
+      seen.add([for (final r in db.rows) '${r['body_text']}@${r['saved_at']}'].join('|'));
+    }
+    expect(seen.length, greaterThan(1), reason: 'not the same notes on every install');
   });
 
   test('a fresh real vault has 0 evidence and 0 contacts', () async {
