@@ -1,5 +1,7 @@
 # Legal Handoff: Project Protiti (প্রতীতি) — Bangladesh Cyber Law & Evidentiary Defense
 
+> **UNVERIFIED, needs counsel (2026-10-14).** The "Cyber Protection Act 2026" sections and the Section 65B references in this handoff have no primary source; 65B is an Indian Evidence Act number. See the banner in `legal/cyber_protection_act_2026_guide.md` and the counsel TODOs in `todo.md`.
+
 **Date:** September 25, 2026  
 **To:** Product, Engineering, Design, and Pitch Defense Teams  
 **From:** Senior Legal Advisor Agent, Project Protiti  
@@ -19,7 +21,7 @@ To address the severe vulnerabilities identified in our institutional evaluation
 2.  **[e_gd_schema_mapping.md](file:///Users/blackbird/Everything/dev/DKC/legal/e_gd_schema_mapping.md):**
     *   Field-by-field JSON payload mapping Protiti's intake questionnaire to the **Bangladesh Police Online GD Portal (`gd.police.gov.bd`)**.
     *   Division-level Thana directory taxonomy covering all 8 administrative divisions.
-    *   Direct escalation protocol for **Police Cyber Support for Women (PCSW)** (`01320000888`, `pcsw@police.gov.bd`), 999 Emergency Dispatch, and offline USSD/SMS fallback payload (140-char compact SOS).
+    *   Direct escalation protocol for **Police Cyber Support for Women (PCSW)** (`01320000888`, `pcsw@police.gov.bd` (verify with PCSW: the Bangladesh Police portal lists `cybersupport.women@police.gov.bd`)), 999 Emergency Dispatch, and offline USSD/SMS fallback payload (140-char compact SOS).
 3.  **[legal_aid_partnership_framework.md](file:///Users/blackbird/Everything/dev/DKC/legal/legal_aid_partnership_framework.md):**
     *   Institutional alliance with **BLAST (Bangladesh Legal Aid and Services Trust)** and **BNWLA (Bangladesh National Woman Lawyers' Association)**.
     *   Framework for joint forensic hash vetting, Section 65B institutional co-certification, and pro-bono representation across all 8 Divisional Cyber Tribunals.
@@ -95,7 +97,7 @@ Here is the exact battle-tested playbook to crush this objection during the pitc
 2.  **Full Bengali Voice & Text Localization:**
     *   All intake steps must feature clean Bengali script and optional audio playback for semi-literate or rural users across all 8 divisions.
 3.  **One-Tap PCSW Escalation:**
-    *   Provide an immediate, prominent PCSW route for women: direct dial to `01320000888` and auto-drafted email to `pcsw@police.gov.bd` with the signed cryptographic PDF attached.
+    *   Provide an immediate, prominent PCSW route for women: direct dial to `01320000888` and auto-drafted email to `pcsw@police.gov.bd` (verify with PCSW: the Bangladesh Police portal lists `cybersupport.women@police.gov.bd`) with the signed cryptographic PDF attached.
 
 ---
 

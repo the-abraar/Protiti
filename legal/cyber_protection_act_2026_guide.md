@@ -1,7 +1,14 @@
 # Bangladesh Cyber Law & Digital Evidence Dossier: Project Protiti
+
+> **UNVERIFIED, needs counsel (2026-10-14).** No lawyer has checked this guide. Do not show it to survivors or quote it to judges until counsel has reviewed it.
+> - **"Cyber Protection Act, 2026":** no primary source was found for this Act, or for the section numbers, penalties and bail status given below. Confirmed: the Cyber Security Ordinance 2025 (Ordinance No. 25 of 2025) repealed the Cyber Security Act 2023 in May 2025 ([Digital Policy Alert](https://digitalpolicyalert.org/change/18746-cyber-security-ordinance-2025-ordinance-no-25-of-2025)). In September 2026 a Cyber Protection (Amendment) Act 2026 was reported as a draft under cabinet review ([UNB](https://unb.com.bd/category/Bangladesh/govt-forms-cabinet-committee-to-finalise-draft-of-cyber-security-amendment-act/189681)).
+> - **Indian-numbered sections:** "Section 65A/65B", "Section 22A", "Section 45A" and "Sections 85A, 85B, 88A" are section numbers from India's Evidence Act. They may not exist in Bangladesh's Evidence Act as amended in 2022.
+> - The claim that a GD "must be converted into an FIR" is unverified.
+> - The app does not meet the chain-of-custody protocol in section 3: it re-encodes photos, strips EXIF, hashes the encrypted file and uses the phone clock (`CrtiQue_Oct14.md` section 11).
+> - Owner TODOs for counsel are in [`todo.md`](../todo.md).
 **Document Reference:** PROTITI-LEG-2026-V1  
 **Jurisdiction:** People's Republic of Bangladesh  
-**Governing Laws:** Cyber Protection Act, 2026; Pornography Control Act, 2012; Evidence Act, 1872 (as amended by Evidence (Amendment) Act, 2022); Code of Criminal Procedure (CrPC), 1898.  
+**Governing Laws:** Cyber Protection Act, 2026 (UNVERIFIED, needs counsel); Pornography Control Act, 2012; Evidence Act, 1872 (as amended by Evidence (Amendment) Act, 2022); Code of Criminal Procedure (CrPC), 1898.  
 **Audience:** Legal Counsels, Forensic Engineers, Product Leads, Fellowship Pitch Defense Team  
 
 ---
@@ -12,13 +19,15 @@ Project Protiti operates at the critical intersection of legal recourse and digi
 
 This dossier provides:
 1. A rigorous statutory analysis of the **Cyber Protection Act, 2026** and **Pornography Control Act, 2012**.
-2. Evidentiary admissibility standards under the **Evidence (Amendment) Act, 2022** (Sections 65A, 65B equivalents, and Section 22A).
+2. Evidentiary admissibility standards under the **Evidence (Amendment) Act, 2022** (Sections 65A, 65B equivalents, and Section 22A) (UNVERIFIED, needs counsel: Indian Evidence Act numbering).
 3. Cryptographic and forensic chain-of-custody protocols adhering to **CID Forensic Lab (Criminal Investigation Department)** benchmarks and **ISO/IEC 27037**.
 4. Concrete technical countermeasures designed to withstand judicial scrutiny and defense cross-examination.
 
 ---
 
 ## 1. Statutory Architecture
+
+> Diagram below: UNVERIFIED, needs counsel. It uses unsourced Cyber Protection Act sections and Indian-numbered Evidence Act sections.
 
 ```
                                ┌─────────────────────────────────────────────────────────┐
@@ -38,11 +47,11 @@ This dossier provides:
    └───────────────────────────┘              └───────────────────────────┘            └───────────────────────────┘
 ```
 
-### 1.1 Cyber Protection Act, 2026: Comprehensive Breakdown
+### 1.1 Cyber Protection Act, 2026: Comprehensive Breakdown (UNVERIFIED, needs counsel)
 
 The Cyber Protection Act, 2026 was promulgated following extensive stakeholder consultations to eliminate draconian speech-policing clauses while aggressively arming law enforcement and judicial tribunals against **Gender-Based Cyber Violence (GBCV)**, non-consensual intimate image (NCII) diffusion, and synthetic identity weaponization.
 
-#### Key Provisions for Gender-Based Cyber Harassment:
+#### Key Provisions for Gender-Based Cyber Harassment (UNVERIFIED, needs counsel: no primary source for these sections, penalties or bail status):
 
 | Section | Offence Description | Offence Classification | Penalty (Custodial + Pecuniary) | Courtroom Standard of Proof |
 | :--- | :--- | :--- | :--- | :--- |
@@ -55,7 +64,7 @@ The Cyber Protection Act, 2026 was promulgated following extensive stakeholder c
 > [!IMPORTANT]
 > **Cognizable vs. Non-Cognizable Strategic Distinction:**
 > Under Section 25 and Section 25(A), offenses are **Cognizable** under the Code of Criminal Procedure (CrPC) 1898. This means the Police Officer-in-Charge (OC) is **statutorily mandated to register a First Information Report (FIR)** upon submission of credible complaint without requiring prior Magistrate permission (CrPC Section 154 vs 155). 
-> When Protiti users file an e-GD, if the facts disclose a cognizable offense under Section 25 of the 2026 Act, the GD **must be converted into an FIR** by the Thana.
+> When Protiti users file an e-GD, if the facts disclose a cognizable offense under Section 25 of the 2026 Act, the GD **must be converted into an FIR** by the Thana. (UNVERIFIED, needs counsel)
 
 ---
 
@@ -82,23 +91,25 @@ Defense lawyers in Bangladesh regularly defeat digital harassment cases on a sin
 
 Prior to 2022, the Evidence Act, 1872 strictly favored primary physical documents (Sections 61–65). The **Evidence (Amendment) Act, 2022 (Act No. XVIII of 2022)** modernized Bangladeshi judicial procedure:
 
-1.  **Section 65A & 65B Equivalents (Admissibility of Electronic Records):**
+1.  **Section 65A & 65B Equivalents (Admissibility of Electronic Records):** (UNVERIFIED, needs counsel: Indian Evidence Act numbering)
     *   Information contained in an electronic record (printout, optical/magnetic media, device screen dump) is deemed to be a **document** and admissible in proceedings without further proof or production of the original physical server, **PROVIDED** statutory conditions are met:
         1.  The computer/device was produced during period of regular use.
         2.  Information of that kind was regularly fed into or processed by the system.
         3.  Throughout the material part of the period, the computer was operating properly (or interruptions did not affect integrity).
         4.  The output reproduces or is derived from information fed into the system in ordinary course.
     *   **Mandatory Requirement: Section 65B Certificate of Integrity.** The electronic evidence *must* be accompanied by a signed Certificate by a person holding an official or responsible technical position managing the device or forensic process.
-2.  **Section 22A — Inadmissibility of Oral Admissions:**
+2.  **Section 22A — Inadmissibility of Oral Admissions:** (UNVERIFIED, needs counsel: Indian Evidence Act numbering)
     *   Oral testimony regarding the contents of digital communications (e.g., victim stating "he sent me this message on WhatsApp") is **irrelevant and inadmissible** unless the genuineness of the record is first established through forensic documentation.
-3.  **Section 45A — Expert Forensic Opinion:**
+3.  **Section 45A — Expert Forensic Opinion:** (UNVERIFIED, needs counsel: Indian Evidence Act numbering)
     *   Empowers the court to admit opinions of certified digital forensic experts (specifically CID Forensic Lab, National Cyber Security Agency, or court-accredited forensic examiners).
-4.  **Sections 85A, 85B, 88A — Presumptions of Electronic Records:**
+4.  **Sections 85A, 85B, 88A — Presumptions of Electronic Records:** (UNVERIFIED, needs counsel: Indian Evidence Act numbering)
     *   Establishes legal presumptions regarding digital signatures, secure electronic records, and electronic messages sent via telecom service providers.
 
 ---
 
 ## 3. The Digital Chain-of-Custody (CoC) Protocol for Protiti
+
+> Target design, not current behaviour. The app does not meet it yet (see the banner at the top).
 
 To ensure that evidence generated by Project Protiti is **courtroom-bulletproof**, the mobile application implements strict compliance with **ISO/IEC 27037** (Guidelines for identification, collection, acquisition, and preservation of digital evidence) and **Bangladesh CID Digital Forensics Standard Operating Procedures (SOP)**.
 
@@ -144,6 +155,8 @@ Screenshots taken carelessly via standard Android/iOS mechanisms strip web-page 
 ---
 
 ## 4. Defeating Defense Cross-Examination in Cyber Tribunals
+
+> UNVERIFIED, needs counsel. These answers rely on Section 65B certificates, which the app does not produce and which may not exist under that number in Bangladesh law.
 
 The following table trains the Project Protiti pitch team and cooperating legal attorneys to neutralize common defense tactics used in Bangladeshi Cyber Tribunals:
 
