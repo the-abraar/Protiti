@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 import 'package:crypto/crypto.dart';
@@ -134,13 +135,21 @@ class AuthService {
   Future<int> _failures() async => int.tryParse(await _read(StoreKeys.failedAttempts) ?? '') ?? 0;
 
   /// Checks run one at a time, across instances, so parallel guesses each count (N7).
-  static Future<void> _inFlight = Future.value();
+  static Future<void>? _busy;
 
   /// The only way to check a code. Every miss is counted, in every mode.
-  Future<AuthStatus> verifyPin(String enteredPin) {
-    final result = _inFlight.then((_) => _verify(asciiDigits(enteredPin)));
-    _inFlight = result.then((_) {}, onError: (_) {});
-    return result;
+  Future<AuthStatus> verifyPin(String enteredPin) async {
+    while (_busy != null) {
+      await _busy;
+    }
+    final done = Completer<void>();
+    _busy = done.future;
+    try {
+      return await _verify(asciiDigits(enteredPin));
+    } finally {
+      _busy = null;
+      done.complete();
+    }
   }
 
   Future<AuthStatus> _verify(String enteredPin) async {
