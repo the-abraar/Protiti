@@ -11,9 +11,9 @@ A Digital Evidence Vault app designed for women facing online harassment in Bang
 
 ### Core Features
 
-- **📦 Secure Evidence Vault** — Biometric-locked, encrypted storage with a **Duress PIN (Decoy Vault)** for physical coercion scenarios
-- **📝 GD-Automator** — Uses TypeSafe's "Jev" AI to map data to the **Cyber Protection Act 2026** and designed for direct **Bangladesh Police e-GD API** integration
-- **🚨 Panic Frame** — Offline-first SOS alert with SMS fallback for low-connectivity environments
+- **📦 Secure Evidence Vault** — PIN-locked, encrypted storage with a **Duress PIN (Decoy Vault)** for physical coercion scenarios. Fingerprint unlock is opt-in.
+- **📝 GD-Automator** — Builds an offline GD draft PDF from the evidence she chooses. No AI, no network call.
+- **🚨 Panic Frame** — SMS SOS to the trusted contacts she adds, with the real per-recipient result and a Call 999 button when sending fails
 - **🤝 Support Bridge** — Curated directory of pro-bono lawyers and mental health counselors
 
 ### Tech Stack
@@ -21,8 +21,7 @@ A Digital Evidence Vault app designed for women facing online harassment in Bang
 - **Framework:** Flutter + Dart
 - **Architecture:** MVVM (Model-View-ViewModel)
 - **Database:** SQLite with SQLCipher encryption
-- **AI Engine:** TypeSafe AI "Jev" (System One) for fast, hallucination-free legal triage
-- **Auth:** Biometric (fingerprint/face) + PIN
+- **Auth:** 6-10 digit PIN with escalating lockout; fingerprint/face opt-in (biometric only, never the phone PIN)
 - **Security:** AES-256 encryption, SHA-256 evidence hashing, app disguise mode
 
 ### Project Structure
@@ -36,7 +35,7 @@ dkc/
     │   └── services/       # Encryption, biometric, location, database
     ├── domain/
     │   ├── models/         # Evidence, Complaint, Contact, SupportProvider, UserProfile
-    │   └── use_cases/      # GD generation, evidence packaging, panic trigger
+    │   └── use_cases/      # GD generation, panic trigger
     └── ui/
         ├── core/theme/     # Dark mode theme (Navy #0A1128, Blue #1282A2, Amber #FFC857)
         └── features/
@@ -46,6 +45,14 @@ dkc/
             ├── panic/      # Panic Frame emergency button
             └── support/    # Support Bridge directory
 ```
+
+### Owner TODOs before any real use
+
+- Release keystore (the release build is signed with the debug key).
+- Test on a real Android phone with a SIM: SOS with credit, without credit and in airplane mode; Recents thumbnail; wipe.
+- Verify any hotline other than 999 and 109 (PCSW, NGOs, campus numbers) with the service itself before listing it.
+- Add a siren sound at `assets/audio/siren.mp3`; the siren button plays nothing until then.
+- iOS: run `pod install` to drop the removed plugins from `ios/Podfile.lock`.
 
 ### Getting Started
 
