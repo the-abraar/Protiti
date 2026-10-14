@@ -11,8 +11,8 @@ class TempFiles {
   static Future<Directory> playbackDir() async =>
       Directory(p.join((await getTemporaryDirectory()).path, 'playback'));
 
-  /// GD PDFs: our dossier name, and the file name builds before Oct 2026 used.
-  static final _pdf = RegExp(r'^(PROTITI-[A-Z0-9-]+|GD_Complaint_\d+)\.pdf$');
+  /// GD PDFs: our dossier name, and the names older builds used.
+  static final _pdf = RegExp(r'^((GD|PROTITI)-[A-Z0-9]{8}-\d{4}|GD_Complaint_\d+)\.pdf$');
 
   static Future<void> sweep() async {
     try {

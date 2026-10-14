@@ -15,6 +15,7 @@ void main() {
     final gone = [
       touch('${temp.path}/playback/a.m4a'),
       touch('${temp.path}/share/PROTITI-AB12CD34-1234.pdf'),
+      touch('${temp.path}/share/GD-AB12CD34-1234.pdf'),
       touch('${temp.path}/GD_Complaint_1760400000000.pdf'),
       touch('${systemTemp.path}/PROTITI-AB12CD34-1234.pdf'),
     ];

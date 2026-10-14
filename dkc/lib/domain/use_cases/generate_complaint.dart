@@ -38,13 +38,14 @@ const hashExplanation =
 
 class GenerateComplaintUseCase {
   /// Dossier IDs must match the schema in
-  /// `legal/e_gd_schema_mapping.md`: `^PROTITI-[A-Z0-9]{8}-[0-9]{4}$`.
+  /// `legal/e_gd_schema_mapping.md`: `^GD-[A-Z0-9]{8}-[0-9]{4}$`. The ID is
+  /// also the PDF's file name, so it names no app wherever she shares it (N13).
   static String _generateDossierId() {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     final rand = Random.secure();
     final code = List.generate(8, (_) => chars[rand.nextInt(chars.length)]).join();
     final seq = (1000 + rand.nextInt(9000)).toString();
-    return 'PROTITI-$code-$seq';
+    return 'GD-$code-$seq';
   }
 
   static final _utc = DateFormat('yyyy-MM-dd HH:mm:ss');
@@ -79,10 +80,6 @@ class GenerateComplaintUseCase {
     final pdf = pw.Document(compress: compress);
 
     final dossierId = _generateDossierId();
-    // Standard cyber complaints route straight to the e-GD portal path;
-    // PCSW/999/CID routing needs the severity intake this wizard doesn't
-    // collect yet, so it isn't claimed here.
-    const triageRoute = 'EGD_DIRECT';
 
     String answer(String key, String fallback) {
       final value = (answers[key] as String?)?.trim() ?? '';
@@ -157,10 +154,6 @@ class GenerateComplaintUseCase {
       ),
       pw.Text(
         'Generated: ${_utc.format(generatedAt)} UTC, by this phone\'s clock',
-        style: const pw.TextStyle(color: PdfColors.grey, fontSize: 9),
-      ),
-      pw.Text(
-        'Triage Route: $triageRoute',
         style: const pw.TextStyle(color: PdfColors.grey, fontSize: 9),
       ),
     ];

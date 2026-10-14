@@ -94,7 +94,7 @@ This schema represents the JSON payload produced by Protiti for automated submis
       "type": "object",
       "required": ["dossier_id", "app_version", "created_at_utc", "triage_route"],
       "properties": {
-        "dossier_id": { "type": "string", "pattern": "^PROTITI-[A-Z0-9]{8}-[0-9]{4}$" },
+        "dossier_id": { "type": "string", "pattern": "^GD-[A-Z0-9]{8}-[0-9]{4}$" },
         "app_version": { "type": "string", "example": "1.0.4-fellowship" },
         "created_at_utc": { "type": "string", "format": "date-time" },
         "created_at_bst": { "type": "string", "example": "2026-09-25T07:30:00+06:00" },
