@@ -14,36 +14,30 @@ class EvidenceRepository {
     final db = await dbService.database;
 
     if (_isDecoy) {
-      await db.insert(
-        'local_notes_cache',
-        {
-          'note_id': evidence.id,
-          'category': evidence.type,
-          'attachment_path': evidence.filePath,
-          'body_text': evidence.description,
-          'extra_json':
-              evidence.metadata != null ? jsonEncode(evidence.metadata) : '',
-          'saved_at': evidence.createdAt.toIso8601String(),
-        },
-        conflictAlgorithm: ConflictAlgorithm.replace,
-      );
+      await db.insert('local_notes_cache', {
+        'note_id': evidence.id,
+        'category': evidence.type,
+        'attachment_path': evidence.filePath,
+        'body_text': evidence.description,
+        'extra_json': evidence.metadata != null
+            ? jsonEncode(evidence.metadata)
+            : '',
+        'saved_at': evidence.createdAt.toIso8601String(),
+      }, conflictAlgorithm: ConflictAlgorithm.replace);
       return;
     }
 
-    await db.insert(
-      'sys_analytics_cache',
-      {
-        'req_id': evidence.id,
-        'mime_type': evidence.type,
-        'uri_path': evidence.filePath,
-        'ext_url': evidence.url,
-        'blob_ref': evidence.description,
-        'meta_tags':
-            evidence.metadata != null ? jsonEncode(evidence.metadata) : '',
-        'timestamp': evidence.createdAt.toIso8601String(),
-      },
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    await db.insert('sys_analytics_cache', {
+      'req_id': evidence.id,
+      'mime_type': evidence.type,
+      'uri_path': evidence.filePath,
+      'ext_url': evidence.url,
+      'blob_ref': evidence.description,
+      'meta_tags': evidence.metadata != null
+          ? jsonEncode(evidence.metadata)
+          : '',
+      'timestamp': evidence.createdAt.toIso8601String(),
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   /// Returns every record from whichever partition (real or decoy) this
@@ -61,11 +55,10 @@ class EvidenceRepository {
       );
       return maps.map((e) {
         Map<String, dynamic>? meta;
-        if (e['extra_json'] != null &&
-            e['extra_json'].toString().isNotEmpty) {
+        if (e['extra_json'] != null && e['extra_json'].toString().isNotEmpty) {
           try {
-            meta = jsonDecode(e['extra_json'].toString())
-                as Map<String, dynamic>?;
+            meta =
+                jsonDecode(e['extra_json'].toString()) as Map<String, dynamic>?;
           } catch (_) {}
         }
         return Evidence(
@@ -97,7 +90,9 @@ class EvidenceRepository {
       return Evidence(
         id: e['req_id'] as String,
         // Builds before Oct 2026 saved typed notes as 'screenshot' with no file.
-        type: type == 'screenshot' && (filePath == null || filePath.isEmpty) ? 'text' : type,
+        type: type == 'screenshot' && (filePath == null || filePath.isEmpty)
+            ? 'text'
+            : type,
         filePath: filePath,
         url: e['ext_url'] as String?,
         description: e['blob_ref'] as String,
@@ -113,9 +108,17 @@ class EvidenceRepository {
   Future<void> deleteEvidence(String id) async {
     final db = await dbService.database;
     if (_isDecoy) {
-      await db.delete('local_notes_cache', where: 'note_id = ?', whereArgs: [id]);
+      await db.delete(
+        'local_notes_cache',
+        where: 'note_id = ?',
+        whereArgs: [id],
+      );
       return;
     }
-    await db.delete('sys_analytics_cache', where: 'req_id = ?', whereArgs: [id]);
+    await db.delete(
+      'sys_analytics_cache',
+      where: 'req_id = ?',
+      whereArgs: [id],
+    );
   }
 }

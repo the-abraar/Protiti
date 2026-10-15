@@ -78,7 +78,10 @@ class EncryptionService {
     }
   }
 
-  Future<String> _encrypt(Future<Uint8List> Function(int n) read, File out) async {
+  Future<String> _encrypt(
+    Future<Uint8List> Function(int n) read,
+    File out,
+  ) async {
     final aes = Encrypter(AES(await _getKey(), mode: AESMode.gcm));
     final fileId = IV.fromSecureRandom(16).bytes;
     late Digest digest;
@@ -89,12 +92,18 @@ class EncryptionService {
     try {
       await dst.writeFrom([..._magic, _version, ...fileId]);
       var chunk = await read(chunkSize);
-      for (var index = 0;; index++) {
-        final next = chunk.length == chunkSize ? await read(chunkSize) : Uint8List(0);
+      for (var index = 0; ; index++) {
+        final next = chunk.length == chunkSize
+            ? await read(chunkSize)
+            : Uint8List(0);
         final last = next.isEmpty;
         hash.add(chunk);
         final nonce = IV.fromSecureRandom(_nonceLength);
-        final sealed = aes.encryptBytes(chunk, iv: nonce, associatedData: _aad(fileId, index, last));
+        final sealed = aes.encryptBytes(
+          chunk,
+          iv: nonce,
+          associatedData: _aad(fileId, index, last),
+        );
         await dst.writeFrom(nonce.bytes);
         await dst.writeFrom(sealed.bytes);
         if (last) break;
@@ -108,7 +117,10 @@ class EncryptionService {
     return digest.toString();
   }
 
-  Future<void> _decrypt(File encrypted, Future<void> Function(Uint8List chunk) emit) async {
+  Future<void> _decrypt(
+    File encrypted,
+    Future<void> Function(Uint8List chunk) emit,
+  ) async {
     final aes = Encrypter(AES(await _getKey(), mode: AESMode.gcm));
     const sealedSize = _nonceLength + chunkSize + _tagLength;
     final src = await encrypted.open();
@@ -119,11 +131,13 @@ class EncryptionService {
       }
       final fileId = header.sublist(5);
       var chunk = await _readFull(src, sealedSize);
-      for (var index = 0;; index++) {
+      for (var index = 0; ; index++) {
         if (chunk.length < _nonceLength + _tagLength) {
           throw const FormatException('Evidence file is cut short');
         }
-        final next = chunk.length == sealedSize ? await _readFull(src, sealedSize) : Uint8List(0);
+        final next = chunk.length == sealedSize
+            ? await _readFull(src, sealedSize)
+            : Uint8List(0);
         final last = next.isEmpty;
         final plain = aes.decryptBytes(
           Encrypted(chunk.sublist(_nonceLength)),
@@ -213,6 +227,11 @@ class EncryptionService {
     // Very early builds stored base64 without encryption.
     if (parts.length != 2) return base64Decode(text);
     final legacy = Encrypter(AES(await _getKey()));
-    return base64Decode(legacy.decrypt(Encrypted.fromBase64(parts[1]), iv: IV.fromBase64(parts[0])));
+    return base64Decode(
+      legacy.decrypt(
+        Encrypted.fromBase64(parts[1]),
+        iv: IV.fromBase64(parts[0]),
+      ),
+    );
   }
 }

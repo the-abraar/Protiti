@@ -14,7 +14,7 @@ class AcousticDeterrentService {
     try {
       // 1. Force the hardware media volume to absolute maximum (1.0)
       await VolumeController.instance.setVolume(1.0);
-      
+
       // 2. Loop a high-decibel siren asset indefinitely
       final player = _player ??= AudioPlayer();
       player.setReleaseMode(ReleaseMode.loop);

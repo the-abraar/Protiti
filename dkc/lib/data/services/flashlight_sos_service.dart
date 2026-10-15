@@ -22,23 +22,27 @@ class FlashlightSosService {
       await _emitMorsePulse(
         [200, 200, 200], // Short pulses (milliseconds)
         [600, 600, 600], // Long pulses
-        [200, 200, 200]  // Short pulses
+        [200, 200, 200], // Short pulses
       );
       // Wait 2 seconds before repeating the SOS sequence
       await Future.delayed(const Duration(seconds: 2));
     }
   }
 
-  Future<void> _emitMorsePulse(List<int> shortMs, List<int> longMs, List<int> shortEndMs) async {
+  Future<void> _emitMorsePulse(
+    List<int> shortMs,
+    List<int> longMs,
+    List<int> shortEndMs,
+  ) async {
     final sequence = [...shortMs, ...longMs, ...shortEndMs];
-    
+
     for (int duration in sequence) {
       if (!_isFlashing) break;
-      
+
       await TorchLight.enableTorch();
       await Future.delayed(Duration(milliseconds: duration));
       await TorchLight.disableTorch();
-      
+
       // Pause between individual flashes
       await Future.delayed(const Duration(milliseconds: 300));
     }

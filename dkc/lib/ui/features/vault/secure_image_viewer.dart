@@ -18,14 +18,19 @@ class SecureImageViewer extends StatelessWidget {
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black,
-        title: const Text('Secure Evidence Viewer', style: TextStyle(fontSize: 14)),
+        title: const Text(
+          'Secure Evidence Viewer',
+          style: TextStyle(fontSize: 14),
+        ),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: FutureBuilder<ImageProvider>(
         future: _decryptImage(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator(color: Colors.white));
+            return const Center(
+              child: CircularProgressIndicator(color: Colors.white),
+            );
           }
           if (snapshot.hasError || !snapshot.hasData) {
             return const Center(
@@ -34,20 +39,20 @@ class SecureImageViewer extends StatelessWidget {
                 children: [
                   Icon(Icons.broken_image, color: Colors.grey, size: 50),
                   SizedBox(height: 10),
-                  Text('Decryption Failed', style: TextStyle(color: Colors.grey)),
+                  Text(
+                    'Decryption Failed',
+                    style: TextStyle(color: Colors.grey),
+                  ),
                 ],
-              )
+              ),
             );
           }
-          
+
           return Center(
             child: InteractiveViewer(
               minScale: 1.0,
               maxScale: 4.0,
-              child: Image(
-                image: snapshot.data!,
-                fit: BoxFit.contain,
-              ),
+              child: Image(image: snapshot.data!, fit: BoxFit.contain),
             ),
           );
         },

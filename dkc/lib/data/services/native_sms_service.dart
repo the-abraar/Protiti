@@ -15,7 +15,9 @@ class NativeSmsService {
   static const MethodChannel channel = MethodChannel('hardware_sos');
 
   /// Permission prompts need the activity, so MainActivity serves these.
-  static const MethodChannel _activity = MethodChannel('com.protiti.protiti/sms');
+  static const MethodChannel _activity = MethodChannel(
+    'com.protiti.protiti/sms',
+  );
 
   static final _deliveries = StreamController<(String, bool)>.broadcast();
 
@@ -27,10 +29,10 @@ class NativeSmsService {
   }
 
   static void _listen() => channel.setMethodCallHandler((call) async {
-        if (call.method != 'delivered') return;
-        final args = call.arguments as Map;
-        _deliveries.add((args['recipient'] as String, args['delivered'] == true));
-      });
+    if (call.method != 'delivered') return;
+    final args = call.arguments as Map;
+    _deliveries.add((args['recipient'] as String, args['delivered'] == true));
+  });
 
   static Future<bool> _ask(MethodChannel c, String method) async {
     try {
@@ -44,9 +46,11 @@ class NativeSmsService {
 
   /// Prompts for SEND_SMS. Call it from Settings after an explanation, never
   /// mid-emergency: the OS dialog is itself visible on screen.
-  static Future<bool> requestPermission() => _ask(_activity, 'requestSmsPermission');
+  static Future<bool> requestPermission() =>
+      _ask(_activity, 'requestSmsPermission');
 
-  static Future<bool> hasNotificationPermission() => _ask(channel, 'hasNotificationPermission');
+  static Future<bool> hasNotificationPermission() =>
+      _ask(channel, 'hasNotificationPermission');
 
   /// Android 13+ asks; older versions just report whether notices are on.
   static Future<bool> requestNotificationPermission() =>

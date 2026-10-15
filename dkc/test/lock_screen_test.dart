@@ -37,7 +37,11 @@ void main() {
       ..failing = false
       ..install();
     root = installTempPaths();
-    await AuthService().setPins(realPin: _real, duressPin: _duress, wipeCode: _wipe);
+    await AuthService().setPins(
+      realPin: _real,
+      duressPin: _duress,
+      wipeCode: _wipe,
+    );
   });
   tearDown(() {
     storage.uninstall();
@@ -49,25 +53,38 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  Future<void> calc(WidgetTester tester, String keys, {bool settle = true}) async {
+  Future<void> calc(
+    WidgetTester tester,
+    String keys, {
+    bool settle = true,
+  }) async {
     for (final k in keys.split('')) {
       await tester.tap(find.widgetWithText(ElevatedButton, k));
       await tester.pump();
     }
     // The vault's loading spinner never settles, so after an unlock just pump.
-    settle ? await tester.pumpAndSettle() : await tester.pump(const Duration(seconds: 1));
+    settle
+        ? await tester.pumpAndSettle()
+        : await tester.pump(const Duration(seconds: 1));
   }
 
-  String display(WidgetTester tester) =>
-      tester.widget<Text>(find.byWidgetPredicate((w) => w is Text && w.style?.fontSize == 54)).data!;
+  String display(WidgetTester tester) => tester
+      .widget<Text>(
+        find.byWidgetPredicate((w) => w is Text && w.style?.fontSize == 54),
+      )
+      .data!;
 
   /// Real file I/O (the wipe, the wiped marker) only runs outside the fake clock.
   Future<void> letIoFinish(WidgetTester tester) async {
-    await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 100)));
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 100)),
+    );
     await tester.pumpAndSettle();
   }
 
-  testWidgets('% and ± are calculator operations, not typed text', (tester) async {
+  testWidgets('% and ± are calculator operations, not typed text', (
+    tester,
+  ) async {
     await openCalculator(tester);
     await calc(tester, '5%');
     expect(display(tester), '0.05');
@@ -77,7 +94,9 @@ void main() {
     expect(display(tester), '5');
   });
 
-  testWidgets('it does real arithmetic: chaining, decimals, Error and clear', (tester) async {
+  testWidgets('it does real arithmetic: chaining, decimals, Error and clear', (
+    tester,
+  ) async {
     await openCalculator(tester);
     final cases = {
       '2+3+4=': '9',
@@ -104,7 +123,9 @@ void main() {
     expect(display(tester), '4', reason: 'clear drops the pending operation');
   });
 
-  testWidgets('a wrong code on the calculator is counted but shows nothing', (tester) async {
+  testWidgets('a wrong code on the calculator is counted but shows nothing', (
+    tester,
+  ) async {
     await openCalculator(tester);
     await calc(tester, '111111=');
     expect(storage.store[StoreKeys.failedAttempts], '1');
@@ -112,29 +133,42 @@ void main() {
     expect(find.byType(SnackBar), findsNothing);
   });
 
-  testWidgets('a short number and = is plain arithmetic, never a miss (N22)', (tester) async {
+  testWidgets('a short number and = is plain arithmetic, never a miss (N22)', (
+    tester,
+  ) async {
     await openCalculator(tester);
     await calc(tester, '2500=');
     expect(storage.store.containsKey(StoreKeys.failedAttempts), isFalse);
   });
 
-  testWidgets('the calculator respects the lockout, then the real PIN works', (tester) async {
+  testWidgets('the calculator respects the lockout, then the real PIN works', (
+    tester,
+  ) async {
     await openCalculator(tester);
     for (var i = 0; i < 5; i++) {
       await calc(tester, 'C111111=');
     }
     await calc(tester, 'C$_real=');
     expect(find.byType(VaultScreen), findsNothing);
-    expect(find.textContaining('attempts'), findsNothing, reason: 'silent while disguised');
+    expect(
+      find.textContaining('attempts'),
+      findsNothing,
+      reason: 'silent while disguised',
+    );
 
     storage.store.remove(StoreKeys.failedAttempts);
     await calc(tester, 'C$_real=', settle: false);
     expect(find.byType(VaultScreen), findsOneWidget);
   });
 
-  testWidgets('holding = asks for a fingerprint only if she turned it on', (tester) async {
+  testWidgets('holding = asks for a fingerprint only if she turned it on', (
+    tester,
+  ) async {
     final biometric = _FakeBiometric();
-    await openCalculator(tester, auth: AuthService(biometricService: biometric));
+    await openCalculator(
+      tester,
+      auth: AuthService(biometricService: biometric),
+    );
     await calc(tester, '12');
     await tester.longPress(find.widgetWithText(ElevatedButton, '='));
     await tester.pumpAndSettle();
@@ -144,38 +178,44 @@ void main() {
 
     storage.store[StoreKeys.biometricOptIn] = 'true';
     await tester.pumpWidget(const SizedBox());
-    await openCalculator(tester, auth: AuthService(biometricService: biometric));
+    await openCalculator(
+      tester,
+      auth: AuthService(biometricService: biometric),
+    );
     await tester.longPress(find.widgetWithText(ElevatedButton, '='));
     await tester.pump(const Duration(seconds: 1));
     expect(biometric.calls, 1);
     expect(find.byType(VaultScreen), findsOneWidget);
   });
 
-  testWidgets('the wipe code lands on a blank calculator, and it stays one after a restart', (tester) async {
-    File('${root.path}/docs/photo.enc').writeAsStringSync('x');
-    await openCalculator(tester);
-    await calc(tester, '$_wipe=', settle: false);
-    final photo = File('${root.path}/docs/photo.enc');
-    // Done when the wipe has replaced the screen with a fresh calculator.
-    for (var i = 0; i < 40 && display(tester) != '0'; i++) {
+  testWidgets(
+    'the wipe code lands on a blank calculator, and it stays one after a restart',
+    (tester) async {
+      File('${root.path}/docs/photo.enc').writeAsStringSync('x');
+      await openCalculator(tester);
+      await calc(tester, '$_wipe=', settle: false);
+      final photo = File('${root.path}/docs/photo.enc');
+      // Done when the wipe has replaced the screen with a fresh calculator.
+      for (var i = 0; i < 40 && display(tester) != '0'; i++) {
+        await letIoFinish(tester);
+      }
+
+      expect(photo.existsSync(), isFalse);
+      expect(storage.store, isEmpty);
+      expect(await tester.runAsync(WipeService.hasWiped), isTrue);
+      expect(display(tester), '0');
+      expect(find.textContaining('Set up'), findsNothing);
+      expect(find.byType(SnackBar), findsNothing);
+
+      // A fresh start with no codes at all: still only a calculator, never setup.
+      await tester.pumpWidget(const SizedBox());
+      await tester.pumpWidget(const ProtitiApp());
       await letIoFinish(tester);
-    }
-
-    expect(photo.existsSync(), isFalse);
-    expect(storage.store, isEmpty);
-    expect(await tester.runAsync(WipeService.hasWiped), isTrue);
-    expect(display(tester), '0');
-    expect(find.textContaining('Set up'), findsNothing);
-    expect(find.byType(SnackBar), findsNothing);
-
-    // A fresh start with no codes at all: still only a calculator, never setup.
-    await tester.pumpWidget(const SizedBox());
-    await tester.pumpWidget(const ProtitiApp());
-    await letIoFinish(tester);
-    await letIoFinish(tester);
-    expect(display(tester), '0');
-    expect(find.textContaining('Set up'), findsNothing);
-  });
+      await letIoFinish(tester);
+      expect(display(tester), '0');
+      expect(find.textContaining('Set up'), findsNothing);
+    },
+  );
 
   group('nothing in the calculator gives the app away', () {
     final giveaway = RegExp(
@@ -184,7 +224,10 @@ void main() {
       caseSensitive: false,
     );
 
-    for (final (locale, title) in [('en', 'Calculator'), ('bn', 'ক্যালকুলেটর')]) {
+    for (final (locale, title) in [
+      ('en', 'Calculator'),
+      ('bn', 'ক্যালকুলেটর'),
+    ]) {
       testWidgets(locale, (tester) async {
         tester.platformDispatcher.localesTestValue = [Locale(locale)];
         addTearDown(tester.platformDispatcher.clearLocalesTestValue);
@@ -202,12 +245,20 @@ void main() {
             else if (w is Title)
               w.title,
         ];
-        expect(strings, containsAll(['=', '÷', title]), reason: 'Recents shows the title');
+        expect(
+          strings,
+          containsAll(['=', '÷', title]),
+          reason: 'Recents shows the title',
+        );
         for (final s in strings) {
           expect(s, isNot(matches(giveaway)));
         }
         expect(find.byType(AppBar), findsNothing);
-        expect(find.byType(IconButton), findsNothing, reason: 'no lock icon, no reveal button');
+        expect(
+          find.byType(IconButton),
+          findsNothing,
+          reason: 'no lock icon, no reveal button',
+        );
       });
     }
   });

@@ -10,21 +10,17 @@ class ComplaintRepository {
 
   Future<void> saveComplaint(Complaint complaint) async {
     final db = await dbService.database;
-    await db.insert(
-      'sys_crash_reports', 
-      {
-        'dump_id': complaint.id,
-        'dump_type': complaint.type,
-        'header_title': complaint.title,
-        'stack_trace': complaint.description,
-        'ref_ids': jsonEncode(complaint.evidenceIds),
-        'compiled_out': complaint.generatedText,
-        'route_node': complaint.targetPoliceStation,
-        'sync_state': complaint.status,
-        'timestamp': complaint.createdAt.toIso8601String(),
-      },
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    await db.insert('sys_crash_reports', {
+      'dump_id': complaint.id,
+      'dump_type': complaint.type,
+      'header_title': complaint.title,
+      'stack_trace': complaint.description,
+      'ref_ids': jsonEncode(complaint.evidenceIds),
+      'compiled_out': complaint.generatedText,
+      'route_node': complaint.targetPoliceStation,
+      'sync_state': complaint.status,
+      'timestamp': complaint.createdAt.toIso8601String(),
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   Future<List<Complaint>> getAllComplaints() async {

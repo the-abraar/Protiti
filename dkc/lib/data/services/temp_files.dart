@@ -12,7 +12,9 @@ class TempFiles {
       Directory(p.join((await getTemporaryDirectory()).path, 'playback'));
 
   /// GD PDFs: our dossier name, and the names older builds used.
-  static final _pdf = RegExp(r'^((GD|PROTITI)-[A-Z0-9]{8}-\d{4}|GD_Complaint_\d+)\.pdf$');
+  static final _pdf = RegExp(
+    r'^((GD|PROTITI)-[A-Z0-9]{8}-\d{4}|GD_Complaint_\d+)\.pdf$',
+  );
 
   static Future<void> sweep() async {
     try {
@@ -25,7 +27,11 @@ class TempFiles {
   @visibleForTesting
   static Future<void> sweepIn(Directory temp, Directory systemTemp) async {
     await _delete(Directory(p.join(temp.path, 'playback')));
-    for (final dir in [temp, Directory(p.join(temp.path, 'share')), systemTemp]) {
+    for (final dir in [
+      temp,
+      Directory(p.join(temp.path, 'share')),
+      systemTemp,
+    ]) {
       for (final f in await _list(dir)) {
         if (f is File && _pdf.hasMatch(p.basename(f.path))) await _delete(f);
       }

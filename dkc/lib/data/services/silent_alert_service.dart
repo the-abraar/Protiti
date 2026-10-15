@@ -11,11 +11,14 @@ import 'secure_store.dart';
 /// can tell her whether it went.
 class AlertLog {
   static Future<void> record(PanicResult r) async {
-    final sent = r.dispatch.statuses.values.where((s) => s == SmsStatus.sent).length;
+    final sent = r.dispatch.statuses.values
+        .where((s) => s == SmsStatus.sent)
+        .length;
     try {
       await secureStore.write(
         key: StoreKeys.lastAlert,
-        value: '${r.timestamp.toIso8601String()}|$sent|${r.dispatch.statuses.length}',
+        value:
+            '${r.timestamp.toIso8601String()}|$sent|${r.dispatch.statuses.length}',
       );
     } catch (_) {}
   }
@@ -23,13 +26,18 @@ class AlertLog {
   /// Null when there is nothing to report.
   static Future<String?> summary() async {
     try {
-      final parts = (await secureStore.read(key: StoreKeys.lastAlert))?.split('|');
+      final parts = (await secureStore.read(
+        key: StoreKeys.lastAlert,
+      ))?.split('|');
       if (parts == null || parts.length != 3) return null;
       final at = DateTime.parse(parts[0]);
       final sent = int.parse(parts[1]), total = int.parse(parts[2]);
-      final when = '${at.day}/${at.month} ${at.hour.toString().padLeft(2, '0')}:'
+      final when =
+          '${at.day}/${at.month} ${at.hour.toString().padLeft(2, '0')}:'
           '${at.minute.toString().padLeft(2, '0')}';
-      if (total == 0) return 'Alert at $when: not sent, you had no trusted contacts.';
+      if (total == 0) {
+        return 'Alert at $when: not sent, you had no trusted contacts.';
+      }
       return 'Alert at $when: sent to $sent of $total contacts.';
     } catch (_) {
       return null;
@@ -63,7 +71,8 @@ class DuressAlert {
   static Future<void> sendIfOn({TriggerPanicUseCase? useCase}) async {
     try {
       if (!await isOn()) return;
-      final panic = useCase ??
+      final panic =
+          useCase ??
           TriggerPanicUseCase(
             LocationService(),
             contactRepository: ContactRepository(DatabaseService()),

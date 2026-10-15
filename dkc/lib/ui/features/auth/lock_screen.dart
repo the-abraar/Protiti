@@ -51,7 +51,8 @@ class _LockScreenState extends State<LockScreen> {
 
   Future<void> _checkSetup() async {
     try {
-      final done = await _authService.isSetupComplete() || await WipeService.hasWiped();
+      final done =
+          await _authService.isSetupComplete() || await WipeService.hasWiped();
       if (mounted) setState(() => _needsSetup = !done);
     } catch (_) {
       // Fail closed: storage is unreadable, so stay a plain calculator.
@@ -124,9 +125,13 @@ class _LockScreenState extends State<LockScreen> {
 
   /// Up to 9 significant digits, no trailing zeros, like a pocket calculator.
   static String _format(double value) {
-    if (value == value.truncateToDouble() && value.abs() < 1e10) return value.toInt().toString();
+    if (value == value.truncateToDouble() && value.abs() < 1e10) {
+      return value.toInt().toString();
+    }
     final parts = value.toStringAsPrecision(9).split('e');
-    final mantissa = parts[0].contains('.') ? parts[0].replaceFirst(RegExp(r'\.?0+$'), '') : parts[0];
+    final mantissa = parts[0].contains('.')
+        ? parts[0].replaceFirst(RegExp(r'\.?0+$'), '')
+        : parts[0];
     return parts.length == 2 ? '${mantissa}e${parts[1]}' : mantissa;
   }
 
@@ -170,12 +175,15 @@ class _LockScreenState extends State<LockScreen> {
           _typedDigits = '';
         case '±':
           if (_display != '0') {
-            _display = _display.startsWith('-') ? _display.substring(1) : '-$_display';
+            _display = _display.startsWith('-')
+                ? _display.substring(1)
+                : '-$_display';
           }
           _typedDigits = '';
         case '=':
           // Only a bare 6-10 digit entry may be a code, so "2500 =" is never a miss (N22).
-          if (_operator == null && RegExp(r'^\d{6,10}$').hasMatch(_typedDigits)) {
+          if (_operator == null &&
+              RegExp(r'^\d{6,10}$').hasMatch(_typedDigits)) {
             _verifyPin(_typedDigits);
           }
           _typedDigits = '';
@@ -309,7 +317,9 @@ class _LockScreenState extends State<LockScreen> {
                 ),
                 onPressed: () => _onCalcButtonPress(label),
                 // Only when she opted in; otherwise a long press is an ordinary press.
-                onLongPress: label == '=' && _biometricEnabled ? _authenticateBiometric : null,
+                onLongPress: label == '=' && _biometricEnabled
+                    ? _authenticateBiometric
+                    : null,
                 child: Text(
                   label,
                   style: const TextStyle(

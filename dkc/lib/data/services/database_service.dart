@@ -17,7 +17,7 @@ class DatabaseService {
   final FlutterSecureStorage _secureStorage;
 
   DatabaseService({this.isDecoy = false, FlutterSecureStorage? secureStorage})
-      : _secureStorage = secureStorage ?? secureStore;
+    : _secureStorage = secureStorage ?? secureStore;
 
   static Database? _realDb;
   static Database? _decoyDb;
@@ -74,7 +74,9 @@ class DatabaseService {
       throw StateError('Storage key missing for an existing database file.');
     }
     final random = Random.secure();
-    final key = base64UrlEncode(List<int>.generate(32, (_) => random.nextInt(256)));
+    final key = base64UrlEncode(
+      List<int>.generate(32, (_) => random.nextInt(256)),
+    );
     await _secureStorage.write(key: _keyStorageKey, value: key);
     return key;
   }
@@ -104,9 +106,16 @@ class DatabaseService {
   @visibleForTesting
   Future<void> onUpgrade(Database db, int oldVersion, int newVersion) async {
     if (isDecoy || oldVersion >= 2) return;
-    await db.delete('sys_analytics_cache',
-        where: 'req_id IN (?, ?, ?)', whereArgs: ['real_ev_1', 'real_ev_2', 'real_ev_3']);
-    await db.delete('net_telemetry_peers', where: 'node_id IN (?, ?, ?)', whereArgs: ['c_1', 'c_2', 'c_3']);
+    await db.delete(
+      'sys_analytics_cache',
+      where: 'req_id IN (?, ?, ?)',
+      whereArgs: ['real_ev_1', 'real_ev_2', 'real_ev_3'],
+    );
+    await db.delete(
+      'net_telemetry_peers',
+      where: 'node_id IN (?, ?, ?)',
+      whereArgs: ['c_1', 'c_2', 'c_3'],
+    );
   }
 
   /// A fresh real vault starts empty: no sample evidence, no placeholder contacts.
@@ -195,7 +204,9 @@ class DatabaseService {
         'attachment_path': null,
         'body_text': picks[i],
         'extra_json': '{}',
-        'saved_at': now.subtract(Duration(hours: 6 + rand.nextInt(24 * 21))).toIso8601String(),
+        'saved_at': now
+            .subtract(Duration(hours: 6 + rand.nextInt(24 * 21)))
+            .toIso8601String(),
       });
     }
   }

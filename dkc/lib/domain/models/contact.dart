@@ -24,7 +24,9 @@ class TrustedContact {
       return i >= 0 ? '$i' : c;
     }).join();
     final compact = ascii.replaceAll(RegExp(r'[\s\-().]'), '');
-    final match = RegExp(r'^(?:\+88|0088|88)?(01[3-9]\d{8})$').firstMatch(compact);
+    final match = RegExp(
+      r'^(?:\+88|0088|88)?(01[3-9]\d{8})$',
+    ).firstMatch(compact);
     return match == null ? null : '+88${match.group(1)}';
   }
 

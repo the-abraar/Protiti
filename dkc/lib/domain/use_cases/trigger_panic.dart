@@ -27,21 +27,30 @@ class SmsDispatch {
 
   const SmsDispatch(this.method, this.statuses);
 
-  bool get allSent => statuses.isNotEmpty && statuses.values.every((s) => s == SmsStatus.sent);
+  bool get allSent =>
+      statuses.isNotEmpty && statuses.values.every((s) => s == SmsStatus.sent);
 }
 
-typedef SmsDispatcher = Future<SmsDispatch> Function(List<String> recipients, String message);
+typedef SmsDispatcher =
+    Future<SmsDispatch> Function(List<String> recipients, String message);
 
 /// Silent SmsManager only, for when nobody may see anything: the background
 /// triggers and the second PIN. Where silent sending is impossible (iOS, no
 /// permission) every recipient is failed; it never opens Messages.
-Future<SmsDispatch> dispatchSilentSms(List<String> recipients, String message) async {
+Future<SmsDispatch> dispatchSilentSms(
+  List<String> recipients,
+  String message,
+) async {
   if (recipients.isEmpty) return const SmsDispatch('no_contacts', {});
   final results = Platform.isAndroid
-      ? await NativeSmsService.sendSilently(recipients: recipients, message: message)
+      ? await NativeSmsService.sendSilently(
+          recipients: recipients,
+          message: message,
+        )
       : const <String, bool>{};
   return SmsDispatch(results.isEmpty ? 'failed' : 'sms', {
-    for (final r in recipients) r: results[r] == true ? SmsStatus.sent : SmsStatus.failed,
+    for (final r in recipients)
+      r: results[r] == true ? SmsStatus.sent : SmsStatus.failed,
   });
 }
 
@@ -56,7 +65,11 @@ Future<SmsDispatch> dispatchSms(List<String> recipients, String message) async {
   }
   final unconfirmed = {for (final r in recipients) r: SmsStatus.unconfirmed};
   try {
-    final smsUri = Uri(scheme: 'sms', path: recipients.join(','), queryParameters: {'body': message});
+    final smsUri = Uri(
+      scheme: 'sms',
+      path: recipients.join(','),
+      queryParameters: {'body': message},
+    );
     if (await canLaunchUrl(smsUri) && await launchUrl(smsUri)) {
       return SmsDispatch('sms_app', unconfirmed);
     }
@@ -65,7 +78,9 @@ Future<SmsDispatch> dispatchSms(List<String> recipients, String message) async {
     await SharePlus.instance.share(ShareParams(text: message));
     return SmsDispatch('share_sheet', unconfirmed);
   } catch (_) {
-    return SmsDispatch('failed', {for (final r in recipients) r: SmsStatus.failed});
+    return SmsDispatch('failed', {
+      for (final r in recipients) r: SmsStatus.failed,
+    });
   }
 }
 
@@ -127,14 +142,18 @@ class TriggerPanicUseCase {
     if (pos != null) {
       lat = pos.latitude;
       lng = pos.longitude;
-      locationStr = '${mapsLink(lat, lng)} (at ${_when(pos.timestamp.toLocal())})';
+      locationStr =
+          '${mapsLink(lat, lng)} (at ${_when(pos.timestamp.toLocal())})';
     }
 
     List<String> recipientNumbers = [];
     if (contactRepository != null) {
       try {
         final contacts = await contactRepository!.getEmergencyContacts();
-        recipientNumbers = contacts.map((c) => c.phone).where((p) => p.isNotEmpty).toList();
+        recipientNumbers = contacts
+            .map((c) => c.phone)
+            .where((p) => p.isNotEmpty)
+            .toList();
       } catch (_) {}
     }
     // No hotline fallback: 999 and 109 take calls, not texts. With no contact
@@ -176,7 +195,9 @@ class TriggerPanicUseCase {
   /// never reads as current (N11). [dateOnly] keeps the SMS within 2 parts.
   static String _when(DateTime t, {bool dateOnly = false}) {
     final now = DateTime.now();
-    if (t.year == now.year && t.month == now.month && t.day == now.day) return _hhmm(t);
+    if (t.year == now.year && t.month == now.month && t.day == now.day) {
+      return _hhmm(t);
+    }
     return dateOnly ? '${t.day}/${t.month}' : '${t.day}/${t.month} ${_hhmm(t)}';
   }
 
@@ -196,8 +217,12 @@ class TriggerPanicUseCase {
     bool mocked = false,
     bool practice = false,
   }) {
-    final head = practice ? practiceHead : 'জরুরি! সাহায্য দরকার। Urgent, help me!';
-    if (lat == null || lng == null) return '$head অবস্থান জানা নেই/Location unknown.';
+    final head = practice
+        ? practiceHead
+        : 'জরুরি! সাহায্য দরকার। Urgent, help me!';
+    if (lat == null || lng == null) {
+      return '$head অবস্থান জানা নেই/Location unknown.';
+    }
     final at = fixedAt == null ? '' : ' ${_when(fixedAt, dateOnly: true)}';
     final doubt = mocked ? ', হয়তো ভুল/may be wrong' : '';
     return '$head অবস্থান/Location$at$doubt: ${mapsLink(lat, lng)}';
@@ -212,7 +237,10 @@ class TriggerPanicUseCase {
     try {
       if (!await audioService.startRecording(askPermission: false)) return;
       await Future.delayed(const Duration(minutes: 2));
-      await audioService.stopAndSave(evidenceRepository, description: 'Emergency recording');
+      await audioService.stopAndSave(
+        evidenceRepository,
+        description: 'Emergency recording',
+      );
     } catch (_) {}
   }
 

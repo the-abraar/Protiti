@@ -5,24 +5,28 @@ import '../../core/theme/app_theme.dart';
 /// Steps for the phone makers whose battery savers most often stop
 /// background apps in Bangladesh.
 const _brandSteps = {
-  'Xiaomi': 'Turn on Autostart for this app, and set its Battery saver to "No restrictions". '
+  'Xiaomi':
+      'Turn on Autostart for this app, and set its Battery saver to "No restrictions". '
       'In Recent apps, hold this app\'s card and tap the lock.',
-  'Oppo': 'In Settings > Battery, find this app and allow background activity. '
+  'Oppo':
+      'In Settings > Battery, find this app and allow background activity. '
       'Turn on Auto launch (or "Allow auto startup").',
-  'Vivo': 'In Settings > Battery > Background power consumption, allow this app. '
+  'Vivo':
+      'In Settings > Battery > Background power consumption, allow this app. '
       'In i Manager > App manager > Autostart, turn it on.',
-  'Realme': 'In Settings > Battery > App battery management, find this app and allow '
+  'Realme':
+      'In Settings > Battery > App battery management, find this app and allow '
       'background activity and Auto launch.',
 };
 
 /// Which of the four a phone maker's name belongs to, or null.
 String? batteryBrand(String? maker) => switch (maker?.trim().toLowerCase()) {
-      'xiaomi' || 'redmi' || 'poco' => 'Xiaomi',
-      'oppo' => 'Oppo',
-      'vivo' || 'iqoo' => 'Vivo',
-      'realme' => 'Realme',
-      _ => null,
-    };
+  'xiaomi' || 'redmi' || 'poco' => 'Xiaomi',
+  'oppo' => 'Oppo',
+  'vivo' || 'iqoo' => 'Vivo',
+  'realme' => 'Realme',
+  _ => null,
+};
 
 /// Shown when she turns on a trigger, and from Settings.
 class BatteryGuideScreen extends StatefulWidget {
@@ -45,7 +49,10 @@ class BatteryGuideScreen extends StatefulWidget {
 
   static Future<bool> _openBatterySettings() async {
     try {
-      return await NativeSmsService.channel.invokeMethod<bool>('openBatterySettings') ?? false;
+      return await NativeSmsService.channel.invokeMethod<bool>(
+            'openBatterySettings',
+          ) ??
+          false;
     } catch (_) {
       return false;
     }
@@ -69,9 +76,11 @@ class _BatteryGuideScreenState extends State<BatteryGuideScreen> {
   Future<void> _open() async {
     final messenger = ScaffoldMessenger.of(context);
     if (!await widget.openSettings()) {
-      messenger.showSnackBar(const SnackBar(
-        content: Text('Opened this app\'s settings. Look for Battery there.'),
-      ));
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text('Opened this app\'s settings. Look for Battery there.'),
+        ),
+      );
     }
   }
 
@@ -88,20 +97,29 @@ class _BatteryGuideScreenState extends State<BatteryGuideScreen> {
             'power-button and shake SOS stop working, and nothing tells you.',
           ),
           const SizedBox(height: 16),
-          const Text('1. Set this app\'s battery use to "Unrestricted" or "No restrictions".'),
+          const Text(
+            '1. Set this app\'s battery use to "Unrestricted" or "No restrictions".',
+          ),
           const SizedBox(height: 8),
-          const Text('2. After the phone restarts, open this app once. That turns the shortcuts '
-              'back on.'),
+          const Text(
+            '2. After the phone restarts, open this app once. That turns the shortcuts '
+            'back on.',
+          ),
           if (brand != null) ...[
             const SizedBox(height: 16),
-            Text('On your $brand phone', style: const TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+              'On your $brand phone',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 8),
             Text(_brandSteps[brand]!),
           ],
           const SizedBox(height: 16),
           ElevatedButton(
             onPressed: _open,
-            child: Text(brand == null ? 'Open app settings' : 'Open $brand settings'),
+            child: Text(
+              brand == null ? 'Open app settings' : 'Open $brand settings',
+            ),
           ),
           const SizedBox(height: 16),
           const Text(

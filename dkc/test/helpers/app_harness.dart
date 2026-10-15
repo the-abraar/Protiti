@@ -4,7 +4,8 @@ import 'package:protiti/l10n/app_localizations.dart';
 import 'package:protiti/ui/core/theme/app_theme.dart';
 
 /// The app's theme and localizations around [home].
-Widget harness(Widget home, {Locale locale = const Locale('en')}) => MaterialApp(
+Widget harness(Widget home, {Locale locale = const Locale('en')}) =>
+    MaterialApp(
       theme: AppTheme.lightTheme,
       locale: locale,
       localizationsDelegates: const [

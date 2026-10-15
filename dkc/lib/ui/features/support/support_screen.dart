@@ -121,9 +121,14 @@ class SupportScreen extends StatelessWidget {
                 ),
                 if (phone != null)
                   IconButton(
-                    icon: const Icon(Icons.call, color: AppTheme.brandSecondary),
+                    icon: const Icon(
+                      Icons.call,
+                      color: AppTheme.brandSecondary,
+                    ),
                     onPressed: () => _makePhoneCall(phone),
-                    tooltip: AppLocalizations.of(context)!.callContactTooltip(name),
+                    tooltip: AppLocalizations.of(
+                      context,
+                    )!.callContactTooltip(name),
                   ),
               ],
             ),
@@ -173,7 +178,11 @@ class SupportScreen extends StatelessWidget {
       children: [
         Row(
           children: const [
-            Icon(Icons.school_outlined, color: AppTheme.brandSecondary, size: 24),
+            Icon(
+              Icons.school_outlined,
+              color: AppTheme.brandSecondary,
+              size: 24,
+            ),
             SizedBox(width: 8),
             Text(
               'Student Services & Campus Directory',

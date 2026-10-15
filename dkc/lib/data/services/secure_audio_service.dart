@@ -20,9 +20,14 @@ class SecureAudioService {
   /// cache. With [askPermission] false it never shows the OS prompt, which
   /// matters mid-emergency; it just returns false.
   Future<bool> startRecording({bool askPermission = true}) async {
-    if (!await _audioRecorder.hasPermission(request: askPermission)) return false;
+    if (!await _audioRecorder.hasPermission(request: askPermission)) {
+      return false;
+    }
     final directory = await getApplicationDocumentsDirectory();
-    _recordingPath = p.join(directory.path, '${const Uuid().v4()}$recordingExt');
+    _recordingPath = p.join(
+      directory.path,
+      '${const Uuid().v4()}$recordingExt',
+    );
     _startedAt = DateTime.now();
     await _audioRecorder.start(
       const RecordConfig(encoder: AudioEncoder.aacLc, bitRate: 128000),
@@ -34,9 +39,15 @@ class SecureAudioService {
   /// Encrypts a finished recording into an evidence file beside it and
   /// deletes the plaintext. The hash is of the recording as the recorder
   /// wrote it, taken while encrypting.
-  Future<Evidence?> fileRecording(File plain, {required String description, required DateTime capturedAt}) async {
+  Future<Evidence?> fileRecording(
+    File plain, {
+    required String description,
+    required DateTime capturedAt,
+  }) async {
     if (!await plain.exists()) return null;
-    final secureFile = File(p.join(plain.parent.path, '${const Uuid().v4()}$evidenceExt'));
+    final secureFile = File(
+      p.join(plain.parent.path, '${const Uuid().v4()}$evidenceExt'),
+    );
     final hash = await _encryptionService.encryptFile(plain, secureFile);
     await plain.delete();
     return Evidence(
@@ -44,19 +55,30 @@ class SecureAudioService {
       type: 'audio',
       description: description,
       filePath: secureFile.path,
-      metadata: Evidence.captureMetadata(source: 'audio', sha256: hash, capturedAt: capturedAt),
+      metadata: Evidence.captureMetadata(
+        source: 'audio',
+        sha256: hash,
+        capturedAt: capturedAt,
+      ),
       createdAt: capturedAt,
     );
   }
 
   /// Stops the current recording and files it as evidence in [repository].
-  Future<Evidence?> stopAndSave(EvidenceRepository repository, {required String description}) async {
+  Future<Evidence?> stopAndSave(
+    EvidenceRepository repository, {
+    required String description,
+  }) async {
     final path = await _audioRecorder.stop() ?? _recordingPath;
     final startedAt = _startedAt ?? DateTime.now();
     _recordingPath = null;
     _startedAt = null;
     if (path == null) return null;
-    final evidence = await fileRecording(File(path), description: description, capturedAt: startedAt);
+    final evidence = await fileRecording(
+      File(path),
+      description: description,
+      capturedAt: startedAt,
+    );
     if (evidence != null) await repository.addEvidence(evidence);
     return evidence;
   }
@@ -92,8 +114,12 @@ class SecureAudioService {
       final modified = await entity.lastModified();
       if (DateTime.now().difference(modified) < minAge) continue;
       // The app was killed mid-recording, so only the file's last write time is known.
-      final evidence = await fileRecording(entity,
-          description: 'Recovered recording (time is when the file was last written)', capturedAt: modified);
+      final evidence = await fileRecording(
+        entity,
+        description:
+            'Recovered recording (time is when the file was last written)',
+        capturedAt: modified,
+      );
       if (evidence == null) continue;
       await repository.addEvidence(evidence);
       recovered++;

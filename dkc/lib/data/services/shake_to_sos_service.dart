@@ -21,7 +21,9 @@ class ShakeDetector {
   /// True when this sample completes a shake; counting then starts afresh.
   bool add(double gForce, int nowMs) {
     if (gForce < threshold) return false;
-    if (_times.isNotEmpty && nowMs - _times.last < minGap.inMilliseconds) return false;
+    if (_times.isNotEmpty && nowMs - _times.last < minGap.inMilliseconds) {
+      return false;
+    }
     _times
       ..add(nowMs)
       ..removeWhere((t) => nowMs - t > window.inMilliseconds);
@@ -44,10 +46,12 @@ class ShakeToSosService {
   void startListening() {
     _accelerometerSubscription ??=
         // ~15 Hz: the default 5 Hz misses most peaks of a hard shake.
-        userAccelerometerEventStream(samplingPeriod: SensorInterval.uiInterval).listen((e) {
-      final g = sqrt(e.x * e.x + e.y * e.y + e.z * e.z) / 9.80665;
-      if (_detector.add(g, _clock.elapsedMilliseconds)) onShake();
-    });
+        userAccelerometerEventStream(
+          samplingPeriod: SensorInterval.uiInterval,
+        ).listen((e) {
+          final g = sqrt(e.x * e.x + e.y * e.y + e.z * e.z) / 9.80665;
+          if (_detector.add(g, _clock.elapsedMilliseconds)) onShake();
+        });
   }
 
   void stopListening() {

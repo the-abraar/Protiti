@@ -10,7 +10,11 @@ import '../../../data/services/secure_audio_service.dart';
 class SecureAudioPlayer extends StatefulWidget {
   final String filePath;
   final AudioPlayer? player;
-  const SecureAudioPlayer({super.key, required this.filePath, @visibleForTesting this.player});
+  const SecureAudioPlayer({
+    super.key,
+    required this.filePath,
+    @visibleForTesting this.player,
+  });
 
   @override
   State<SecureAudioPlayer> createState() => _SecureAudioPlayerState();
@@ -93,7 +97,10 @@ class _SecureAudioPlayerState extends State<SecureAudioPlayer> {
       backgroundColor: Colors.black,
       appBar: AppBar(
         backgroundColor: Colors.black,
-        title: const Text('Secure Audio Review', style: TextStyle(fontSize: 14)),
+        title: const Text(
+          'Secure Audio Review',
+          style: TextStyle(fontSize: 14),
+        ),
       ),
       body: Center(
         child: _busy
@@ -102,7 +109,9 @@ class _SecureAudioPlayerState extends State<SecureAudioPlayer> {
                 iconSize: 64,
                 color: Colors.white,
                 tooltip: playing ? 'Pause' : 'Play',
-                icon: Icon(playing ? Icons.pause_circle_filled : Icons.play_circle_fill),
+                icon: Icon(
+                  playing ? Icons.pause_circle_filled : Icons.play_circle_fill,
+                ),
                 onPressed: playing ? _pause : _play,
               ),
       ),

@@ -17,7 +17,9 @@ TestDefaultBinaryMessenger get _messenger =>
 /// In-memory stand-in for the flutter_secure_storage platform channel.
 /// Set [failing] to make every call throw, like a broken keystore.
 class FakeSecureStorage {
-  static const channel = MethodChannel('plugins.it_nomads.com/flutter_secure_storage');
+  static const channel = MethodChannel(
+    'plugins.it_nomads.com/flutter_secure_storage',
+  );
   final Map<String, String> store = {};
   bool failing = false;
 
@@ -25,7 +27,9 @@ class FakeSecureStorage {
   void uninstall() => _messenger.setMockMethodCallHandler(channel, null);
 
   Future<Object?> _handle(MethodCall call) async {
-    if (failing) throw PlatformException(code: 'keystore', message: 'unavailable');
+    if (failing) {
+      throw PlatformException(code: 'keystore', message: 'unavailable');
+    }
     final args = (call.arguments as Map?) ?? const {};
     switch (call.method) {
       case 'read':
@@ -54,17 +58,23 @@ Directory installTempPaths() {
   final docs = Directory('${root.path}/docs')..createSync();
   final temp = Directory('${root.path}/tmp')..createSync();
   final dbs = Directory('${root.path}/dbs')..createSync();
-  _messenger.setMockMethodCallHandler(const MethodChannel('plugins.flutter.io/path_provider'), (call) async {
-    return switch (call.method) {
-      'getApplicationDocumentsDirectory' => docs.path,
-      'getTemporaryDirectory' => temp.path,
-      _ => root.path,
-    };
-  });
-  _messenger.setMockMethodCallHandler(const MethodChannel('com.davidmartos96.sqflite_sqlcipher'), (call) async {
-    if (call.method == 'getDatabasesPath') return dbs.path;
-    return null;
-  });
+  _messenger.setMockMethodCallHandler(
+    const MethodChannel('plugins.flutter.io/path_provider'),
+    (call) async {
+      return switch (call.method) {
+        'getApplicationDocumentsDirectory' => docs.path,
+        'getTemporaryDirectory' => temp.path,
+        _ => root.path,
+      };
+    },
+  );
+  _messenger.setMockMethodCallHandler(
+    const MethodChannel('com.davidmartos96.sqflite_sqlcipher'),
+    (call) async {
+      if (call.method == 'getDatabasesPath') return dbs.path;
+      return null;
+    },
+  );
   return root;
 }
 
@@ -74,8 +84,8 @@ class FakeEvidenceRepository extends EvidenceRepository {
   final List<String> deleted = [];
 
   FakeEvidenceRepository([List<Evidence>? items])
-      : items = items ?? [],
-        super(DatabaseService());
+    : items = items ?? [],
+      super(DatabaseService());
 
   /// Same id replaces, like the real table's ConflictAlgorithm.replace.
   @override
@@ -97,8 +107,8 @@ class FakeEvidenceRepository extends EvidenceRepository {
 class FakeContactRepository extends ContactRepository {
   final List<TrustedContact> contacts;
   FakeContactRepository([List<TrustedContact>? contacts])
-      : contacts = contacts ?? [],
-        super(DatabaseService());
+    : contacts = contacts ?? [],
+      super(DatabaseService());
 
   @override
   Future<void> addContact(TrustedContact contact) async {
@@ -107,7 +117,8 @@ class FakeContactRepository extends ContactRepository {
   }
 
   @override
-  Future<void> deleteContact(String id) async => contacts.removeWhere((c) => c.id == id);
+  Future<void> deleteContact(String id) async =>
+      contacts.removeWhere((c) => c.id == id);
 
   @override
   Future<List<TrustedContact>> getAllContacts() async => List.of(contacts);
@@ -117,8 +128,14 @@ class FakeContactRepository extends ContactRepository {
       contacts.where((c) => c.isEmergency).toList();
 }
 
-TrustedContact contact(String name, String phone) =>
-    TrustedContact(id: name, name: name, phone: phone, email: '', relationship: '', isEmergency: true);
+TrustedContact contact(String name, String phone) => TrustedContact(
+  id: name,
+  name: name,
+  phone: phone,
+  email: '',
+  relationship: '',
+  isEmergency: true,
+);
 
 /// Records SMS requests and answers with [answer].
 class FakeSms {
@@ -156,27 +173,26 @@ DateTime _todayAt930() {
 }
 
 Position position(double lat, double lng) => Position(
-      latitude: lat,
-      longitude: lng,
-      timestamp: _todayAt930(),
-      accuracy: 10,
-      altitude: 0,
-      altitudeAccuracy: 0,
-      heading: 0,
-      headingAccuracy: 0,
-      speed: 0,
-      speedAccuracy: 0,
-    );
+  latitude: lat,
+  longitude: lng,
+  timestamp: _todayAt930(),
+  accuracy: 10,
+  altitude: 0,
+  altitudeAccuracy: 0,
+  heading: 0,
+  headingAccuracy: 0,
+  speed: 0,
+  speedAccuracy: 0,
+);
 
 TriggerPanicUseCase panicUseCase({
   required FakeSms sms,
   List<TrustedContact> contacts = const [],
   Position? at,
-}) =>
-    TriggerPanicUseCase(
-      FakeLocationService(at),
-      contactRepository: FakeContactRepository(List.of(contacts)),
-      audioService: SilentAudioService(),
-      evidenceRepository: FakeEvidenceRepository(),
-      sendSms: sms.call,
-    );
+}) => TriggerPanicUseCase(
+  FakeLocationService(at),
+  contactRepository: FakeContactRepository(List.of(contacts)),
+  audioService: SilentAudioService(),
+  evidenceRepository: FakeEvidenceRepository(),
+  sendSms: sms.call,
+);

@@ -34,7 +34,14 @@ void main() {
       StoreKeys.notesDraftTitle: 'notes',
     });
     for (final key in storage.store.keys) {
-      expect(key, isNot(matches(RegExp('pin|duress|decoy|protiti|vault', caseSensitive: false))));
+      expect(
+        key,
+        isNot(
+          matches(
+            RegExp('pin|duress|decoy|protiti|vault', caseSensitive: false),
+          ),
+        ),
+      );
     }
   });
 

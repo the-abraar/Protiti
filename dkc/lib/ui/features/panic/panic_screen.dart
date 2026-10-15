@@ -24,7 +24,12 @@ class PanicScreen extends StatefulWidget {
   /// Delivery reports, (recipient, delivered); defaults to the SMS plugin's.
   final Stream<(String, bool)>? deliveries;
 
-  const PanicScreen({super.key, this.isDecoy = false, this.useCase, this.deliveries});
+  const PanicScreen({
+    super.key,
+    this.isDecoy = false,
+    this.useCase,
+    this.deliveries,
+  });
 
   /// How an SOS goes out once the screen is gone mid-countdown: silent SMS
   /// only, so nothing (Messages, a share sheet) pops up later for anyone to see.
@@ -61,7 +66,8 @@ class _PanicScreenState extends State<PanicScreen>
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     // Permissions are asked in Settings, after an explanation, never here.
-    _panicUseCase = widget.useCase ??
+    _panicUseCase =
+        widget.useCase ??
         TriggerPanicUseCase(
           LocationService(),
           contactRepository: ContactRepository(DatabaseService()),
@@ -88,7 +94,9 @@ class _PanicScreenState extends State<PanicScreen>
     });
 
     if (!widget.isDecoy) {
-      _deliverySub = (widget.deliveries ?? NativeSmsService.deliveries).listen((d) {
+      _deliverySub = (widget.deliveries ?? NativeSmsService.deliveries).listen((
+        d,
+      ) {
         if (mounted && _lastResult?.dispatch.statuses[d.$1] == SmsStatus.sent) {
           setState(() => _delivered[d.$1] = d.$2);
         }
@@ -101,7 +109,9 @@ class _PanicScreenState extends State<PanicScreen>
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.paused && _sendIfLeftMidCountdown()) _resetEmergency();
+    if (state == AppLifecycleState.paused && _sendIfLeftMidCountdown()) {
+      _resetEmergency();
+    }
   }
 
   /// She held SOS for 3 s, then the screen went away (screen off, another app,
@@ -118,10 +128,16 @@ class _PanicScreenState extends State<PanicScreen>
   static Future<void> _sendUnattended(TriggerPanicUseCase useCase) async {
     PanicResult? result;
     try {
-      result = await useCase.execute(dim: false, record: false, sms: PanicScreen.unattendedSms);
+      result = await useCase.execute(
+        dim: false,
+        record: false,
+        sms: PanicScreen.unattendedSms,
+      );
       await AlertLog.record(result);
     } catch (_) {}
-    await const SosAlerts().vibrate((result?.success ?? false) ? Buzz.sent : Buzz.failed);
+    await const SosAlerts().vibrate(
+      (result?.success ?? false) ? Buzz.sent : Buzz.failed,
+    );
   }
 
   @override
@@ -245,7 +261,9 @@ class _PanicScreenState extends State<PanicScreen>
                       ? Icons.warning_rounded
                       : Icons.offline_bolt_outlined,
                   size: 16,
-                  color: _isTriggered ? AppTheme.panicRed : AppTheme.brandSecondary,
+                  color: _isTriggered
+                      ? AppTheme.panicRed
+                      : AppTheme.brandSecondary,
                 ),
                 const SizedBox(width: 8),
                 Text(
@@ -255,7 +273,9 @@ class _PanicScreenState extends State<PanicScreen>
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
-                    color: _isTriggered ? AppTheme.panicRed : AppTheme.brandSecondary,
+                    color: _isTriggered
+                        ? AppTheme.panicRed
+                        : AppTheme.brandSecondary,
                     letterSpacing: 0.5,
                   ),
                 ),
@@ -269,11 +289,11 @@ class _PanicScreenState extends State<PanicScreen>
           _buildHoldButton(),
 
           const SizedBox(height: 40),
-          
+
           ElevatedButton.icon(
             icon: Icon(
-              _isVisualSosActive ? Icons.flashlight_off : Icons.flashlight_on, 
-              color: Colors.white
+              _isVisualSosActive ? Icons.flashlight_off : Icons.flashlight_on,
+              color: Colors.white,
             ),
             label: Text(
               _isVisualSosActive ? 'STOP VISUAL SOS' : 'ACTIVATE VISUAL SOS',
@@ -299,7 +319,11 @@ class _PanicScreenState extends State<PanicScreen>
             icon: const Icon(Icons.phone_in_talk, color: Colors.redAccent),
             label: const Text(
               'CALL 999 NOW',
-              style: TextStyle(color: Colors.redAccent, fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                color: Colors.redAccent,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             style: OutlinedButton.styleFrom(
               padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
@@ -313,12 +337,12 @@ class _PanicScreenState extends State<PanicScreen>
               _panicUseCase.launchEmergencyCall();
             },
           ),
-          
+
           const SizedBox(height: 20),
           ElevatedButton.icon(
             icon: Icon(
-              _isSirenActive ? Icons.volume_off : Icons.volume_up, 
-              color: Colors.white
+              _isSirenActive ? Icons.volume_off : Icons.volume_up,
+              color: Colors.white,
             ),
             label: Text(
               _isSirenActive ? 'STOP SIREN ALARM' : 'TRIGGER SIREN ALARM',
@@ -331,7 +355,7 @@ class _PanicScreenState extends State<PanicScreen>
               setState(() {
                 _isSirenActive = !_isSirenActive;
               });
-              
+
               if (_isSirenActive) {
                 _sirenService.triggerLoudSiren();
                 Navigator.push(
@@ -357,10 +381,10 @@ class _PanicScreenState extends State<PanicScreen>
           Text(
             _isTriggered
                 ? (_secondsLeft > 0
-                ? 'Sending in $_secondsLeft s. Cancel if this was a mistake.'
-                : _isDispatching
-                    ? 'Sending SOS...'
-                    : 'SOS finished. See the result below.')
+                      ? 'Sending in $_secondsLeft s. Cancel if this was a mistake.'
+                      : _isDispatching
+                      ? 'Sending SOS...'
+                      : 'SOS finished. See the result below.')
                 : (_isHolding
                       ? 'Keep holding... ${(3.0 - (_holdController.value * 3.0)).toStringAsFixed(1)}s'
                       : AppLocalizations.of(context)!.panicHoldInstruction),
@@ -387,7 +411,9 @@ class _PanicScreenState extends State<PanicScreen>
                 Expanded(
                   child: OutlinedButton(
                     onPressed: _resetEmergency,
-                    style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(56)),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size.fromHeight(56),
+                    ),
                     child: const Text('Cancel', style: TextStyle(fontSize: 18)),
                   ),
                 ),
@@ -400,7 +426,10 @@ class _PanicScreenState extends State<PanicScreen>
                       backgroundColor: AppTheme.panicRed,
                       foregroundColor: Colors.white,
                     ),
-                    child: const Text('Send now', style: TextStyle(fontSize: 18)),
+                    child: const Text(
+                      'Send now',
+                      style: TextStyle(fontSize: 18),
+                    ),
                   ),
                 ),
               ],
@@ -430,119 +459,121 @@ class _PanicScreenState extends State<PanicScreen>
         onTapDown: (_) => _onHoldStart(),
         onTapUp: (_) => _onHoldEnd(),
         onTapCancel: () => _onHoldEnd(),
-      child: AnimatedBuilder(
-        animation: Listenable.merge([_pulseController, _holdController]),
-        builder: (context, child) {
-          final pulseScale = _isTriggered
-              ? 1.05
-              : 1.0 + (_pulseController.value * 0.05);
+        child: AnimatedBuilder(
+          animation: Listenable.merge([_pulseController, _holdController]),
+          builder: (context, child) {
+            final pulseScale = _isTriggered
+                ? 1.05
+                : 1.0 + (_pulseController.value * 0.05);
 
-          return Stack(
-            alignment: Alignment.center,
-            children: [
-              // Outer Progress Ring (Fills up during 3-second hold)
-              SizedBox(
-                width: 220,
-                height: 220,
-                child: CircularProgressIndicator(
-                  value: _holdController.value,
-                  strokeWidth: 8,
-                  backgroundColor: AppTheme.primaryWhite,
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    _isTriggered ? AppTheme.panicRed : AppTheme.brandSecondary,
-                  ),
-                ),
-              ),
-
-              // Glowing Pulsing SOS Circle
-              Transform.scale(
-                scale: pulseScale,
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(
-                    minWidth: 190,
-                    minHeight: 190,
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(
-                      colors: _isTriggered
-                          ? [AppTheme.panicRed, const Color(0xFF8B0000)]
-                          : [const Color(0xFFE53935), AppTheme.panicRed],
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
+            return Stack(
+              alignment: Alignment.center,
+              children: [
+                // Outer Progress Ring (Fills up during 3-second hold)
+                SizedBox(
+                  width: 220,
+                  height: 220,
+                  child: CircularProgressIndicator(
+                    value: _holdController.value,
+                    strokeWidth: 8,
+                    backgroundColor: AppTheme.primaryWhite,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      _isTriggered
+                          ? AppTheme.panicRed
+                          : AppTheme.brandSecondary,
                     ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.panicRed.withValues(
-                          alpha: _isTriggered ? 0.7 : 0.4,
-                        ),
-                        blurRadius: _isHolding ? 40 : 25,
-                        spreadRadius: _isHolding ? 8 : 4,
-                      ),
-                    ],
                   ),
-                  alignment: Alignment.center,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        _isTriggered
-                            ? Icons.notification_important
-                            : Icons.touch_app_outlined,
-                        size: 44,
-                        color: Colors.white,
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        _isTriggered ? 'ACTIVE' : 'SOS',
-                        style: const TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.white,
-                          letterSpacing: 2,
+                ),
+
+                // Glowing Pulsing SOS Circle
+                Transform.scale(
+                  scale: pulseScale,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      minWidth: 190,
+                      minHeight: 190,
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        gradient: LinearGradient(
+                          colors: _isTriggered
+                              ? [AppTheme.panicRed, const Color(0xFF8B0000)]
+                              : [const Color(0xFFE53935), AppTheme.panicRed],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
                         ),
-                      ),
-                      if (_isHolding)
-                        Text(
-                          'HOLDING',
-                          style: TextStyle(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                            letterSpacing: 1.5,
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppTheme.panicRed.withValues(
+                              alpha: _isTriggered ? 0.7 : 0.4,
+                            ),
+                            blurRadius: _isHolding ? 40 : 25,
+                            spreadRadius: _isHolding ? 8 : 4,
                           ),
-                        ),
-                    ],
+                        ],
+                      ),
+                      alignment: Alignment.center,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            _isTriggered
+                                ? Icons.notification_important
+                                : Icons.touch_app_outlined,
+                            size: 44,
+                            color: Colors.white,
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            _isTriggered ? 'ACTIVE' : 'SOS',
+                            style: const TextStyle(
+                              fontSize: 32,
+                              fontWeight: FontWeight.w900,
+                              color: Colors.white,
+                              letterSpacing: 2,
+                            ),
+                          ),
+                          if (_isHolding)
+                            Text(
+                              'HOLDING',
+                              style: TextStyle(
+                                fontSize: 11,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                letterSpacing: 1.5,
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
-                ),
-              ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   /// An alert sent while the app was not on screen (shortcut, second PIN, or an
   /// in-app SOS she left mid-countdown).
   Widget _buildLastAlert(String text) => Card(
-        margin: const EdgeInsets.only(bottom: 16),
-        child: ListTile(
-          leading: const Icon(Icons.history, color: AppTheme.brandSecondary),
-          title: Text(text, style: const TextStyle(fontSize: 13)),
-          trailing: IconButton(
-            icon: const Icon(Icons.close),
-            tooltip: 'Dismiss',
-            onPressed: () {
-              AlertLog.clear();
-              setState(() => _lastAlert = null);
-            },
-          ),
-        ),
-      );
+    margin: const EdgeInsets.only(bottom: 16),
+    child: ListTile(
+      leading: const Icon(Icons.history, color: AppTheme.brandSecondary),
+      title: Text(text, style: const TextStyle(fontSize: 13)),
+      trailing: IconButton(
+        icon: const Icon(Icons.close),
+        tooltip: 'Dismiss',
+        onPressed: () {
+          AlertLog.clear();
+          setState(() => _lastAlert = null);
+        },
+      ),
+    ),
+  );
 
   static const _statusText = {
     SmsStatus.sent: 'Sent',
@@ -556,10 +587,13 @@ class _PanicScreenState extends State<PanicScreen>
     final allSent = result.success;
     final String headline;
     if (result.dispatchMethod == 'no_contacts') {
-      headline = 'No SOS text sent: you have no trusted contacts yet. Add them in Settings.';
+      headline =
+          'No SOS text sent: you have no trusted contacts yet. Add them in Settings.';
     } else if (allSent) {
       headline = 'SOS text sent to every contact.';
-    } else if (result.dispatch.statuses.values.every((s) => s == SmsStatus.unconfirmed)) {
+    } else if (result.dispatch.statuses.values.every(
+      (s) => s == SmsStatus.unconfirmed,
+    )) {
       headline = 'SOS text not confirmed. Check that it was sent.';
     } else {
       headline = 'SOS text failed for some or all contacts.';
@@ -579,16 +613,28 @@ class _PanicScreenState extends State<PanicScreen>
         children: [
           Row(
             children: [
-              Icon(allSent ? Icons.check_circle_outline : Icons.error_outline, color: accent, size: 20),
+              Icon(
+                allSent ? Icons.check_circle_outline : Icons.error_outline,
+                color: accent,
+                size: 20,
+              ),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   headline,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: accent),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                    color: accent,
+                  ),
                 ),
               ),
               IconButton(
-                icon: const Icon(Icons.close, size: 18, color: AppTheme.textSecondary),
+                icon: const Icon(
+                  Icons.close,
+                  size: 18,
+                  color: AppTheme.textSecondary,
+                ),
                 onPressed: _resetEmergency,
                 tooltip: AppLocalizations.of(context)!.disarmSosTooltip,
               ),
@@ -605,7 +651,10 @@ class _PanicScreenState extends State<PanicScreen>
                   foregroundColor: Colors.white,
                 ),
                 icon: const Icon(Icons.phone_in_talk, size: 28),
-                label: const Text('Call 999', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+                label: const Text(
+                  'Call 999',
+                  style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                ),
                 onPressed: _panicUseCase.launchEmergencyCall,
               ),
             ),
@@ -622,7 +671,9 @@ class _PanicScreenState extends State<PanicScreen>
                 }}',
                 style: TextStyle(
                   fontSize: 13,
-                  color: entry.value == SmsStatus.sent && _delivered[entry.key] != false
+                  color:
+                      entry.value == SmsStatus.sent &&
+                          _delivered[entry.key] != false
                       ? AppTheme.textPrimary
                       : AppTheme.panicRed,
                 ),
@@ -631,7 +682,11 @@ class _PanicScreenState extends State<PanicScreen>
           const SizedBox(height: 8),
           const Text(
             'Location sent:',
-            style: TextStyle(fontSize: 12, color: AppTheme.textSecondary, fontWeight: FontWeight.bold),
+            style: TextStyle(
+              fontSize: 12,
+              color: AppTheme.textSecondary,
+              fontWeight: FontWeight.bold,
+            ),
           ),
           const SizedBox(height: 4),
           SelectableText(
@@ -743,7 +798,10 @@ class _PanicScreenState extends State<PanicScreen>
                     label,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(fontSize: 10, color: AppTheme.textSecondary),
+                    style: const TextStyle(
+                      fontSize: 10,
+                      color: AppTheme.textSecondary,
+                    ),
                   ),
                 ],
               ),
@@ -789,11 +847,7 @@ class _PanicScreenState extends State<PanicScreen>
             'Public Service',
           ),
           const SizedBox(height: 10),
-          _buildDecoyItem(
-            'National Helpline',
-            '109',
-            'Public Service',
-          ),
+          _buildDecoyItem('National Helpline', '109', 'Public Service'),
         ],
       ),
     );
@@ -823,17 +877,27 @@ class _PanicScreenState extends State<PanicScreen>
                 const SizedBox(height: 4),
                 Text(
                   category,
-                  style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary),
+                  style: const TextStyle(
+                    fontSize: 11,
+                    color: AppTheme.textSecondary,
+                  ),
                 ),
               ],
             ),
           ),
           TextButton.icon(
             onPressed: () => _callHotline(phone),
-            icon: const Icon(Icons.call, size: 16, color: AppTheme.brandSecondary),
+            icon: const Icon(
+              Icons.call,
+              size: 16,
+              color: AppTheme.brandSecondary,
+            ),
             label: Text(
               phone,
-              style: const TextStyle(color: AppTheme.brandSecondary, fontSize: 12),
+              style: const TextStyle(
+                color: AppTheme.brandSecondary,
+                fontSize: 12,
+              ),
             ),
           ),
         ],

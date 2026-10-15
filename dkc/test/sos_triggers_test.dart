@@ -21,22 +21,32 @@ class FakeAlerts extends SosAlerts {
 
   @override
   Future<void> vibrate(List<int> pattern) async => log.add(
-      'buzz:${identical(pattern, Buzz.armed) ? 'armed' : identical(pattern, Buzz.sent) ? 'sent' : 'failed'}');
+    'buzz:${identical(pattern, Buzz.armed)
+        ? 'armed'
+        : identical(pattern, Buzz.sent)
+        ? 'sent'
+        : 'failed'}',
+  );
 
   @override
-  Future<void> notify(String text, {bool cancel = false, bool call999 = false}) async =>
-      log.add('notice:$text${cancel ? ' [Cancel]' : ''}${call999 ? ' [Call 999]' : ''}');
+  Future<void> notify(
+    String text, {
+    bool cancel = false,
+    bool call999 = false,
+  }) async => log.add(
+    'notice:$text${cancel ? ' [Cancel]' : ''}${call999 ? ' [Call 999]' : ''}',
+  );
 
   @override
   Future<void> clear() async => log.add('clear');
 }
 
 PanicResult _result(Map<String, SmsStatus> statuses) => PanicResult(
-      formattedMessage: 'm',
-      locationDisplay: 'l',
-      timestamp: DateTime(2026, 10, 14, 14, 2),
-      dispatch: SmsDispatch(statuses.isEmpty ? 'no_contacts' : 'sms', statuses),
-    );
+  formattedMessage: 'm',
+  locationDisplay: 'l',
+  timestamp: DateTime(2026, 10, 14, 14, 2),
+  dispatch: SmsDispatch(statuses.isEmpty ? 'no_contacts' : 'sms', statuses),
+);
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -45,7 +55,10 @@ void main() {
   group('ShakeDetector', () {
     test('four hard shakes within 3 s trigger', () {
       final d = ShakeDetector();
-      expect([for (var i = 0; i < 4; i++) d.add(3.5, i * 450)], [false, false, false, true]);
+      expect(
+        [for (var i = 0; i < 4; i++) d.add(3.5, i * 450)],
+        [false, false, false, true],
+      );
     });
 
     test('rickshaw and bag movement under 3 g never trigger', () {
@@ -57,10 +70,18 @@ void main() {
 
     test('three hard jolts are not enough; spread-out jolts never add up', () {
       final d = ShakeDetector();
-      expect([d.add(4, 0), d.add(4, 500), d.add(4, 1000)], everyElement(isFalse));
+      expect([
+        d.add(4, 0),
+        d.add(4, 500),
+        d.add(4, 1000),
+      ], everyElement(isFalse));
       final spread = ShakeDetector();
       for (var i = 0; i < 20; i++) {
-        expect(spread.add(4, i * 1100), isFalse, reason: 'one jolt every 1.1 s');
+        expect(
+          spread.add(4, i * 1100),
+          isFalse,
+          reason: 'one jolt every 1.1 s',
+        );
       }
     });
 
@@ -75,26 +96,32 @@ void main() {
   group('SosTriggerHandler', () {
     const window = Duration(milliseconds: 40);
 
-    test('buzz and Cancel notice first, then the send, then the real result', () async {
-      final alerts = FakeAlerts();
-      var sends = 0;
-      final h = SosTriggerHandler(
-        send: () async {
-          sends++;
-          return _result({a: SmsStatus.sent, b: SmsStatus.sent});
-        },
-        alerts: alerts,
-        deliveries: const Stream.empty(),
-        window: window,
-      );
-      final run = h.trigger();
-      await Future<void>.delayed(Duration.zero);
-      expect(alerts.log, ['buzz:armed', 'notice:$sosCountdownNotice [Cancel]']);
-      expect(sends, 0, reason: 'nothing goes out inside the window');
-      await run;
-      expect(sends, 1);
-      expect(alerts.log.skip(2), ['buzz:sent', 'notice:Done: 2 of 2.']);
-    });
+    test(
+      'buzz and Cancel notice first, then the send, then the real result',
+      () async {
+        final alerts = FakeAlerts();
+        var sends = 0;
+        final h = SosTriggerHandler(
+          send: () async {
+            sends++;
+            return _result({a: SmsStatus.sent, b: SmsStatus.sent});
+          },
+          alerts: alerts,
+          deliveries: const Stream.empty(),
+          window: window,
+        );
+        final run = h.trigger();
+        await Future<void>.delayed(Duration.zero);
+        expect(alerts.log, [
+          'buzz:armed',
+          'notice:$sosCountdownNotice [Cancel]',
+        ]);
+        expect(sends, 0, reason: 'nothing goes out inside the window');
+        await run;
+        expect(sends, 1);
+        expect(alerts.log.skip(2), ['buzz:sent', 'notice:Done: 2 of 2.']);
+      },
+    );
 
     test('Cancel inside the window sends nothing', () async {
       final alerts = FakeAlerts();
@@ -134,7 +161,11 @@ void main() {
       await first;
       expect(sends, 1);
       await h.trigger();
-      expect(sends, 2, reason: 'a new trigger after the first finished is a new alert');
+      expect(
+        sends,
+        2,
+        reason: 'a new trigger after the first finished is a new alert',
+      );
     });
 
     test('a failure or a crash says not sent and offers Call 999', () async {
@@ -145,7 +176,10 @@ void main() {
         deliveries: const Stream.empty(),
         window: window,
       ).trigger();
-      expect(alerts.log.skip(2), ['buzz:failed', 'notice:$sosNotSentNotice [Call 999]']);
+      expect(alerts.log.skip(2), [
+        'buzz:failed',
+        'notice:$sosNotSentNotice [Call 999]',
+      ]);
 
       final crashed = FakeAlerts();
       await SosTriggerHandler(
@@ -154,7 +188,10 @@ void main() {
         deliveries: const Stream.empty(),
         window: window,
       ).trigger();
-      expect(crashed.log.skip(2), ['buzz:failed', 'notice:$sosNotSentNotice [Call 999]']);
+      expect(crashed.log.skip(2), [
+        'buzz:failed',
+        'notice:$sosNotSentNotice [Call 999]',
+      ]);
     });
 
     test('delivery reports update the notice', () async {
@@ -182,23 +219,36 @@ void main() {
   });
 
   test('result notices never claim more than happened', () {
-    String n(Map<String, SmsStatus> s) => sosResultNotice(SmsDispatch('sms', s));
-    expect(sosResultNotice(const SmsDispatch('no_contacts', {})), contains('nothing set up'));
+    String n(Map<String, SmsStatus> s) =>
+        sosResultNotice(SmsDispatch('sms', s));
+    expect(
+      sosResultNotice(const SmsDispatch('no_contacts', {})),
+      contains('nothing set up'),
+    );
     expect(n({a: SmsStatus.failed, b: SmsStatus.failed}), sosNotSentNotice);
     expect(n({a: SmsStatus.sent, b: SmsStatus.failed}), 'Done: 1 of 2.');
     expect(n({a: SmsStatus.sent}), 'Done: 1 of 1.');
-    expect(sosServiceNotice.toLowerCase(), isNot(anyOf(contains('system'), contains('google'))));
+    expect(
+      sosServiceNotice.toLowerCase(),
+      isNot(anyOf(contains('system'), contains('google'))),
+    );
   });
 
   test('no notice tells someone holding the phone what happened (N4)', () {
-    final giveaway = RegExp(r'sos|alert|message|sms|text|999|help|emergency|contact|deliver|shortcut',
-        caseSensitive: false);
+    final giveaway = RegExp(
+      r'sos|alert|message|sms|text|999|help|emergency|contact|deliver|shortcut',
+      caseSensitive: false,
+    );
     final notices = [
       sosServiceNotice,
       sosCountdownNotice,
       sosNotSentNotice,
       sosResultNotice(const SmsDispatch('no_contacts', {})),
-      sosResultNotice(SmsDispatch('sms', {a: SmsStatus.sent, b: SmsStatus.failed}), delivered: 1, undelivered: 1),
+      sosResultNotice(
+        SmsDispatch('sms', {a: SmsStatus.sent, b: SmsStatus.failed}),
+        delivered: 1,
+        undelivered: 1,
+      ),
     ];
     for (final n in notices) {
       expect(n, isNot(matches(giveaway)));
@@ -216,103 +266,176 @@ void main() {
       debugDefaultTargetPlatformOverride = null;
     });
 
-    test('both triggers and the alert are off by default; each turns on alone', () async {
-      for (final t in SosTrigger.values) {
-        expect(await BackgroundSosService.isOn(t), isFalse);
-      }
-      expect(await DuressAlert.isOn(), isFalse);
+    test(
+      'both triggers and the alert are off by default; each turns on alone',
+      () async {
+        for (final t in SosTrigger.values) {
+          expect(await BackgroundSosService.isOn(t), isFalse);
+        }
+        expect(await DuressAlert.isOn(), isFalse);
 
-      BackgroundSosService.permissions = ({required bool ask}) async => false;
-      expect(await BackgroundSosService.enable(SosTrigger.power), isFalse);
-      expect(await BackgroundSosService.isOn(SosTrigger.power), isFalse, reason: 'a refused permission keeps it off');
+        BackgroundSosService.permissions = ({required bool ask}) async => false;
+        expect(await BackgroundSosService.enable(SosTrigger.power), isFalse);
+        expect(
+          await BackgroundSosService.isOn(SosTrigger.power),
+          isFalse,
+          reason: 'a refused permission keeps it off',
+        );
 
-      BackgroundSosService.permissions = ({required bool ask}) async => true;
-      expect(await BackgroundSosService.enable(SosTrigger.power), isTrue);
-      expect(await BackgroundSosService.isOn(SosTrigger.power), isTrue);
-      expect(await BackgroundSosService.isOn(SosTrigger.shake), isFalse);
-      await BackgroundSosService.disable(SosTrigger.power);
-      expect(storage.store, isNot(contains(StoreKeys.powerSosOn)));
-    });
+        BackgroundSosService.permissions = ({required bool ask}) async => true;
+        expect(await BackgroundSosService.enable(SosTrigger.power), isTrue);
+        expect(await BackgroundSosService.isOn(SosTrigger.power), isTrue);
+        expect(await BackgroundSosService.isOn(SosTrigger.shake), isFalse);
+        await BackgroundSosService.disable(SosTrigger.power);
+        expect(storage.store, isNot(contains(StoreKeys.powerSosOn)));
+      },
+    );
 
-    test('a practice run is used once, then the real SOS is back (N16)', () async {
-      expect(await SosPractice.take(), isFalse, reason: 'off unless she arms it');
-      await SosPractice.arm();
-      expect(await SosPractice.take(), isTrue);
-      expect(await SosPractice.take(), isFalse, reason: 'one trigger only');
+    test(
+      'a practice run is used once, then the real SOS is back (N16)',
+      () async {
+        expect(
+          await SosPractice.take(),
+          isFalse,
+          reason: 'off unless she arms it',
+        );
+        await SosPractice.arm();
+        expect(await SosPractice.take(), isTrue);
+        expect(await SosPractice.take(), isFalse, reason: 'one trigger only');
 
-      storage.store[StoreKeys.practiceUntil] =
-          DateTime.now().subtract(const Duration(seconds: 1)).toIso8601String();
-      expect(await SosPractice.take(), isFalse, reason: 'expired');
-      expect(storage.store, isNot(contains(StoreKeys.practiceUntil)));
+        storage.store[StoreKeys.practiceUntil] = DateTime.now()
+            .subtract(const Duration(seconds: 1))
+            .toIso8601String();
+        expect(await SosPractice.take(), isFalse, reason: 'expired');
+        expect(storage.store, isNot(contains(StoreKeys.practiceUntil)));
 
-      final sms = FakeSms();
-      await panicUseCase(sms: sms, contacts: [contact('A', a)], at: position(23.81, 90.41))
-          .execute(dim: false, practice: true);
-      expect(sms.sent.single.$2, startsWith(TriggerPanicUseCase.practiceHead));
-      expect(sms.sent.single.$2, isNot(contains('Urgent')));
-      expect(sms.sent.single.$2, contains('maps.google.com'), reason: 'she can check the link works');
-    });
+        final sms = FakeSms();
+        await panicUseCase(
+          sms: sms,
+          contacts: [contact('A', a)],
+          at: position(23.81, 90.41),
+        ).execute(dim: false, practice: true);
+        expect(
+          sms.sent.single.$2,
+          startsWith(TriggerPanicUseCase.practiceHead),
+        );
+        expect(sms.sent.single.$2, isNot(contains('Urgent')));
+        expect(
+          sms.sent.single.$2,
+          contains('maps.google.com'),
+          reason: 'she can check the link works',
+        );
+      },
+    );
 
-    test('the second PIN sends nothing unless she turned the alert on', () async {
-      final sms = FakeSms();
-      await DuressAlert.sendIfOn(useCase: panicUseCase(sms: sms, contacts: [contact('A', a)]));
-      expect(sms.sent, isEmpty);
-      expect(await AlertLog.summary(), isNull);
+    test(
+      'the second PIN sends nothing unless she turned the alert on',
+      () async {
+        final sms = FakeSms();
+        await DuressAlert.sendIfOn(
+          useCase: panicUseCase(sms: sms, contacts: [contact('A', a)]),
+        );
+        expect(sms.sent, isEmpty);
+        expect(await AlertLog.summary(), isNull);
 
-      await DuressAlert.setOn(true);
-      await DuressAlert.sendIfOn(useCase: panicUseCase(sms: sms, contacts: [contact('A', a)]));
-      expect(sms.sent.single.$1, [a]);
-      expect(await AlertLog.summary(), matches(RegExp(r'^Alert at \d+/\d+ \d\d:\d\d: sent to 1 of 1 contacts\.$')));
-      await AlertLog.clear();
-      expect(await AlertLog.summary(), isNull);
-    });
+        await DuressAlert.setOn(true);
+        await DuressAlert.sendIfOn(
+          useCase: panicUseCase(sms: sms, contacts: [contact('A', a)]),
+        );
+        expect(sms.sent.single.$1, [a]);
+        expect(
+          await AlertLog.summary(),
+          matches(
+            RegExp(r'^Alert at \d+/\d+ \d\d:\d\d: sent to 1 of 1 contacts\.$'),
+          ),
+        );
+        await AlertLog.clear();
+        expect(await AlertLog.summary(), isNull);
+      },
+    );
 
-    test('a broken store or send never throws out of the second-PIN path', () async {
-      storage.failing = true;
-      await DuressAlert.sendIfOn();
-    });
+    test(
+      'a broken store or send never throws out of the second-PIN path',
+      () async {
+        storage.failing = true;
+        await DuressAlert.sendIfOn();
+      },
+    );
 
     Future<void> pumpSettings(WidgetTester tester) async {
       await tester.binding.setSurfaceSize(const Size(420, 1600));
       addTearDown(() => tester.binding.setSurfaceSize(null));
-      await tester.pumpWidget(harness(SettingsScreen(authService: AuthService())));
+      await tester.pumpWidget(
+        harness(SettingsScreen(authService: AuthService())),
+      );
       await tester.pumpAndSettle();
     }
 
-    testWidgets('Settings: off by default, on only after the explanation, then the battery guide',
-        (tester) async {
-      await pumpSettings(tester);
-      final power = find.widgetWithText(SwitchListTile, 'Power button SOS');
-      expect(tester.widget<SwitchListTile>(power).value, isFalse);
-      expect(tester.widget<SwitchListTile>(find.widgetWithText(SwitchListTile, 'Shake SOS')).value, isFalse);
-      expect(
-          tester.widget<SwitchListTile>(find.widgetWithText(SwitchListTile, 'Silent alert with your second PIN')).value,
-          isFalse);
+    testWidgets(
+      'Settings: off by default, on only after the explanation, then the battery guide',
+      (tester) async {
+        await pumpSettings(tester);
+        final power = find.widgetWithText(SwitchListTile, 'Power button SOS');
+        expect(tester.widget<SwitchListTile>(power).value, isFalse);
+        expect(
+          tester
+              .widget<SwitchListTile>(
+                find.widgetWithText(SwitchListTile, 'Shake SOS'),
+              )
+              .value,
+          isFalse,
+        );
+        expect(
+          tester
+              .widget<SwitchListTile>(
+                find.widgetWithText(
+                  SwitchListTile,
+                  'Silent alert with your second PIN',
+                ),
+              )
+              .value,
+          isFalse,
+        );
 
-      await tester.tap(power);
-      await tester.pumpAndSettle();
-      expect(find.textContaining('Press the power button 4 times quickly'), findsWidgets);
-      await tester.tap(find.text('Not now'));
-      await tester.pumpAndSettle();
-      expect(tester.widget<SwitchListTile>(power).value, isFalse);
-      expect(storage.store, isNot(contains(StoreKeys.powerSosOn)));
+        await tester.tap(power);
+        await tester.pumpAndSettle();
+        expect(
+          find.textContaining('Press the power button 4 times quickly'),
+          findsWidgets,
+        );
+        await tester.tap(find.text('Not now'));
+        await tester.pumpAndSettle();
+        expect(tester.widget<SwitchListTile>(power).value, isFalse);
+        expect(storage.store, isNot(contains(StoreKeys.powerSosOn)));
 
-      await tester.tap(power);
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Continue'));
-      await tester.pumpAndSettle();
-      expect(find.byType(BatteryGuideScreen), findsOneWidget);
-      expect(storage.store[StoreKeys.powerSosOn], 'true');
-      expect(storage.store, isNot(contains(StoreKeys.shakeSosOn)));
-    });
+        await tester.tap(power);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Continue'));
+        await tester.pumpAndSettle();
+        expect(find.byType(BatteryGuideScreen), findsOneWidget);
+        expect(storage.store[StoreKeys.powerSosOn], 'true');
+        expect(storage.store, isNot(contains(StoreKeys.shakeSosOn)));
+      },
+    );
 
-    testWidgets('Settings: the second-PIN alert needs SMS permission', (tester) async {
+    testWidgets('Settings: the second-PIN alert needs SMS permission', (
+      tester,
+    ) async {
       const plugin = MethodChannel('hardware_sos');
-      final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
-      messenger.setMockMethodCallHandler(plugin, (call) async => call.method == 'hasSmsPermission');
+      final messenger =
+          TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+      messenger.setMockMethodCallHandler(
+        plugin,
+        (call) async => call.method == 'hasSmsPermission',
+      );
       addTearDown(() => messenger.setMockMethodCallHandler(plugin, null));
       await pumpSettings(tester);
-      await tester.tap(find.widgetWithText(SwitchListTile, 'Silent alert with your second PIN'));
+      await tester.tap(
+        find.widgetWithText(
+          SwitchListTile,
+          'Silent alert with your second PIN',
+        ),
+      );
       await tester.pumpAndSettle();
       expect(find.textContaining('nothing on screen changes'), findsOneWidget);
       await tester.tap(find.text('Continue'));
@@ -320,22 +443,31 @@ void main() {
       expect(storage.store[StoreKeys.duressAlertOn], 'true');
     });
 
-    testWidgets('Settings on iPhone: no trigger toggles, a plain note instead', (tester) async {
-      debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
-      await pumpSettings(tester);
-      expect(find.text('Power button SOS'), findsNothing);
-      expect(find.text('Shake SOS'), findsNothing);
-      expect(find.text('Silent alert with your second PIN'), findsNothing);
-      expect(find.textContaining('iPhone does not allow'), findsOneWidget);
-      debugDefaultTargetPlatformOverride = null;
-    });
+    testWidgets(
+      'Settings on iPhone: no trigger toggles, a plain note instead',
+      (tester) async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
+        await pumpSettings(tester);
+        expect(find.text('Power button SOS'), findsNothing);
+        expect(find.text('Shake SOS'), findsNothing);
+        expect(find.text('Silent alert with your second PIN'), findsNothing);
+        expect(find.textContaining('iPhone does not allow'), findsOneWidget);
+        debugDefaultTargetPlatformOverride = null;
+      },
+    );
 
-    testWidgets('a trigger left on without its permissions says it is not working', (tester) async {
-      storage.store[StoreKeys.shakeSosOn] = 'true';
-      BackgroundSosService.permissions = ({required bool ask}) async => false;
-      await pumpSettings(tester);
-      expect(find.textContaining('Not working: a permission was turned off'), findsOneWidget);
-    });
+    testWidgets(
+      'a trigger left on without its permissions says it is not working',
+      (tester) async {
+        storage.store[StoreKeys.shakeSosOn] = 'true';
+        BackgroundSosService.permissions = ({required bool ask}) async => false;
+        await pumpSettings(tester);
+        expect(
+          find.textContaining('Not working: a permission was turned off'),
+          findsOneWidget,
+        );
+      },
+    );
   });
 
   group('battery guide', () {
@@ -350,26 +482,44 @@ void main() {
       expect(batteryBrand(null), isNull);
     });
 
-    testWidgets('shows her brand\'s steps and opens its settings', (tester) async {
+    testWidgets('shows her brand\'s steps and opens its settings', (
+      tester,
+    ) async {
       var opened = 0;
-      await tester.pumpWidget(harness(BatteryGuideScreen(
-        maker: () async => 'Xiaomi',
-        openSettings: () async {
-          opened++;
-          return false;
-        },
-      )));
+      await tester.pumpWidget(
+        harness(
+          BatteryGuideScreen(
+            maker: () async => 'Xiaomi',
+            openSettings: () async {
+              opened++;
+              return false;
+            },
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
       expect(find.text('On your Xiaomi phone'), findsOneWidget);
       expect(find.textContaining('Autostart'), findsOneWidget);
       await tester.tap(find.text('Open Xiaomi settings'));
       await tester.pumpAndSettle();
       expect(opened, 1);
-      expect(find.textContaining('Opened this app\'s settings'), findsOneWidget);
+      expect(
+        find.textContaining('Opened this app\'s settings'),
+        findsOneWidget,
+      );
     });
 
-    testWidgets('other phones get the general steps and app settings', (tester) async {
-      await tester.pumpWidget(harness(BatteryGuideScreen(maker: () async => 'samsung', openSettings: () async => false)));
+    testWidgets('other phones get the general steps and app settings', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        harness(
+          BatteryGuideScreen(
+            maker: () async => 'samsung',
+            openSettings: () async => false,
+          ),
+        ),
+      );
       await tester.pumpAndSettle();
       expect(find.textContaining('On your'), findsNothing);
       expect(find.text('Open app settings'), findsOneWidget);

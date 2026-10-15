@@ -14,7 +14,9 @@ import 'package:hardware_sos/hardware_sos.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('sosEvents exposes a broadcast stream', (WidgetTester tester) async {
+  testWidgets('sosEvents exposes a broadcast stream', (
+    WidgetTester tester,
+  ) async {
     final HardwareSos plugin = HardwareSos();
     // No hardware trigger fires during this test; just assert the platform
     // channel is wired up and returns a stream without throwing.

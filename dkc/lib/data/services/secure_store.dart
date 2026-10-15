@@ -3,7 +3,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 /// The one secure store the app uses. "This device only" Keychain items are
 /// left out of iCloud and iTunes backups and never move to another phone.
 const secureStore = FlutterSecureStorage(
-  iOptions: IOSOptions(accessibility: KeychainAccessibility.first_unlock_this_device),
+  iOptions: IOSOptions(
+    accessibility: KeychainAccessibility.first_unlock_this_device,
+  ),
 );
 
 /// Secure-storage key names. They are deliberately meaningless: with backup
@@ -48,7 +50,9 @@ const legacyStoreKeys = <String, String?>{
 };
 
 /// Moves values from the old key names once; later runs find nothing to move.
-Future<void> migrateStoreKeys([FlutterSecureStorage store = secureStore]) async {
+Future<void> migrateStoreKeys([
+  FlutterSecureStorage store = secureStore,
+]) async {
   for (final entry in legacyStoreKeys.entries) {
     final value = await store.read(key: entry.key);
     if (value == null) continue;

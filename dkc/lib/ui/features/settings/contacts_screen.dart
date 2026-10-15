@@ -13,7 +13,11 @@ class ContactsScreen extends StatefulWidget {
   final ContactRepository? repository;
   final SmsDispatcher sendSms;
 
-  const ContactsScreen({super.key, this.repository, this.sendSms = dispatchSms});
+  const ContactsScreen({
+    super.key,
+    this.repository,
+    this.sendSms = dispatchSms,
+  });
 
   /// Neutral on purpose: it also lands in her own Sent messages.
   static const testMessage = 'Test message. Please reply OK if you got this.';
@@ -23,7 +27,8 @@ class ContactsScreen extends StatefulWidget {
 }
 
 class _ContactsScreenState extends State<ContactsScreen> {
-  late final ContactRepository _repo = widget.repository ?? ContactRepository(DatabaseService());
+  late final ContactRepository _repo =
+      widget.repository ?? ContactRepository(DatabaseService());
   List<TrustedContact>? _contacts;
 
   @override
@@ -54,8 +59,14 @@ class _ContactsScreenState extends State<ContactsScreen> {
         title: Text('Remove ${contact.name}?'),
         content: const Text('They will no longer get your SOS texts.'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Cancel')),
-          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Remove')),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Remove'),
+          ),
         ],
       ),
     );
@@ -66,29 +77,35 @@ class _ContactsScreenState extends State<ContactsScreen> {
 
   Future<void> _sendTest(TrustedContact contact) async {
     final messenger = ScaffoldMessenger.of(context);
-    final needsPermission = Platform.isAndroid && !await NativeSmsService.hasPermission();
+    final needsPermission =
+        Platform.isAndroid && !await NativeSmsService.hasPermission();
     if (!mounted) return;
     if (needsPermission) {
       await explainThenRequest(
         context,
         title: 'Allow sending texts',
-        body: 'To text your trusted contacts without opening the Messages app, the phone '
+        body:
+            'To text your trusted contacts without opening the Messages app, the phone '
             'will ask to let this app send SMS. It costs a normal text each time. '
             'If you say no, the Messages app opens and you press Send yourself. Android may '
             'keep a copy of each text in your Messages app, where anyone who opens it can read it.',
         request: NativeSmsService.requestPermission,
       );
     }
-    final result = await widget.sendSms([contact.phone], ContactsScreen.testMessage);
+    final result = await widget.sendSms([
+      contact.phone,
+    ], ContactsScreen.testMessage);
     final status = result.statuses[contact.phone];
     messenger.hideCurrentSnackBar();
-    messenger.showSnackBar(SnackBar(
-      content: Text(switch (status) {
-        SmsStatus.sent => 'Test text sent to ${contact.name}.',
-        SmsStatus.unconfirmed => 'Messages app opened. Press Send there.',
-        _ => 'Not sent. Check the SIM, credit and signal, then try again.',
-      }),
-    ));
+    messenger.showSnackBar(
+      SnackBar(
+        content: Text(switch (status) {
+          SmsStatus.sent => 'Test text sent to ${contact.name}.',
+          SmsStatus.unconfirmed => 'Messages app opened. Press Send there.',
+          _ => 'Not sent. Check the SIM, credit and signal, then try again.',
+        }),
+      ),
+    );
   }
 
   @override
@@ -104,38 +121,38 @@ class _ContactsScreenState extends State<ContactsScreen> {
       body: contacts == null
           ? const Center(child: CircularProgressIndicator())
           : contacts.isEmpty
-              ? const Padding(
-                  padding: EdgeInsets.all(24),
-                  child: Text(
-                    'No trusted contacts yet. Your SOS text goes only to the people you add here. '
-                    'Add someone you trust, then send them a test text.',
-                  ),
-                )
-              : ListView(
-                  children: [
-                    for (final c in contacts)
-                      ListTile(
-                        title: Text(c.name),
-                        subtitle: Text(c.phone),
-                        onTap: () => _edit(c),
-                        trailing: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            IconButton(
-                              tooltip: 'Send test SMS',
-                              icon: const Icon(Icons.sms_outlined),
-                              onPressed: () => _sendTest(c),
-                            ),
-                            IconButton(
-                              tooltip: 'Remove',
-                              icon: const Icon(Icons.delete_outline),
-                              onPressed: () => _delete(c),
-                            ),
-                          ],
+          ? const Padding(
+              padding: EdgeInsets.all(24),
+              child: Text(
+                'No trusted contacts yet. Your SOS text goes only to the people you add here. '
+                'Add someone you trust, then send them a test text.',
+              ),
+            )
+          : ListView(
+              children: [
+                for (final c in contacts)
+                  ListTile(
+                    title: Text(c.name),
+                    subtitle: Text(c.phone),
+                    onTap: () => _edit(c),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          tooltip: 'Send test SMS',
+                          icon: const Icon(Icons.sms_outlined),
+                          onPressed: () => _sendTest(c),
                         ),
-                      ),
-                  ],
-                ),
+                        IconButton(
+                          tooltip: 'Remove',
+                          icon: const Icon(Icons.delete_outline),
+                          onPressed: () => _delete(c),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
+            ),
     );
   }
 }
@@ -166,7 +183,9 @@ class _ContactDialogState extends State<_ContactDialog> {
     final phone = TrustedContact.normalizePhone(_phone.text);
     setState(() {
       _nameError = name.isEmpty ? 'Enter a name.' : null;
-      _phoneError = phone == null ? 'Enter a Bangladeshi mobile number, like 01712345678.' : null;
+      _phoneError = phone == null
+          ? 'Enter a Bangladeshi mobile number, like 01712345678.'
+          : null;
     });
     if (name.isEmpty || phone == null) return;
     Navigator.pop(
@@ -184,24 +203,30 @@ class _ContactDialogState extends State<_ContactDialog> {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-        title: Text(widget.existing == null ? 'Add contact' : 'Edit contact'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: _name,
-              decoration: InputDecoration(labelText: 'Name', errorText: _nameError),
-            ),
-            TextField(
-              controller: _phone,
-              keyboardType: TextInputType.phone,
-              decoration: InputDecoration(labelText: 'Mobile number', errorText: _phoneError),
-            ),
-          ],
+    title: Text(widget.existing == null ? 'Add contact' : 'Edit contact'),
+    content: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        TextField(
+          controller: _name,
+          decoration: InputDecoration(labelText: 'Name', errorText: _nameError),
         ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
-          ElevatedButton(onPressed: _save, child: const Text('Save')),
-        ],
-      );
+        TextField(
+          controller: _phone,
+          keyboardType: TextInputType.phone,
+          decoration: InputDecoration(
+            labelText: 'Mobile number',
+            errorText: _phoneError,
+          ),
+        ),
+      ],
+    ),
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.pop(context),
+        child: const Text('Cancel'),
+      ),
+      ElevatedButton(onPressed: _save, child: const Text('Save')),
+    ],
+  );
 }

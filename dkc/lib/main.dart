@@ -28,25 +28,28 @@ void main() async {
 
 /// Secured from the first frame: Android FLAG_SECURE (also set natively in
 /// MainActivity) and the iOS app-switcher blur.
-final appSecurity = SecureApplicationController(SecureApplicationState(secured: true));
+final appSecurity = SecureApplicationController(
+  SecureApplicationState(secured: true),
+);
 
 /// MaterialApp.builder: sits above the Navigator, so every route, pushed or
 /// replaced, is under the same protection.
 Widget protectApp(BuildContext context, Widget? child) => SecureApplication(
-      secureApplicationController: appSecurity,
-      nativeRemoveDelay: 100,
-      // The vault already returns to the lock screen when backgrounded, so
-      // on return only the switcher cover needs lifting.
-      onNeedUnlock: (controller) async {
-        controller?.unlock();
-        return null;
-      },
-      child: SecureGate(
-        blurr: 20,
-        lockedBuilder: (context, _) => ColoredBox(color: Theme.of(context).scaffoldBackgroundColor),
-        child: child ?? const SizedBox.shrink(),
-      ),
-    );
+  secureApplicationController: appSecurity,
+  nativeRemoveDelay: 100,
+  // The vault already returns to the lock screen when backgrounded, so
+  // on return only the switcher cover needs lifting.
+  onNeedUnlock: (controller) async {
+    controller?.unlock();
+    return null;
+  },
+  child: SecureGate(
+    blurr: 20,
+    lockedBuilder: (context, _) =>
+        ColoredBox(color: Theme.of(context).scaffoldBackgroundColor),
+    child: child ?? const SizedBox.shrink(),
+  ),
+);
 
 class ProtitiApp extends StatefulWidget {
   const ProtitiApp({super.key});
@@ -68,7 +71,8 @@ class _ProtitiAppState extends State<ProtitiApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       // Android shows the title and colour in Recents: a calculator, like the launcher.
-      onGenerateTitle: (context) => AppLocalizations.of(context)!.calculatorLabel,
+      onGenerateTitle: (context) =>
+          AppLocalizations.of(context)!.calculatorLabel,
       color: Colors.black,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
@@ -80,10 +84,7 @@ class _ProtitiAppState extends State<ProtitiApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [
-        Locale('en'),
-        Locale('bn'),
-      ],
+      supportedLocales: const [Locale('en'), Locale('bn')],
       builder: _isSupported ? protectApp : null,
       home: const LockScreen(),
     );

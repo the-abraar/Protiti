@@ -25,7 +25,8 @@ class VaultProvider extends ChangeNotifier {
   bool _pickerOpen = false;
 
   VaultProvider(this._repository, {required this.isDecoy, PickImage? pickImage})
-      : _pickImage = pickImage ?? ((source) => ImagePicker().pickImage(source: source)) {
+    : _pickImage =
+          pickImage ?? ((source) => ImagePicker().pickImage(source: source)) {
     loadEvidence();
   }
 
@@ -67,7 +68,11 @@ class VaultProvider extends ChangeNotifier {
   }
 
   /// A typed note. Its hash is of the text exactly as saved.
-  Future<void> addNote(String text, {String platform = '', String url = ''}) async {
+  Future<void> addNote(
+    String text, {
+    String platform = '',
+    String url = '',
+  }) async {
     final now = DateTime.now();
     final note = Evidence(
       id: now.millisecondsSinceEpoch.toString(),
@@ -77,16 +82,27 @@ class VaultProvider extends ChangeNotifier {
       isDecoy: isDecoy,
       metadata: isDecoy
           ? null
-          : Evidence.captureMetadata(source: 'note', sha256: sha256.convert(utf8.encode(text)).toString(), capturedAt: now),
+          : Evidence.captureMetadata(
+              source: 'note',
+              sha256: sha256.convert(utf8.encode(text)).toString(),
+              capturedAt: now,
+            ),
     );
-    await addEvidence(isDecoy ? note : note.withDetails(description: text, platform: platform, url: url));
+    await addEvidence(
+      isDecoy
+          ? note
+          : note.withDetails(description: text, platform: platform, url: url),
+    );
   }
 
   /// Opens the camera or the gallery and stores the file exactly as the OS
   /// hands it over: hashed and encrypted in one pass, never re-encoded and
   /// never stripped of EXIF. [captureSource] is camera, gallery or screenshot.
   /// Returns the saved item, or null if she backed out.
-  Future<Evidence?> addImage(ImageSource source, {required String captureSource}) async {
+  Future<Evidence?> addImage(
+    ImageSource source, {
+    required String captureSource,
+  }) async {
     if (isDecoy) return null;
 
     final XFile? photo;
@@ -105,14 +121,25 @@ class VaultProvider extends ChangeNotifier {
 
       final now = DateTime.now();
       final id = const Uuid().v4();
-      final file = File(p.join((await getApplicationDocumentsDirectory()).path, '$id$evidenceExt'));
+      final file = File(
+        p.join(
+          (await getApplicationDocumentsDirectory()).path,
+          '$id$evidenceExt',
+        ),
+      );
       final hash = await EncryptionService().encryptFile(picked, file);
       final evidence = Evidence(
         id: id,
         type: 'image',
-        description: captureSource == 'camera' ? 'Camera photo' : (captureSource == 'screenshot' ? 'Screenshot' : 'Gallery photo'),
+        description: captureSource == 'camera'
+            ? 'Camera photo'
+            : (captureSource == 'screenshot' ? 'Screenshot' : 'Gallery photo'),
         filePath: file.path,
-        metadata: Evidence.captureMetadata(source: captureSource, sha256: hash, capturedAt: now),
+        metadata: Evidence.captureMetadata(
+          source: captureSource,
+          sha256: hash,
+          capturedAt: now,
+        ),
         createdAt: now,
       );
       await _repository.addEvidence(evidence);
@@ -127,8 +154,14 @@ class VaultProvider extends ChangeNotifier {
   }
 
   /// Saves her description, platform and link on an item already stored.
-  Future<void> updateDetails(Evidence item, {required String description, required String platform, required String url}) =>
-      addEvidence(item.withDetails(description: description, platform: platform, url: url));
+  Future<void> updateDetails(
+    Evidence item, {
+    required String description,
+    required String platform,
+    required String url,
+  }) => addEvidence(
+    item.withDetails(description: description, platform: platform, url: url),
+  );
 
   Future<Evidence?> captureAndSaveSecureAudio(BuildContext context) async {
     if (isDecoy) return null;
@@ -142,23 +175,32 @@ class VaultProvider extends ChangeNotifier {
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        title: const Text('Recording Secure Audio...', style: TextStyle(color: Colors.red)),
+        title: const Text(
+          'Recording Secure Audio...',
+          style: TextStyle(color: Colors.red),
+        ),
         content: const LinearProgressIndicator(color: Colors.red),
         actions: [
           ElevatedButton(
             onPressed: () => Navigator.pop(ctx),
             style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-            child: const Text('STOP & SECURE', style: TextStyle(color: Colors.white)),
-          )
+            child: const Text(
+              'STOP & SECURE',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
         ],
-      )
+      ),
     );
 
     _isLoading = true;
     notifyListeners();
 
     try {
-      return await audioService.stopAndSave(_repository, description: 'Audio recording');
+      return await audioService.stopAndSave(
+        _repository,
+        description: 'Audio recording',
+      );
     } finally {
       await loadEvidence();
     }

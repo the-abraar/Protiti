@@ -25,9 +25,14 @@ Future<List<pw.Widget>> pdfText(
   if (text.codeUnits.every((c) => c < 0x100)) {
     // span: a long description flows onto the next page instead of failing.
     return [
-      pw.Text(text,
-          overflow: pw.TextOverflow.span,
-          style: pw.TextStyle(fontSize: fontSize, fontWeight: bold ? pw.FontWeight.bold : null)),
+      pw.Text(
+        text,
+        overflow: pw.TextOverflow.span,
+        style: pw.TextStyle(
+          fontSize: fontSize,
+          fontWeight: bold ? pw.FontWeight.bold : null,
+        ),
+      ),
     ];
   }
   final painter = TextPainter(
@@ -49,16 +54,27 @@ Future<List<pw.Widget>> pdfText(
   final out = <pw.Widget>[];
   for (var i = 0; i < lines.length; i++) {
     final top = lines[i].baseline - lines[i].ascent;
-    final bottom = i + 1 < lines.length ? lines[i + 1].baseline - lines[i + 1].ascent : painter.height;
+    final bottom = i + 1 < lines.length
+        ? lines[i + 1].baseline - lines[i + 1].ascent
+        : painter.height;
     final height = (bottom - top).ceil();
     if (height <= 0) continue;
     final recorder = ui.PictureRecorder();
     final canvas = Canvas(recorder)..translate(0, -top);
     painter.paint(canvas, Offset.zero);
-    final image = await recorder.endRecording().toImage((width * scale).ceil(), height);
+    final image = await recorder.endRecording().toImage(
+      (width * scale).ceil(),
+      height,
+    );
     final png = await image.toByteData(format: ui.ImageByteFormat.png);
     image.dispose();
-    out.add(pw.Image(pw.MemoryImage(png!.buffer.asUint8List()), width: width, height: height / scale));
+    out.add(
+      pw.Image(
+        pw.MemoryImage(png!.buffer.asUint8List()),
+        width: width,
+        height: height / scale,
+      ),
+    );
   }
   painter.dispose();
   return out;

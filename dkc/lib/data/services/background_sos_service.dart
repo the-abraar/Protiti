@@ -35,14 +35,16 @@ abstract final class SosPractice {
   static const window = Duration(minutes: 10);
 
   static Future<void> arm() => secureStore.write(
-        key: StoreKeys.practiceUntil,
-        value: DateTime.now().add(window).toIso8601String(),
-      );
+    key: StoreKeys.practiceUntil,
+    value: DateTime.now().add(window).toIso8601String(),
+  );
 
   /// True once while armed; disarms either way. Never throws.
   static Future<bool> take() async {
     try {
-      final until = DateTime.tryParse(await secureStore.read(key: StoreKeys.practiceUntil) ?? '');
+      final until = DateTime.tryParse(
+        await secureStore.read(key: StoreKeys.practiceUntil) ?? '',
+      );
       if (until == null) return false;
       await secureStore.delete(key: StoreKeys.practiceUntil);
       return DateTime.now().isBefore(until);
@@ -69,10 +71,14 @@ abstract final class Buzz {
 class SosAlerts {
   const SosAlerts();
 
-  Future<void> vibrate(List<int> pattern) => _call('vibrate', {'pattern': pattern});
+  Future<void> vibrate(List<int> pattern) =>
+      _call('vibrate', {'pattern': pattern});
 
-  Future<void> notify(String text, {bool cancel = false, bool call999 = false}) =>
-      _call('notify', {'text': text, 'cancel': cancel, 'call999': call999});
+  Future<void> notify(
+    String text, {
+    bool cancel = false,
+    bool call999 = false,
+  }) => _call('notify', {'text': text, 'cancel': cancel, 'call999': call999});
 
   Future<void> clear() => _call('clearNotice');
 
@@ -92,7 +98,11 @@ final sosCountdownNotice = 'Starting in ${sosCancelWindow.inSeconds} seconds.';
 const sosNotSentNotice = 'Not done.';
 
 /// The real outcome, never better than it was.
-String sosResultNotice(SmsDispatch d, {int delivered = 0, int undelivered = 0}) {
+String sosResultNotice(
+  SmsDispatch d, {
+  int delivered = 0,
+  int undelivered = 0,
+}) {
   final total = d.statuses.length;
   final sent = d.statuses.values.where((s) => s == SmsStatus.sent).length;
   if (total == 0) return 'Not done: nothing set up.';
@@ -165,13 +175,19 @@ class SosTriggerHandler {
   void _watchDeliveries(SmsDispatch d) {
     _deliverySub?.cancel();
     final delivered = <String>{}, undelivered = <String>{};
-    _deliverySub = deliveries.where((e) => d.statuses[e.$1] == SmsStatus.sent).listen((e) {
-      (e.$2 ? delivered : undelivered).add(e.$1);
-      alerts.notify(
-        sosResultNotice(d, delivered: delivered.length, undelivered: undelivered.length),
-        call999: !d.allSent || undelivered.isNotEmpty,
-      );
-    });
+    _deliverySub = deliveries
+        .where((e) => d.statuses[e.$1] == SmsStatus.sent)
+        .listen((e) {
+          (e.$2 ? delivered : undelivered).add(e.$1);
+          alerts.notify(
+            sosResultNotice(
+              d,
+              delivered: delivered.length,
+              undelivered: undelivered.length,
+            ),
+            call999: !d.allSent || undelivered.isNotEmpty,
+          );
+        });
   }
 
   void dispose() {
@@ -202,7 +218,8 @@ class BackgroundSosService {
       if (ask && location == LocationPermission.denied) {
         location = await Geolocator.requestPermission();
       }
-      if (location != LocationPermission.always && location != LocationPermission.whileInUse) {
+      if (location != LocationPermission.always &&
+          location != LocationPermission.whileInUse) {
         return false;
       }
       if (!await AudioRecorder().hasPermission(request: ask)) return false;
@@ -278,7 +295,8 @@ class BackgroundSosService {
   static Future<void> _start(FlutterBackgroundService service) async {
     var label = '';
     try {
-      label = await NativeSmsService.channel.invokeMethod<String>('appLabel') ?? '';
+      label =
+          await NativeSmsService.channel.invokeMethod<String>('appLabel') ?? '';
     } catch (_) {}
     await service.configure(
       androidConfiguration: AndroidConfiguration(
@@ -304,18 +322,20 @@ class BackgroundSosService {
     // Plugins' Dart halves (path_provider, geolocator...) are not registered
     // on this engine until asked; without them every SOS found no contacts.
     DartPluginRegistrant.ensureInitialized();
-    final handler = SosTriggerHandler(send: () async {
-      final practice = await SosPractice.take();
-      final result = await TriggerPanicUseCase(
-        LocationService(),
-        contactRepository: ContactRepository(DatabaseService()),
-        audioService: SecureAudioService(),
-        evidenceRepository: EvidenceRepository(DatabaseService()),
-        sendSms: dispatchSilentSms,
-      ).execute(dim: false, practice: practice);
-      if (!practice) await AlertLog.record(result);
-      return result;
-    });
+    final handler = SosTriggerHandler(
+      send: () async {
+        final practice = await SosPractice.take();
+        final result = await TriggerPanicUseCase(
+          LocationService(),
+          contactRepository: ContactRepository(DatabaseService()),
+          audioService: SecureAudioService(),
+          evidenceRepository: EvidenceRepository(DatabaseService()),
+          sendSms: dispatchSilentSms,
+        ).execute(dim: false, practice: practice);
+        if (!practice) await AlertLog.record(result);
+        return result;
+      },
+    );
 
     StreamSubscription<String>? events;
     late final ShakeToSosService shake;
@@ -332,7 +352,8 @@ class BackgroundSosService {
 
     // The switch is read again at trigger time: after a wipe or a change in
     // Settings, a stale service must not send.
-    Future<void> fire(SosTrigger t) async => await isOn(t) ? handler.trigger() : apply();
+    Future<void> fire(SosTrigger t) async =>
+        await isOn(t) ? handler.trigger() : apply();
 
     shake = ShakeToSosService(() => fire(SosTrigger.shake));
     // Also carries the notice's Cancel taps, so it is listened to even when

@@ -10,11 +10,14 @@ void main() {
 
   setUp(() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockStreamHandler(channel, MockStreamHandler.inline(
-      onListen: (Object? arguments, MockStreamHandlerEventSink events) {
-        events.success('triple_press_power_button');
-      },
-    ));
+        .setMockStreamHandler(
+          channel,
+          MockStreamHandler.inline(
+            onListen: (Object? arguments, MockStreamHandlerEventSink events) {
+              events.success('triple_press_power_button');
+            },
+          ),
+        );
   });
 
   tearDown(() {

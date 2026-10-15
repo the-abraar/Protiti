@@ -13,37 +13,68 @@ void main() {
   setUp(() {
     nativeCalls.clear();
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(channel, (call) async => nativeCalls.add(call.method));
+        .setMockMethodCallHandler(
+          channel,
+          (call) async => nativeCalls.add(call.method),
+        );
   });
-  tearDown(() => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-      .setMockMethodCallHandler(channel, null));
+  tearDown(
+    () => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(channel, null),
+  );
 
-  testWidgets('pushed and replaced routes sit under the secured protection', (tester) async {
+  testWidgets('pushed and replaced routes sit under the secured protection', (
+    tester,
+  ) async {
     appSecurity.secure();
     final navigator = GlobalKey<NavigatorState>();
-    await tester.pumpWidget(MaterialApp(
-      navigatorKey: navigator,
-      builder: protectApp,
-      home: const Text('home'),
-    ));
+    await tester.pumpWidget(
+      MaterialApp(
+        navigatorKey: navigator,
+        builder: protectApp,
+        home: const Text('home'),
+      ),
+    );
 
-    navigator.currentState!.push(MaterialPageRoute(builder: (_) => const Text('pushed')));
+    navigator.currentState!.push(
+      MaterialPageRoute(builder: (_) => const Text('pushed')),
+    );
     await tester.pumpAndSettle();
-    expect(SecureApplicationProvider.of(tester.element(find.text('pushed')), listen: false)?.secured, isTrue);
+    expect(
+      SecureApplicationProvider.of(
+        tester.element(find.text('pushed')),
+        listen: false,
+      )?.secured,
+      isTrue,
+    );
 
-    navigator.currentState!.pushReplacement(MaterialPageRoute(builder: (_) => const Text('replaced')));
+    navigator.currentState!.pushReplacement(
+      MaterialPageRoute(builder: (_) => const Text('replaced')),
+    );
     await tester.pumpAndSettle();
-    expect(SecureApplicationProvider.of(tester.element(find.text('replaced')), listen: false)?.secured, isTrue);
+    expect(
+      SecureApplicationProvider.of(
+        tester.element(find.text('replaced')),
+        listen: false,
+      )?.secured,
+      isTrue,
+    );
     expect(nativeCalls, contains('secure'));
     expect(nativeCalls, isNot(contains('open')));
-
   });
 
   test('native config: FLAG_SECURE for the whole app, no Android backup', () {
-    final activity = File('android/app/src/main/kotlin/com/protiti/protiti/MainActivity.kt').readAsStringSync();
+    final activity = File(
+      'android/app/src/main/kotlin/com/protiti/protiti/MainActivity.kt',
+    ).readAsStringSync();
     expect(activity, contains('WindowManager.LayoutParams.FLAG_SECURE'));
-    final manifest = File('android/app/src/main/AndroidManifest.xml').readAsStringSync();
+    final manifest = File(
+      'android/app/src/main/AndroidManifest.xml',
+    ).readAsStringSync();
     expect(manifest, contains('android:allowBackup="false"'));
-    expect(manifest, contains('android:dataExtractionRules="@xml/data_extraction_rules"'));
+    expect(
+      manifest,
+      contains('android:dataExtractionRules="@xml/data_extraction_rules"'),
+    );
   });
 }

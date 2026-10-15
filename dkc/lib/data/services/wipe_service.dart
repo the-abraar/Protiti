@@ -50,7 +50,9 @@ class WipeService {
     }
     final exts = [evidenceExt, recordingExt, ...legacyEvidenceExts];
     for (final entity in await _list(docsDir)) {
-      if (entity is File && exts.any(entity.path.endsWith)) await _delete(entity);
+      if (entity is File && exts.any(entity.path.endsWith)) {
+        await _delete(entity);
+      }
     }
     // Temp holds exported PDFs, image-picker copies and decrypted playback files.
     for (final entity in await _list(tempDir)) {

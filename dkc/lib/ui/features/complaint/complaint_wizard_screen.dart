@@ -43,12 +43,15 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
     if (widget.isDecoy) {
       _titleController.text =
           await _storage.read(key: StoreKeys.notesDraftTitle) ?? '';
-      _descController.text = await _storage.read(key: StoreKeys.notesDraftBody) ?? '';
+      _descController.text =
+          await _storage.read(key: StoreKeys.notesDraftBody) ?? '';
       return;
     }
 
-    _titleController.text = await _storage.read(key: StoreKeys.draftTitle) ?? '';
-    _descController.text = await _storage.read(key: StoreKeys.draftDescription) ?? '';
+    _titleController.text =
+        await _storage.read(key: StoreKeys.draftTitle) ?? '';
+    _descController.text =
+        await _storage.read(key: StoreKeys.draftDescription) ?? '';
     _stationController.text =
         await _storage.read(key: StoreKeys.draftStation) ?? '';
   }
@@ -59,12 +62,24 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
     if (_debounce?.isActive ?? false) _debounce!.cancel();
     _debounce = Timer(const Duration(milliseconds: 500), () {
       if (widget.isDecoy) {
-        _storage.write(key: StoreKeys.notesDraftTitle, value: _titleController.text);
-        _storage.write(key: StoreKeys.notesDraftBody, value: _descController.text);
+        _storage.write(
+          key: StoreKeys.notesDraftTitle,
+          value: _titleController.text,
+        );
+        _storage.write(
+          key: StoreKeys.notesDraftBody,
+          value: _descController.text,
+        );
       } else {
         _storage.write(key: StoreKeys.draftTitle, value: _titleController.text);
-        _storage.write(key: StoreKeys.draftDescription, value: _descController.text);
-        _storage.write(key: StoreKeys.draftStation, value: _stationController.text);
+        _storage.write(
+          key: StoreKeys.draftDescription,
+          value: _descController.text,
+        );
+        _storage.write(
+          key: StoreKeys.draftStation,
+          value: _stationController.text,
+        );
       }
     });
   }
@@ -80,19 +95,16 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
 
   Future<void> _generateAndExportPDF() async {
     final useCase = GenerateComplaintUseCase();
-    final vaultEvidence = Provider.of<VaultProvider>(context, listen: false)
-        .items
-        .where((e) => !_excludedIds.contains(e.id))
-        .toList();
+    final vaultEvidence = Provider.of<VaultProvider>(
+      context,
+      listen: false,
+    ).items.where((e) => !_excludedIds.contains(e.id)).toList();
 
-    final result = await useCase.execute(
-      vaultEvidence,
-      {
-        'title': _titleController.text,
-        'description': _descController.text,
-        'station': _stationController.text,
-      },
-    );
+    final result = await useCase.execute(vaultEvidence, {
+      'title': _titleController.text,
+      'description': _descController.text,
+      'station': _stationController.text,
+    });
 
     if (!mounted) return;
 
@@ -169,7 +181,10 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Text(
               'Draft a General Diary (GD) complaint to print or share. Not reviewed by a lawyer.',
-              style: const TextStyle(fontSize: 12, color: AppTheme.textSecondary),
+              style: const TextStyle(
+                fontSize: 12,
+                color: AppTheme.textSecondary,
+              ),
             ),
           ),
           const SizedBox(height: 12),
@@ -274,7 +289,9 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                 content: Consumer<VaultProvider>(
                   builder: (context, vaultProvider, _) {
                     final items = vaultProvider.items;
-                    final chosen = items.where((e) => !_excludedIds.contains(e.id)).length;
+                    final chosen = items
+                        .where((e) => !_excludedIds.contains(e.id))
+                        .length;
                     final summary = items.isEmpty
                         ? 'No evidence yet. Save items in the Files tab, then come back to choose them.'
                         : '$chosen of ${items.length} item${items.length == 1 ? '' : 's'} will go into the PDF. '
@@ -288,7 +305,9 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                           decoration: BoxDecoration(
                             color: AppTheme.primaryWhite,
                             borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: AppTheme.accentSoft.withValues(alpha: 0.3)),
+                            border: Border.all(
+                              color: AppTheme.accentSoft.withValues(alpha: 0.3),
+                            ),
                           ),
                           child: Row(
                             children: [
@@ -315,7 +334,11 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
                             dense: true,
                             contentPadding: EdgeInsets.zero,
                             value: !_excludedIds.contains(item.id),
-                            title: Text(item.description, maxLines: 2, overflow: TextOverflow.ellipsis),
+                            title: Text(
+                              item.description,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                             subtitle: Text(item.type),
                             onChanged: (include) => setState(() {
                               if (include == true) {
@@ -462,7 +485,9 @@ class _ComplaintWizardScreenState extends State<ComplaintWizardScreen> {
           ),
           const SizedBox(height: 16),
           ElevatedButton.icon(
-            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.accentSoft),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.accentSoft,
+            ),
             onPressed: () {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(content: Text('Personal note saved.')),

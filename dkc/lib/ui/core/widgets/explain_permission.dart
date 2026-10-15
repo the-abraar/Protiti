@@ -14,8 +14,14 @@ Future<bool> explainThenRequest(
       title: Text(title),
       content: Text(body),
       actions: [
-        TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Not now')),
-        ElevatedButton(onPressed: () => Navigator.pop(ctx, true), child: const Text('Continue')),
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, false),
+          child: const Text('Not now'),
+        ),
+        ElevatedButton(
+          onPressed: () => Navigator.pop(ctx, true),
+          child: const Text('Continue'),
+        ),
       ],
     ),
   );

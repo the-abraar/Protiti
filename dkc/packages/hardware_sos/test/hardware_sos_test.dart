@@ -23,6 +23,9 @@ void main() {
     MockHardwareSosPlatform fakePlatform = MockHardwareSosPlatform();
     HardwareSosPlatform.instance = fakePlatform;
 
-    expect(await hardwareSosPlugin.sosEvents.first, 'triple_press_power_button');
+    expect(
+      await hardwareSosPlugin.sosEvents.first,
+      'triple_press_power_button',
+    );
   });
 }

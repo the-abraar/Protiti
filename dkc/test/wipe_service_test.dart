@@ -13,8 +13,12 @@ void main() {
     final storage = FakeSecureStorage()..install();
     final root = installTempPaths();
     final calls = <String>[];
-    final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
-    messenger.setMockMethodCallHandler(NativeSmsService.channel, (call) async => calls.add(call.method));
+    final messenger =
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+    messenger.setMockMethodCallHandler(
+      NativeSmsService.channel,
+      (call) async => calls.add(call.method),
+    );
     addTearDown(() {
       messenger.setMockMethodCallHandler(NativeSmsService.channel, null);
       storage.uninstall();
@@ -27,29 +31,33 @@ void main() {
     expect(calls, contains('clearNotice'));
   });
 
-  test('wipe deletes both databases with their -wal/-journal/-shm files and every evidence file', () async {
-    final root = Directory.systemTemp.createTempSync('protiti_wipe_');
-    final dbDir = Directory('${root.path}/dbs')..createSync();
-    final docs = Directory('${root.path}/docs')..createSync();
-    final temp = Directory('${root.path}/tmp')..createSync();
+  test(
+    'wipe deletes both databases with their -wal/-journal/-shm files and every evidence file',
+    () async {
+      final root = Directory.systemTemp.createTempSync('protiti_wipe_');
+      final dbDir = Directory('${root.path}/dbs')..createSync();
+      final docs = Directory('${root.path}/docs')..createSync();
+      final temp = Directory('${root.path}/tmp')..createSync();
 
-    for (final db in ['app_state.db', 'app_cache.db']) {
-      for (final suffix in ['', '-wal', '-journal', '-shm']) {
-        File('${dbDir.path}/$db$suffix').writeAsStringSync('x');
+      for (final db in ['app_state.db', 'app_cache.db']) {
+        for (final suffix in ['', '-wal', '-journal', '-shm']) {
+          File('${dbDir.path}/$db$suffix').writeAsStringSync('x');
+        }
       }
-    }
-    for (final name in ['a.enc', 'b.bin', 'c.tmp', 'd.enc_audio', 'e.m4a']) {
-      File('${docs.path}/$name').writeAsStringSync('x');
-    }
-    final unrelated = File('${docs.path}/flutter_assets.txt')..writeAsStringSync('keep');
-    File('${temp.path}/dossier.pdf').writeAsStringSync('x');
-    Directory('${temp.path}/picker').createSync();
+      for (final name in ['a.enc', 'b.bin', 'c.tmp', 'd.enc_audio', 'e.m4a']) {
+        File('${docs.path}/$name').writeAsStringSync('x');
+      }
+      final unrelated = File('${docs.path}/flutter_assets.txt')
+        ..writeAsStringSync('keep');
+      File('${temp.path}/dossier.pdf').writeAsStringSync('x');
+      Directory('${temp.path}/picker').createSync();
 
-    await WipeService.wipeFiles(dbDir: dbDir, docsDir: docs, tempDir: temp);
+      await WipeService.wipeFiles(dbDir: dbDir, docsDir: docs, tempDir: temp);
 
-    expect(dbDir.listSync(), isEmpty);
-    expect(docs.listSync().map((e) => e.path), [unrelated.path]);
-    expect(temp.listSync(), isEmpty);
-    root.deleteSync(recursive: true);
-  });
+      expect(dbDir.listSync(), isEmpty);
+      expect(docs.listSync().map((e) => e.path), [unrelated.path]);
+      expect(temp.listSync(), isEmpty);
+      root.deleteSync(recursive: true);
+    },
+  );
 }
