@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,6 +11,7 @@ import 'package:protiti/data/services/secure_audio_service.dart';
 import 'package:protiti/domain/models/contact.dart';
 import 'package:protiti/domain/models/evidence.dart';
 import 'package:protiti/domain/use_cases/trigger_panic.dart';
+import 'package:sqflite_sqlcipher/sqflite.dart' show databaseFactory;
 
 TestDefaultBinaryMessenger get _messenger =>
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
@@ -75,6 +77,8 @@ Directory installTempPaths() {
       return null;
     },
   );
+  // sqflite caches the path from its first call; point it at this test's dir.
+  unawaited(databaseFactory.setDatabasesPath(dbs.path));
   return root;
 }
 
