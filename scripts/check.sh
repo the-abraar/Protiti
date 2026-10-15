@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# One command for all checks: pub get, analyze (infos allowed, as in CI), test, stray files.
+# One command for all checks, as in CI: pub get, format, analyze (infos fail), test, stray files.
 set -euo pipefail
 cd "$(dirname "$0")/../dkc"
 
@@ -9,7 +9,8 @@ stray() { local f; f=$(find . \( -name .git -o -name build -o -name .dart_tool -
   \( -name '*.orig' -o -name '*.rej' -o -name '*.bak' -o -name '*-e' -o -name .DS_Store \) -type f -print); [ -z "$f" ] || { echo "$f"; return 1; }; }
 
 step pub-get flutter pub get
-step analyze flutter analyze --no-fatal-infos
+step format dart format --output=none --set-exit-if-changed .
+step analyze flutter analyze
 step test flutter test
 step stray-files stray
 

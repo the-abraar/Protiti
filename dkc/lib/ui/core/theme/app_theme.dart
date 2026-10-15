@@ -45,7 +45,7 @@ class AppTheme {
       cardTheme: CardThemeData(
         color: primaryWhite,
         elevation: 1,
-        shadowColor: Colors.black.withOpacity(0.05),
+        shadowColor: Colors.black.withValues(alpha: 0.05),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
         ),
@@ -78,11 +78,11 @@ class AppTheme {
         fillColor: primaryWhite,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: accentSoft.withOpacity(0.3)),
+          borderSide: BorderSide(color: accentSoft.withValues(alpha: 0.3)),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: accentSoft.withOpacity(0.3)),
+          borderSide: BorderSide(color: accentSoft.withValues(alpha: 0.3)),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
